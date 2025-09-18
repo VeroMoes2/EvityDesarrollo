@@ -78,6 +78,106 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Jira integration endpoints
+  app.get('/api/jira/test', async (req, res) => {
+    try {
+      const jiraService = new (await import('./jiraService')).JiraService({
+        host: process.env.JIRA_DOMAIN || '',
+        email: process.env.JIRA_EMAIL || '',
+        apiToken: process.env.JIRA_API_TOKEN || ''
+      });
+
+      const connectionTest = await jiraService.testConnection();
+      res.json(connectionTest);
+    } catch (error: any) {
+      console.error('Jira connection test failed:', error);
+      res.status(500).json({ 
+        status: 'Connection failed', 
+        error: error?.message || error 
+      });
+    }
+  });
+
+  app.get('/api/jira/projects', async (req, res) => {
+    try {
+      const jiraService = new (await import('./jiraService')).JiraService({
+        host: process.env.JIRA_DOMAIN || '',
+        email: process.env.JIRA_EMAIL || '',
+        apiToken: process.env.JIRA_API_TOKEN || ''
+      });
+
+      const projects = await jiraService.getProjects();
+      res.json({ projects });
+    } catch (error: any) {
+      console.error('Error fetching Jira projects:', error);
+      res.status(500).json({ 
+        error: 'Failed to fetch projects', 
+        details: error?.message || error 
+      });
+    }
+  });
+
+  app.get('/api/jira/issues/recent', async (req, res) => {
+    try {
+      const jiraService = new (await import('./jiraService')).JiraService({
+        host: process.env.JIRA_DOMAIN || '',
+        email: process.env.JIRA_EMAIL || '',
+        apiToken: process.env.JIRA_API_TOKEN || ''
+      });
+
+      const maxResults = req.query.limit ? parseInt(req.query.limit as string) : 10;
+      const issues = await jiraService.getRecentIssues(maxResults);
+      res.json({ issues });
+    } catch (error: any) {
+      console.error('Error fetching recent Jira issues:', error);
+      res.status(500).json({ 
+        error: 'Failed to fetch recent issues', 
+        details: error?.message || error 
+      });
+    }
+  });
+
+  app.get('/api/jira/projects/:projectKey/issues', async (req, res) => {
+    try {
+      const jiraService = new (await import('./jiraService')).JiraService({
+        host: process.env.JIRA_DOMAIN || '',
+        email: process.env.JIRA_EMAIL || '',
+        apiToken: process.env.JIRA_API_TOKEN || ''
+      });
+
+      const { projectKey } = req.params;
+      const maxResults = req.query.limit ? parseInt(req.query.limit as string) : 20;
+      const issues = await jiraService.getProjectIssues(projectKey, maxResults);
+      res.json({ issues });
+    } catch (error: any) {
+      console.error(`Error fetching issues for project ${req.params.projectKey}:`, error);
+      res.status(500).json({ 
+        error: 'Failed to fetch project issues', 
+        details: error?.message || error 
+      });
+    }
+  });
+
+  app.get('/api/jira/projects/:projectKey/stats', async (req, res) => {
+    try {
+      const jiraService = new (await import('./jiraService')).JiraService({
+        host: process.env.JIRA_DOMAIN || '',
+        email: process.env.JIRA_EMAIL || '',
+        apiToken: process.env.JIRA_API_TOKEN || ''
+      });
+
+      const { projectKey } = req.params;
+      const stats = await jiraService.getProjectStats(projectKey);
+      res.json(stats);
+    } catch (error: any) {
+      console.error(`Error fetching stats for project ${req.params.projectKey}:`, error);
+      res.status(500).json({ 
+        error: 'Failed to fetch project stats', 
+        details: error?.message || error 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
