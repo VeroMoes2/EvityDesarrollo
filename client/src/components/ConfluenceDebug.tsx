@@ -126,11 +126,11 @@ export default function ConfluenceDebug() {
                 </div>
               </div>
 
-              {confluenceData.searchResults && confluenceData.searchResults.length > 0 && (
+              {(confluenceData as any).searchResults && (confluenceData as any).searchResults.length > 0 && (
                 <div>
                   <h4 className="font-medium mb-2">Páginas encontradas:</h4>
                   <div className="space-y-1">
-                    {confluenceData.searchResults.map((result: any) => (
+                    {(confluenceData as any).searchResults.map((result: any) => (
                       <div key={result.id} className="text-sm p-2 bg-muted rounded">
                         <strong>{result.title}</strong> (ID: {result.id})
                         {result.space && <span className="text-muted-foreground ml-2">en {result.space.key}</span>}

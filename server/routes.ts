@@ -15,36 +15,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const businessContent = await confluenceService.getBusinessPlanContent();
       
-      // Extract key information from the content
-      let extractedData = {
-        businessPlan: null,
-        propuestaIntegral: null,
+      // Extract key information from the content - ONLY return safe, whitelisted fields
+      let safeData = {
+        companyName: 'Evity',
         mission: '',
         vision: '',
-        valueProposition: '',
-        companyName: 'Evity',
-        availableSpaces: businessContent.allSpaces,
-        searchResults: businessContent.searchResults
+        valueProposition: ''
       };
+
+      // Add debug data only if explicitly enabled
+      if (process.env.SHOW_CONFLUENCE_DEBUG === 'true') {
+        (safeData as any).availableSpaces = businessContent.allSpaces;
+        (safeData as any).searchResults = businessContent.searchResults;
+      }
 
       if (businessContent.businessPlan) {
         const businessInfo = confluenceService.extractKeyInfo(businessContent.businessPlan.content);
-        extractedData.businessPlan = businessInfo;
-        if (businessInfo.mission) extractedData.mission = businessInfo.mission;
-        if (businessInfo.vision) extractedData.vision = businessInfo.vision;
-        if (businessInfo.valueProposition) extractedData.valueProposition = businessInfo.valueProposition;
+        if (businessInfo.mission) safeData.mission = businessInfo.mission;
+        if (businessInfo.vision) safeData.vision = businessInfo.vision;
+        if (businessInfo.valueProposition) safeData.valueProposition = businessInfo.valueProposition;
       }
 
       if (businessContent.propuestaIntegral) {
         const propuestaInfo = confluenceService.extractKeyInfo(businessContent.propuestaIntegral.content);
-        extractedData.propuestaIntegral = propuestaInfo;
         // Use propuesta content if main business plan doesn't have these sections
-        if (!extractedData.mission && propuestaInfo.mission) extractedData.mission = propuestaInfo.mission;
-        if (!extractedData.vision && propuestaInfo.vision) extractedData.vision = propuestaInfo.vision;
-        if (!extractedData.valueProposition && propuestaInfo.valueProposition) extractedData.valueProposition = propuestaInfo.valueProposition;
+        if (!safeData.mission && propuestaInfo.mission) safeData.mission = propuestaInfo.mission;
+        if (!safeData.vision && propuestaInfo.vision) safeData.vision = propuestaInfo.vision;
+        if (!safeData.valueProposition && propuestaInfo.valueProposition) safeData.valueProposition = propuestaInfo.valueProposition;
       }
 
-      res.json(extractedData);
+      res.json(safeData);
     } catch (error: any) {
       console.error('Error fetching Confluence content:', error);
       res.status(500).json({ 

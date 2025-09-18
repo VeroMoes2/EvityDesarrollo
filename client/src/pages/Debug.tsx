@@ -17,7 +17,14 @@ export default function Debug() {
               </p>
             </div>
             
-            <ConfluenceDebug />
+            {import.meta.env.VITE_SHOW_DEBUG === 'true' ? (
+              <ConfluenceDebug />
+            ) : (
+              <div className="p-8 text-center text-muted-foreground">
+                <p>Debug mode is disabled</p>
+                <p className="text-sm mt-2">Set VITE_SHOW_DEBUG=true to enable debug features</p>
+              </div>
+            )}
           </div>
         </div>
       </main>
