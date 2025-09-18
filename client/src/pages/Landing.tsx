@@ -2,7 +2,7 @@ import { useConfluenceData } from "@/hooks/useConfluenceData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Brain, Dna, Shield, Microscope, Activity } from "lucide-react";
-import heroImage from "@assets/image_1758225930811.png";
+import heroImage from "@assets/generated_images/Hero_mountain_landscape_12ea45bd.png";
 
 export default function Landing() {
   const { data, isLoading } = useConfluenceData();
@@ -74,16 +74,27 @@ export default function Landing() {
           <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto" data-testid="text-hero-mission">
             {data?.mission || 'Transformar la forma en que las personas envejecen, proporcionando herramientas científicas y personalizadas para vivir vidas más largas, saludables y plenas.'}
           </p>
-          <Button 
-            size="lg" 
-            className="bg-primary text-primary-foreground px-8 py-3 text-lg"
-            onClick={() => window.location.href = '/api/login'}
-            data-testid="button-login"
-          >
-            Acceder a mi Perfil
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button 
+              size="lg" 
+              className="bg-primary text-primary-foreground px-8 py-3 text-lg"
+              onClick={() => window.location.href = '/api/login'}
+              data-testid="button-login"
+            >
+              Acceder a mi Perfil
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline"
+              className="px-8 py-3 text-lg bg-white/10 border-white/30 text-white backdrop-blur-sm"
+              onClick={() => window.location.href = '/api/login'}
+              data-testid="button-register"
+            >
+              Crear Cuenta
+            </Button>
+          </div>
           <p className="mt-4 text-sm text-white/70">
-            Inicia sesión para cargar tus estudios y laboratorios
+            Inicia sesión o crea una cuenta para cargar tus estudios y laboratorios
           </p>
         </div>
         
@@ -142,14 +153,25 @@ export default function Landing() {
           <p className="text-lg text-muted-foreground mb-8">
             Accede a tu perfil personal y carga tus estudios médicos para recibir análisis personalizados
           </p>
-          <Button 
-            size="lg" 
-            className="bg-primary text-primary-foreground px-8 py-3 text-lg"
-            onClick={() => window.location.href = '/api/login'}
-            data-testid="button-login-cta"
-          >
-            Iniciar Sesión
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button 
+              size="lg" 
+              className="bg-primary text-primary-foreground px-8 py-3 text-lg"
+              onClick={() => window.location.href = '/api/login'}
+              data-testid="button-login-cta"
+            >
+              Iniciar Sesión
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline"
+              className="px-8 py-3 text-lg"
+              onClick={() => window.location.href = '/api/login'}
+              data-testid="button-register-cta"
+            >
+              Crear Cuenta
+            </Button>
+          </div>
         </div>
       </section>
     </div>
