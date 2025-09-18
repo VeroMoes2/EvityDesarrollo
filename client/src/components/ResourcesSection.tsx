@@ -145,7 +145,7 @@ export default function ResourcesSection() {
             <div className="mt-6">
               <div className="inline-flex items-center px-4 py-2 bg-green-50 dark:bg-green-900/20 rounded-full border border-green-200 dark:border-green-800">
                 <span className="text-green-800 dark:text-green-200 text-sm font-medium">
-                  Basado en el plan estratégico de {companyName}
+                  Contenido especializado en longevidad
                 </span>
               </div>
             </div>

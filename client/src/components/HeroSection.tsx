@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import heroImage from "@assets/generated_images/Hero_mountain_landscape_12ea45bd.png";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
 
@@ -13,12 +13,9 @@ export default function HeroSection() {
     }
   };
 
-  const handleVideoClick = () => {
-    console.log("Video demo clicked");
-  };
 
   const companyName = confluenceData?.companyName || "Evity";
-  const valueProposition = confluenceData?.valueProposition || confluenceData?.mission || "Tu plataforma de longevidad personalizada";
+  const valueProposition = "Descubre los secretos científicos de la longevidad. Herramientas personalizadas, recursos basados en evidencia y una comunidad dedicada a vivir más y mejor.";
 
   return (
     <section 
@@ -51,10 +48,10 @@ export default function HeroSection() {
           </h1>
           
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">
-            {valueProposition || "Descubre los secretos científicos de la longevidad. Herramientas personalizadas, recursos basados en evidencia y una comunidad dedicada a vivir más y mejor."}
+            {valueProposition}
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex justify-center">
             <Button 
               size="lg" 
               className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 text-primary-foreground"
@@ -64,46 +61,8 @@ export default function HeroSection() {
               Descubre Más
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="text-lg px-8 py-6 bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
-              onClick={handleVideoClick}
-              data-testid="button-hero-video"
-            >
-              <Play className="mr-2 h-5 w-5" />
-              Ver Demo
-            </Button>
           </div>
           
-          {(isLoading || confluenceData || error) && (
-            <div className="mt-12 text-center">
-              {isLoading && (
-                <div className="inline-flex items-center px-6 py-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
-                  <span className="text-white font-medium">
-                    Conectando con Confluence...
-                  </span>
-                </div>
-              )}
-              
-              {error && !isLoading && (
-                <div className="inline-flex items-center px-6 py-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
-                  <span className="text-white font-medium">
-                    Modo offline - Datos locales
-                  </span>
-                </div>
-              )}
-              
-              {confluenceData && !error && !isLoading && (
-                <div className="inline-flex items-center px-6 py-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
-                  <span className="text-white font-medium">
-                    Contenido actualizado desde nuestro plan de negocio
-                  </span>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </div>
       
