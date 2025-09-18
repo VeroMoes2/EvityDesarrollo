@@ -2,8 +2,83 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { ConfluenceService } from "./confluenceService";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Auth middleware
+  await setupAuth(app);
+
+  // Auth routes
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // LS-96: Medical documents endpoints for user profile system
+  app.get('/api/profile/medical-documents', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const documents = await storage.getUserMedicalDocuments(userId);
+      res.json({ documents });
+    } catch (error) {
+      console.error("Error fetching medical documents:", error);
+      res.status(500).json({ message: "Failed to fetch medical documents" });
+    }
+  });
+
+  app.post('/api/profile/medical-documents', isAuthenticated, async (req: any, res) => {
+    try {
+      // Import validation schema
+      const { insertMedicalDocumentSchema } = await import("@shared/schema");
+      
+      const userId = req.user.claims.sub;
+      
+      // Validate request body with schema
+      const validationResult = insertMedicalDocumentSchema.safeParse({
+        ...req.body,
+        userId,
+      });
+      
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Invalid request data", 
+          errors: validationResult.error.issues 
+        });
+      }
+      
+      const document = await storage.createMedicalDocument(validationResult.data);
+      res.json({ document });
+    } catch (error) {
+      console.error("Error creating medical document:", error);
+      res.status(500).json({ message: "Failed to create medical document" });
+    }
+  });
+
+  app.delete('/api/profile/medical-documents/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id } = req.params;
+      
+      // Security: Check ownership before deletion
+      const deletedCount = await storage.deleteMedicalDocumentByOwner(userId, id);
+      
+      if (deletedCount === 0) {
+        return res.status(404).json({ message: "Document not found or access denied" });
+      }
+      
+      res.json({ message: "Document deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting medical document:", error);
+      res.status(500).json({ message: "Failed to delete medical document" });
+    }
+  });
+
   // Confluence integration endpoint
   app.get('/api/confluence/content', async (req, res) => {
     try {
