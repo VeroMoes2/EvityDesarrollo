@@ -113,15 +113,15 @@ export default function ConfluenceDebug() {
               <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                 <h4 className="font-medium mb-2">Información Extraída:</h4>
                 <div className="space-y-2 text-sm">
-                  <div><strong>Empresa:</strong> {confluenceData.companyName}</div>
-                  {confluenceData.mission && (
-                    <div><strong>Misión:</strong> {confluenceData.mission}</div>
+                  <div><strong>Empresa:</strong> {(confluenceData as any).companyName}</div>
+                  {(confluenceData as any).mission && (
+                    <div><strong>Misión:</strong> {(confluenceData as any).mission}</div>
                   )}
-                  {confluenceData.vision && (
-                    <div><strong>Visión:</strong> {confluenceData.vision}</div>
+                  {(confluenceData as any).vision && (
+                    <div><strong>Visión:</strong> {(confluenceData as any).vision}</div>
                   )}
-                  {confluenceData.valueProposition && (
-                    <div><strong>Propuesta de Valor:</strong> {confluenceData.valueProposition}</div>
+                  {(confluenceData as any).valueProposition && (
+                    <div><strong>Propuesta de Valor:</strong> {(confluenceData as any).valueProposition}</div>
                   )}
                 </div>
               </div>
