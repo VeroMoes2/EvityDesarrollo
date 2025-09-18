@@ -6,8 +6,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Progress } from "@/components/ui/progress";
 import { useState } from "react";
 import { Calculator, TrendingUp, Heart, Activity } from "lucide-react";
+import { useConfluenceData } from "@/hooks/useConfluenceData";
 
 export default function CalculatorSection() {
+  const { data: confluenceData, isLoading, error } = useConfluenceData();
   const [formData, setFormData] = useState({
     age: "",
     gender: "",
@@ -17,6 +19,8 @@ export default function CalculatorSection() {
   });
   const [result, setResult] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
+  
+  const companyName = confluenceData?.companyName || "Evity";
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -58,11 +62,10 @@ export default function CalculatorSection() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-            Calculadora de Longevidad
+            Calculadora {companyName}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Descubre tu expectativa de vida basada en tu estilo de vida actual y obtén 
-            recomendaciones personalizadas para mejorarla.
+            {confluenceData?.mission || "Descubre tu expectativa de vida basada en tu estilo de vida actual y obtén recomendaciones personalizadas para mejorarla."}
           </p>
         </div>
 
@@ -227,6 +230,33 @@ export default function CalculatorSection() {
               </CardContent>
             </Card>
           </div>
+        </div>
+        
+        {/* Status indicator */}
+        <div className="mt-12 text-center">
+          {isLoading && (
+            <div className="inline-flex items-center px-4 py-2 bg-gray-50 dark:bg-gray-900/20 rounded-full border border-gray-200 dark:border-gray-800">
+              <span className="text-gray-800 dark:text-gray-200 text-sm font-medium">
+                Configurando calculadora con datos de {companyName}...
+              </span>
+            </div>
+          )}
+          
+          {error && (
+            <div className="inline-flex items-center px-4 py-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-full border border-yellow-200 dark:border-yellow-800">
+              <span className="text-yellow-800 dark:text-yellow-200 text-sm font-medium">
+                Calculadora usando algoritmos predeterminados
+              </span>
+            </div>
+          )}
+          
+          {confluenceData && !error && (
+            <div className="inline-flex items-center px-4 py-2 bg-purple-50 dark:bg-purple-900/20 rounded-full border border-purple-200 dark:border-purple-800">
+              <span className="text-purple-800 dark:text-purple-200 text-sm font-medium">
+                Contenido personalizado para {companyName}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </section>

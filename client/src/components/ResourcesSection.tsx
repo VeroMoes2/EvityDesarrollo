@@ -60,7 +60,7 @@ export default function ResourcesSection() {
           {resources.map((resource, index) => (
             <Card 
               key={index} 
-              className="overflow-hidden hover-elevate cursor-pointer transition-all duration-300"
+              className="overflow-hidden cursor-pointer transition-all duration-300"
               onClick={() => handleResourceClick(resource.title)}
               data-testid={`resource-card-${index}`}
             >
@@ -96,7 +96,7 @@ export default function ResourcesSection() {
                 </p>
                 <Button 
                   variant="ghost" 
-                  className="p-0 h-auto font-medium text-primary hover:text-primary/80"
+                  size="sm"
                   data-testid={`button-read-more-${index}`}
                 >
                   Leer más
@@ -122,7 +122,7 @@ export default function ResourcesSection() {
             <div className="mt-6">
               <div className="inline-flex items-center px-4 py-2 bg-gray-50 dark:bg-gray-900/20 rounded-full border border-gray-200 dark:border-gray-800">
                 <span className="text-gray-800 dark:text-gray-200 text-sm font-medium">
-                  🔄 Sincronizando con Confluence...
+                  Sincronizando con Confluence...
                 </span>
               </div>
             </div>
@@ -132,7 +132,7 @@ export default function ResourcesSection() {
             <div className="mt-6">
               <div className="inline-flex items-center px-4 py-2 bg-orange-50 dark:bg-orange-900/20 rounded-full border border-orange-200 dark:border-orange-800">
                 <span className="text-orange-800 dark:text-orange-200 text-sm font-medium">
-                  ⚠️ Contenido estático (sin conexión a Confluence)
+                  Contenido estático (sin conexión a Confluence)
                 </span>
               </div>
             </div>
@@ -142,7 +142,7 @@ export default function ResourcesSection() {
             <div className="mt-6">
               <div className="inline-flex items-center px-4 py-2 bg-green-50 dark:bg-green-900/20 rounded-full border border-green-200 dark:border-green-800">
                 <span className="text-green-800 dark:text-green-200 text-sm font-medium">
-                  📊 Basado en el plan estratégico de {companyName}
+                  Basado en el plan estratégico de {companyName}
                 </span>
               </div>
             </div>

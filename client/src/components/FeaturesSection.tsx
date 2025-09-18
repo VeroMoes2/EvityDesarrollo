@@ -84,7 +84,7 @@ export default function FeaturesSection() {
             <div className="mt-4">
               <div className="inline-flex items-center px-4 py-2 bg-gray-50 dark:bg-gray-900/20 rounded-full border border-gray-200 dark:border-gray-800">
                 <span className="text-gray-800 dark:text-gray-200 text-sm font-medium">
-                  🔄 Cargando información desde Confluence...
+                  Cargando información desde Confluence...
                 </span>
               </div>
             </div>
@@ -94,7 +94,7 @@ export default function FeaturesSection() {
             <div className="mt-4">
               <div className="inline-flex items-center px-4 py-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-full border border-yellow-200 dark:border-yellow-800">
                 <span className="text-yellow-800 dark:text-yellow-200 text-sm font-medium">
-                  ⚠️ Usando contenido predeterminado (Confluence no disponible)
+                  Usando contenido predeterminado (Confluence no disponible)
                 </span>
               </div>
             </div>
@@ -104,7 +104,7 @@ export default function FeaturesSection() {
             <div className="mt-4">
               <div className="inline-flex items-center px-4 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-full border border-blue-200 dark:border-blue-800">
                 <span className="text-blue-800 dark:text-blue-200 text-sm font-medium">
-                  ✨ Información actualizada desde nuestro plan de negocio
+                  Información actualizada desde nuestro plan de negocio
                 </span>
               </div>
             </div>

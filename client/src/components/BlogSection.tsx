@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Clock, User } from "lucide-react";
 import yogaImage from "@assets/generated_images/Seniors_yoga_outdoors_983aaba4.png";
 import dietImage from "@assets/generated_images/Healthy_diet_spread_92eea712.png";
+import { useConfluenceData } from "@/hooks/useConfluenceData";
 
 const blogPosts = [
   {
@@ -39,26 +40,30 @@ const blogPosts = [
 ];
 
 export default function BlogSection() {
+  const { data: confluenceData, isLoading, error } = useConfluenceData();
+  
   const handlePostClick = (postTitle: string) => {
     console.log(`Clicked on blog post: ${postTitle}`); // todo: remove mock functionality
   };
+
+  const companyName = confluenceData?.companyName || "Evity";
 
   return (
     <section id="blog" className="py-20 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-            Blog de Longevidad
+            Blog {companyName}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Las últimas noticias, investigaciones y consejos prácticos del mundo de la longevidad y la salud.
+            {confluenceData?.valueProposition || "Las últimas noticias, investigaciones y consejos prácticos del mundo de la longevidad y la salud."}
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Featured Post */}
           <Card 
-            className="lg:col-span-2 overflow-hidden hover-elevate cursor-pointer transition-all duration-300"
+            className="lg:col-span-2 overflow-hidden cursor-pointer transition-all duration-300"
             onClick={() => handlePostClick(blogPosts[0].title)}
             data-testid="featured-post"
           >
@@ -102,7 +107,7 @@ export default function BlogSection() {
                   
                   <Button 
                     variant="ghost" 
-                    className="p-0 h-auto font-medium text-primary hover:text-primary/80"
+                    size="sm"
                     data-testid="button-read-featured"
                   >
                     Leer más
@@ -119,7 +124,7 @@ export default function BlogSection() {
           {blogPosts.slice(1).map((post, index) => (
             <Card 
               key={index + 1} 
-              className="overflow-hidden hover-elevate cursor-pointer transition-all duration-300"
+              className="overflow-hidden cursor-pointer transition-all duration-300"
               onClick={() => handlePostClick(post.title)}
               data-testid={`blog-post-${index + 1}`}
             >
@@ -157,7 +162,7 @@ export default function BlogSection() {
                   
                   <Button 
                     variant="ghost" 
-                    className="p-0 h-auto font-medium text-primary hover:text-primary/80"
+                    size="sm"
                     data-testid={`button-read-more-${index + 1}`}
                   >
                     Leer más
@@ -179,6 +184,33 @@ export default function BlogSection() {
             Ver Todos los Artículos
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
+          
+          {/* Status indicator */}
+          <div className="mt-6">
+            {isLoading && (
+              <div className="inline-flex items-center px-4 py-2 bg-gray-50 dark:bg-gray-900/20 rounded-full border border-gray-200 dark:border-gray-800">
+                <span className="text-gray-800 dark:text-gray-200 text-sm font-medium">
+                  Actualizando contenido desde {companyName}...
+                </span>
+              </div>
+            )}
+            
+            {error && (
+              <div className="inline-flex items-center px-4 py-2 bg-orange-50 dark:bg-orange-900/20 rounded-full border border-orange-200 dark:border-orange-800">
+                <span className="text-orange-800 dark:text-orange-200 text-sm font-medium">
+                  Contenido editorial estático
+                </span>
+              </div>
+            )}
+            
+            {confluenceData && !error && (
+              <div className="inline-flex items-center px-4 py-2 bg-teal-50 dark:bg-teal-900/20 rounded-full border border-teal-200 dark:border-teal-800">
+                <span className="text-teal-800 dark:text-teal-200 text-sm font-medium">
+                  Contenido alineado con la visión de {companyName}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </section>

@@ -82,7 +82,7 @@ export default function HeroSection() {
               {isLoading && (
                 <div className="inline-flex items-center px-6 py-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
                   <span className="text-white font-medium">
-                    🔄 Conectando con Confluence...
+                    Conectando con Confluence...
                   </span>
                 </div>
               )}
@@ -90,7 +90,7 @@ export default function HeroSection() {
               {error && !isLoading && (
                 <div className="inline-flex items-center px-6 py-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
                   <span className="text-white font-medium">
-                    ⚠️ Modo offline - Datos locales
+                    Modo offline - Datos locales
                   </span>
                 </div>
               )}
@@ -98,7 +98,7 @@ export default function HeroSection() {
               {confluenceData && !error && !isLoading && (
                 <div className="inline-flex items-center px-6 py-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
                   <span className="text-white font-medium">
-                    ✨ Contenido actualizado desde nuestro plan de negocio
+                    Contenido actualizado desde nuestro plan de negocio
                   </span>
                 </div>
               )}
