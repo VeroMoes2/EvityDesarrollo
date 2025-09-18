@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import heroImage from "@assets/generated_images/Hero_mountain_landscape_12ea45bd.png";
+import heroImage from "@assets/image_1758225930811.png";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
 
 export default function HeroSection() {
