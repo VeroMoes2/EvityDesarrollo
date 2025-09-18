@@ -4,6 +4,7 @@ import { ArrowRight, BookOpen, Video, FileText } from "lucide-react";
 import yogaImage from "@assets/generated_images/Seniors_yoga_outdoors_983aaba4.png";
 import dietImage from "@assets/generated_images/Healthy_diet_spread_92eea712.png";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
+import { useLocation } from "wouter";
 
 const resources = [
   {
@@ -37,9 +38,11 @@ const resources = [
 
 export default function ResourcesSection() {
   const { data: confluenceData, isLoading, error } = useConfluenceData();
+  const [, setLocation] = useLocation();
   
   const handleResourceClick = (resourceTitle: string) => {
-    console.log(`Clicked on resource: ${resourceTitle}`); // todo: remove mock functionality
+    const slug = resourceTitle.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+    setLocation(`/recurso/${slug}`);
   };
 
   const companyName = confluenceData?.companyName || "Evity";
@@ -111,7 +114,7 @@ export default function ResourcesSection() {
           <Button 
             size="lg" 
             variant="outline"
-            onClick={() => console.log("View all resources clicked")} // todo: remove mock functionality
+            onClick={() => setLocation("/recursos")}
             data-testid="button-view-all-resources"
           >
             Ver Todos los Recursos

@@ -5,6 +5,7 @@ import { ArrowRight, Clock, User } from "lucide-react";
 import yogaImage from "@assets/generated_images/Seniors_yoga_outdoors_983aaba4.png";
 import dietImage from "@assets/generated_images/Healthy_diet_spread_92eea712.png";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
+import { useLocation } from "wouter";
 
 const blogPosts = [
   {
@@ -41,9 +42,11 @@ const blogPosts = [
 
 export default function BlogSection() {
   const { data: confluenceData, isLoading, error } = useConfluenceData();
+  const [, setLocation] = useLocation();
   
   const handlePostClick = (postTitle: string) => {
-    console.log(`Clicked on blog post: ${postTitle}`); // todo: remove mock functionality
+    const slug = postTitle.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+    setLocation(`/blog/${slug}`);
   };
 
   const companyName = confluenceData?.companyName || "Evity";
@@ -178,7 +181,7 @@ export default function BlogSection() {
           <Button 
             size="lg" 
             variant="outline"
-            onClick={() => console.log("View all blog posts clicked")} // todo: remove mock functionality
+            onClick={() => setLocation("/blog")}
             data-testid="button-view-all-blog"
           >
             Ver Todos los Artículos
