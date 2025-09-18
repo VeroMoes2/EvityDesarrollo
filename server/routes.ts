@@ -4,6 +4,7 @@ import multer from "multer";
 import { storage } from "./storage";
 import { ConfluenceService } from "./confluenceService";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { uploadRateLimit, downloadRateLimit, previewRateLimit } from "./rateLimiter";
 
 // Configure multer for file uploads
 const upload = multer({
@@ -12,11 +13,14 @@ const upload = multer({
     fileSize: 10 * 1024 * 1024, // 10MB limit
   },
   fileFilter: (req, file, cb) => {
+    // LS-96-7: Aligned with fileValidation.ts ALLOWED_MIME_TYPES
     const allowedTypes = [
       'application/pdf',
       'image/jpeg',
-      'image/png', 
       'image/jpg',
+      'image/png',
+      'image/gif',
+      'image/webp',
       'application/msword',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     ];
@@ -24,7 +28,8 @@ const upload = multer({
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error('Tipo de archivo no permitido'));
+      // Return structured error for consistent JSON handling
+      cb(new Error(`MULTER_INVALID_TYPE:${file.mimetype}`));
     }
   }
 });
@@ -97,6 +102,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Document not found or access denied" });
       }
       
+      // LS-96-7: Audit logging for medical document deletions
+      console.log(`AUDIT: Medical document deleted - User: ${userId}, Document: ${id}`);
+      
       res.json({ message: "Document deleted successfully" });
     } catch (error) {
       console.error("Error deleting medical document:", error);
@@ -104,11 +112,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // File upload endpoint
-  app.post('/api/profile/medical-documents/upload', isAuthenticated, upload.single('file'), async (req: any, res) => {
+  // File upload endpoint with enhanced security validations and multer error handling
+  app.post('/api/profile/medical-documents/upload', isAuthenticated, uploadRateLimit, (req: any, res: any, next: any) => {
+    upload.single('file')(req, res, (err: any) => {
+      if (err) {
+        // LS-96-7: Handle multer errors with consistent JSON response
+        if (err.message.startsWith('MULTER_INVALID_TYPE:')) {
+          const mimeType = err.message.split(':')[1];
+          return res.status(400).json({
+            message: `Tipo de archivo '${mimeType}' no permitido para documentos médicos`,
+            type: "VALIDATION_ERROR"
+          });
+        } else if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(400).json({
+            message: "El archivo excede el límite de 10MB",
+            type: "VALIDATION_ERROR"
+          });
+        } else {
+          return res.status(400).json({
+            message: "Error en la carga del archivo",
+            type: "UPLOAD_ERROR"
+          });
+        }
+      }
+      next();
+    });
+  }, async (req: any, res) => {
     try {
-      // Import validation schema
+      // Import validation schema and security utilities
       const { insertMedicalDocumentSchema } = await import("@shared/schema");
+      const { validateMedicalFile, sanitizeFileData } = await import("./fileValidation");
       
       const userId = req.user.claims.sub;
       const file = req.file;
@@ -118,7 +151,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No file uploaded" });
       }
 
-      // Create document record with file data
+      // LS-96-7: Enhanced file validation with magic number verification
+      const validationResult = validateMedicalFile(file);
+      
+      if (!validationResult.isValid) {
+        console.warn(`File validation failed for user ${userId}: ${validationResult.error}`);
+        return res.status(400).json({ 
+          message: validationResult.error,
+          type: "VALIDATION_ERROR"
+        });
+      }
+
+      // Log security warnings if any
+      if (validationResult.securityWarnings) {
+        console.warn(`Security warnings for upload from user ${userId}:`, validationResult.securityWarnings);
+      }
+
+      // Sanitize file data for secure storage
+      const sanitizedFileData = sanitizeFileData(file.buffer);
+
+      // Create document record with validated file data
       const documentData = {
         userId,
         fileType,
@@ -126,20 +178,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         filename: `${Date.now()}_${file.originalname}`,
         fileSize: file.size.toString(),
         mimeType: file.mimetype,
-        fileData: file.buffer.toString('base64'), // Store file as base64 in database
+        fileData: sanitizedFileData,
       };
 
       // Validate document data with schema
-      const validationResult = insertMedicalDocumentSchema.safeParse(documentData);
+      const schemaValidationResult = insertMedicalDocumentSchema.safeParse(documentData);
       
-      if (!validationResult.success) {
+      if (!schemaValidationResult.success) {
         return res.status(400).json({ 
           message: "Invalid file data", 
-          errors: validationResult.error.issues 
+          errors: schemaValidationResult.error.issues,
+          type: "SCHEMA_VALIDATION_ERROR"
         });
       }
 
-      const document = await storage.createMedicalDocument(validationResult.data);
+      const document = await storage.createMedicalDocument(schemaValidationResult.data);
+      
+      // LS-96-7: Enhanced audit logging for medical document uploads (PHI-safe)
+      console.log(`AUDIT: Medical document uploaded - User: ${userId}, Document: ${document.id}, Type: ${fileType}, Size: ${file.size}`);
       
       res.json({ 
         message: "File uploaded successfully",
@@ -148,7 +204,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           originalName: document.originalName,
           fileSize: document.fileSize,
           uploadedAt: document.uploadedAt
-        }
+        },
+        securityInfo: validationResult.securityWarnings ? {
+          warnings: validationResult.securityWarnings
+        } : undefined
       });
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -156,9 +215,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // File download endpoint
-  app.get('/api/profile/medical-documents/:id/download', isAuthenticated, async (req: any, res) => {
+  // File download endpoint with enhanced security
+  app.get('/api/profile/medical-documents/:id/download', isAuthenticated, downloadRateLimit, async (req: any, res) => {
     try {
+      // Import security utilities
+      const { getSecureFileHeaders } = await import("./fileValidation");
+      
       const userId = req.user.claims.sub;
       const documentId = req.params.id;
 
@@ -171,12 +233,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Decode base64 file data
       const fileBuffer = Buffer.from(document.fileData, 'base64');
       
-      // Set appropriate headers
+      // LS-96-7: Enhanced security headers for file downloads
+      const secureHeaders = getSecureFileHeaders(document.originalName, document.mimeType, false);
       res.set({
-        'Content-Type': document.mimeType,
-        'Content-Disposition': `attachment; filename="${document.originalName}"`,
+        ...secureHeaders,
         'Content-Length': fileBuffer.length.toString(),
       });
+
+      // LS-96-7: Audit logging for medical document downloads (PHI-safe)
+      console.log(`AUDIT: Medical document downloaded - User: ${userId}, Document: ${documentId}, Size: ${fileBuffer.length}`);
 
       res.send(fileBuffer);
     } catch (error) {
@@ -185,9 +250,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // File preview endpoint (inline display)
-  app.get('/api/profile/medical-documents/:id/preview', isAuthenticated, async (req: any, res) => {
+  // File preview endpoint with enhanced security (inline display)
+  app.get('/api/profile/medical-documents/:id/preview', isAuthenticated, previewRateLimit, async (req: any, res) => {
     try {
+      // Import security utilities
+      const { getSecureFileHeaders, PREVIEWABLE_MIME_TYPES } = await import("./fileValidation");
+      
       const userId = req.user.claims.sub;
       const documentId = req.params.id;
 
@@ -197,29 +265,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Document not found" });
       }
 
-      // Only allow preview for safe file types
-      const previewableMimeTypes = [
-        'application/pdf',
-        'image/jpeg',
-        'image/jpg',
-        'image/png',
-        'image/gif',
-        'image/webp'
-      ];
-
-      if (!previewableMimeTypes.includes(document.mimeType)) {
+      // LS-96-7: Enhanced type checking for previewable files
+      if (!PREVIEWABLE_MIME_TYPES.includes(document.mimeType as any)) {
+        console.warn(`AUDIT: Preview attempt for non-previewable file - User: ${userId}, Document: ${documentId}, Type: ${document.mimeType}`);
         return res.status(400).json({ message: "File type not previewable" });
       }
 
       // Decode base64 file data
       const fileBuffer = Buffer.from(document.fileData, 'base64');
       
-      // Set appropriate headers for inline display
+      // LS-96-7: Enhanced security headers for file previews
+      const secureHeaders = getSecureFileHeaders(document.originalName, document.mimeType, true);
       res.set({
-        'Content-Type': document.mimeType,
-        'Content-Disposition': `inline; filename="${document.originalName}"`,
+        ...secureHeaders,
         'Content-Length': fileBuffer.length.toString(),
       });
+
+      // LS-96-7: Audit logging for medical document previews (PHI-safe)
+      console.log(`AUDIT: Medical document previewed - User: ${userId}, Document: ${documentId}, Type: ${document.mimeType}`);
 
       res.send(fileBuffer);
     } catch (error) {

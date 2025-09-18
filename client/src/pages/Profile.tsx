@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Upload, FileText, Trash2, User, Mail, Calendar, ArrowLeft, Shield, Activity, Download, Eye, Search } from "lucide-react";
@@ -203,6 +204,15 @@ export default function Profile() {
           {/* Medical Documents */}
           <div className="lg:col-span-2">
             <div className="space-y-8">
+              {/* LS-96-7: Medical Data Privacy Notice */}
+              <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
+                <Shield className="h-4 w-4" />
+                <AlertDescription>
+                  <strong>Privacidad de Datos Médicos:</strong> Tus documentos médicos están protegidos con validaciones de seguridad avanzadas, 
+                  límites de acceso y almacenamiento seguro. Solo tú puedes ver y descargar tus documentos. Seguimos buenas prácticas de privacidad.
+                </AlertDescription>
+              </Alert>
+
               {/* Search and Filters */}
               <Card data-testid="card-search-filters">
                 <CardHeader>
