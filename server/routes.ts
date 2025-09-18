@@ -78,14 +78,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Jira integration endpoints
+  // Helper function to validate Jira configuration
+  const validateJiraConfig = () => {
+    const host = process.env.JIRA_DOMAIN;
+    const email = process.env.JIRA_EMAIL;
+    const apiToken = process.env.JIRA_API_TOKEN;
+    
+    if (!host || !email || !apiToken) {
+      throw new Error('Jira configuration incomplete. Please set JIRA_DOMAIN, JIRA_EMAIL, and JIRA_API_TOKEN environment variables.');
+    }
+    
+    if (!host.includes('.atlassian.net')) {
+      throw new Error('JIRA_DOMAIN must be in format: https://your-domain.atlassian.net');
+    }
+    
+    return { host, email, apiToken };
+  };
+
+  // Helper function to validate project key
+  const validateProjectKey = (projectKey: string) => {
+    if (!/^[A-Z][A-Z0-9]+$/.test(projectKey)) {
+      throw new Error('Invalid project key format. Must start with a letter and contain only uppercase letters and numbers.');
+    }
+  };
+
+  // Jira integration endpoints (debug mode only)
   app.get('/api/jira/test', async (req, res) => {
     try {
-      const jiraService = new (await import('./jiraService')).JiraService({
-        host: process.env.JIRA_DOMAIN || '',
-        email: process.env.JIRA_EMAIL || '',
-        apiToken: process.env.JIRA_API_TOKEN || ''
-      });
+      if (process.env.SHOW_JIRA_DEBUG !== 'true') {
+        return res.status(404).json({ error: 'Jira integration is disabled' });
+      }
+
+      const config = validateJiraConfig();
+      const jiraService = new (await import('./jiraService')).JiraService(config);
 
       const connectionTest = await jiraService.testConnection();
       res.json(connectionTest);
@@ -100,11 +125,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/jira/projects', async (req, res) => {
     try {
-      const jiraService = new (await import('./jiraService')).JiraService({
-        host: process.env.JIRA_DOMAIN || '',
-        email: process.env.JIRA_EMAIL || '',
-        apiToken: process.env.JIRA_API_TOKEN || ''
-      });
+      if (process.env.SHOW_JIRA_DEBUG !== 'true') {
+        return res.status(404).json({ error: 'Jira integration is disabled' });
+      }
+
+      const config = validateJiraConfig();
+      const jiraService = new (await import('./jiraService')).JiraService(config);
 
       const projects = await jiraService.getProjects();
       res.json({ projects });
@@ -119,13 +145,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/jira/issues/recent', async (req, res) => {
     try {
-      const jiraService = new (await import('./jiraService')).JiraService({
-        host: process.env.JIRA_DOMAIN || '',
-        email: process.env.JIRA_EMAIL || '',
-        apiToken: process.env.JIRA_API_TOKEN || ''
-      });
+      if (process.env.SHOW_JIRA_DEBUG !== 'true') {
+        return res.status(404).json({ error: 'Jira integration is disabled' });
+      }
 
-      const maxResults = req.query.limit ? parseInt(req.query.limit as string) : 10;
+      const config = validateJiraConfig();
+      const jiraService = new (await import('./jiraService')).JiraService(config);
+
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+      const maxResults = Math.min(Math.max(limit, 1), 100); // Limit between 1-100
+      
       const issues = await jiraService.getRecentIssues(maxResults);
       res.json({ issues });
     } catch (error: any) {
@@ -139,14 +168,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/jira/projects/:projectKey/issues', async (req, res) => {
     try {
-      const jiraService = new (await import('./jiraService')).JiraService({
-        host: process.env.JIRA_DOMAIN || '',
-        email: process.env.JIRA_EMAIL || '',
-        apiToken: process.env.JIRA_API_TOKEN || ''
-      });
+      if (process.env.SHOW_JIRA_DEBUG !== 'true') {
+        return res.status(404).json({ error: 'Jira integration is disabled' });
+      }
 
       const { projectKey } = req.params;
-      const maxResults = req.query.limit ? parseInt(req.query.limit as string) : 20;
+      
+      try {
+        validateProjectKey(projectKey);
+      } catch (validationError: any) {
+        return res.status(400).json({ 
+          error: 'Invalid project key', 
+          details: validationError.message 
+        });
+      }
+
+      const config = validateJiraConfig();
+      const jiraService = new (await import('./jiraService')).JiraService(config);
+
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
+      const maxResults = Math.min(Math.max(limit, 1), 100); // Limit between 1-100
+      
       const issues = await jiraService.getProjectIssues(projectKey, maxResults);
       res.json({ issues });
     } catch (error: any) {
@@ -160,13 +202,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/jira/projects/:projectKey/stats', async (req, res) => {
     try {
-      const jiraService = new (await import('./jiraService')).JiraService({
-        host: process.env.JIRA_DOMAIN || '',
-        email: process.env.JIRA_EMAIL || '',
-        apiToken: process.env.JIRA_API_TOKEN || ''
-      });
+      if (process.env.SHOW_JIRA_DEBUG !== 'true') {
+        return res.status(404).json({ error: 'Jira integration is disabled' });
+      }
 
       const { projectKey } = req.params;
+      
+      try {
+        validateProjectKey(projectKey);
+      } catch (validationError: any) {
+        return res.status(400).json({ 
+          error: 'Invalid project key', 
+          details: validationError.message 
+        });
+      }
+
+      const config = validateJiraConfig();
+      const jiraService = new (await import('./jiraService')).JiraService(config);
+
       const stats = await jiraService.getProjectStats(projectKey);
       res.json(stats);
     } catch (error: any) {

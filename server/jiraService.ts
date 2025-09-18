@@ -13,8 +13,7 @@ export interface JiraIssue {
   description?: string;
   status: string;
   assignee?: {
-    displayName: string;
-    emailAddress: string;
+    displayName?: string;
   };
   priority: string;
   created: string;
@@ -32,8 +31,7 @@ export interface JiraProject {
   name: string;
   description?: string;
   lead?: {
-    displayName: string;
-    emailAddress: string;
+    displayName?: string;
   };
   projectTypeKey: string;
 }
@@ -56,14 +54,13 @@ export class JiraService {
   /**
    * Test the connection to Jira
    */
-  async testConnection(): Promise<{ status: string; user: any }> {
+  async testConnection(): Promise<{ status: string; user: { displayName?: string; accountId?: string } }> {
     try {
       const user = await this.client.myself.getCurrentUser();
       return {
         status: 'Connected successfully to Jira',
         user: {
           displayName: user.displayName,
-          emailAddress: user.emailAddress,
           accountId: user.accountId
         }
       };
@@ -87,8 +84,7 @@ export class JiraService {
         name: project.name!,
         description: project.description,
         lead: project.lead ? {
-          displayName: project.lead.displayName!,
-          emailAddress: project.lead.emailAddress!
+          displayName: project.lead.displayName
         } : undefined,
         projectTypeKey: project.projectTypeKey!
       })) || [];
@@ -103,7 +99,7 @@ export class JiraService {
   async getProjectIssues(projectKey: string, maxResults: number = 20): Promise<JiraIssue[]> {
     try {
       const searchResult = await this.client.issueSearch.searchForIssuesUsingJql({
-        jql: `project = ${projectKey} ORDER BY updated DESC`,
+        jql: `project = "${projectKey}" ORDER BY updated DESC`,
         maxResults,
         fields: ['summary', 'description', 'status', 'assignee', 'priority', 'created', 'updated', 'issuetype', 'project']
       });
@@ -115,8 +111,7 @@ export class JiraService {
         description: typeof issue.fields?.description === 'string' ? issue.fields.description : '',
         status: issue.fields?.status?.name || '',
         assignee: issue.fields?.assignee ? {
-          displayName: issue.fields.assignee.displayName!,
-          emailAddress: issue.fields.assignee.emailAddress!
+          displayName: issue.fields.assignee.displayName
         } : undefined,
         priority: issue.fields?.priority?.name || '',
         created: issue.fields?.created || '',
@@ -150,8 +145,7 @@ export class JiraService {
         description: typeof issue.fields?.description === 'string' ? issue.fields.description : '',
         status: issue.fields?.status?.name || '',
         assignee: issue.fields?.assignee ? {
-          displayName: issue.fields.assignee.displayName!,
-          emailAddress: issue.fields.assignee.emailAddress!
+          displayName: issue.fields.assignee.displayName
         } : undefined,
         priority: issue.fields?.priority?.name || '',
         created: issue.fields?.created || '',
@@ -174,13 +168,13 @@ export class JiraService {
     try {
       // Get total count
       const totalResult = await this.client.issueSearch.searchForIssuesUsingJql({
-        jql: `project = ${projectKey}`,
+        jql: `project = "${projectKey}"`,
         maxResults: 0
       });
 
       // Get issues grouped by status  
       const statusResult = await this.client.issueSearch.searchForIssuesUsingJql({
-        jql: `project = ${projectKey}`,
+        jql: `project = "${projectKey}"`,
         maxResults: 1000,
         fields: ['status']
       });
