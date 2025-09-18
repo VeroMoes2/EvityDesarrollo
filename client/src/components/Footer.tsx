@@ -1,11 +1,16 @@
 import { Heart, Mail, MapPin, Phone } from "lucide-react";
+import { useConfluenceData } from "@/hooks/useConfluenceData";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const { data: confluenceData } = useConfluenceData();
 
   const handleLinkClick = (linkName: string) => {
     console.log(`Footer link clicked: ${linkName}`); // todo: remove mock functionality
   };
+
+  const companyName = confluenceData?.companyName || "Evity";
+  const companyDescription = confluenceData?.valueProposition || confluenceData?.mission || "Tu plataforma de longevidad personalizada. Basado en ciencia, diseñado para ti.";
 
   return (
     <footer className="bg-card border-t border-card-border">
@@ -13,10 +18,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-primary">LongeVida</h3>
+            <h3 className="text-xl font-bold text-primary">{companyName}</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Tu compañero en el viaje hacia una vida más larga, saludable y plena. 
-              Basado en ciencia, diseñado para ti.
+              {companyDescription}
             </p>
             <div className="flex items-center text-sm text-muted-foreground">
               <Heart className="h-4 w-4 mr-2 text-red-500" />
@@ -105,7 +109,7 @@ export default function Footer() {
                   className="hover:text-primary transition-colors"
                   data-testid="footer-contact-email"
                 >
-                  hola@longevida.com
+                  hola@evity.com
                 </button>
               </div>
               <div className="flex items-center text-sm text-muted-foreground">
@@ -129,7 +133,7 @@ export default function Footer() {
         <div className="border-t border-card-border mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm text-muted-foreground">
-              © {currentYear} LongeVida. Todos los derechos reservados.
+              © {currentYear} {companyName}. Todos los derechos reservados.
             </div>
             <div className="flex items-center gap-6 text-sm">
               <button 

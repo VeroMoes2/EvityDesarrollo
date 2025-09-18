@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, BookOpen, Video, FileText } from "lucide-react";
 import yogaImage from "@assets/generated_images/Seniors_yoga_outdoors_983aaba4.png";
 import dietImage from "@assets/generated_images/Healthy_diet_spread_92eea712.png";
+import { useConfluenceData } from "@/hooks/useConfluenceData";
 
 const resources = [
   {
@@ -35,19 +36,23 @@ const resources = [
 ];
 
 export default function ResourcesSection() {
+  const { data: confluenceData, isLoading, error } = useConfluenceData();
+  
   const handleResourceClick = (resourceTitle: string) => {
     console.log(`Clicked on resource: ${resourceTitle}`); // todo: remove mock functionality
   };
+
+  const companyName = confluenceData?.companyName || "Evity";
 
   return (
     <section id="recursos" className="py-20 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-            Recursos Educativos
+            Recursos {companyName}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Contenido basado en evidencia científica para guiarte en tu camino hacia la longevidad.
+            {confluenceData?.mission || "Contenido basado en evidencia científica para guiarte en tu camino hacia la longevidad."}
           </p>
         </div>
 
@@ -112,6 +117,36 @@ export default function ResourcesSection() {
             Ver Todos los Recursos
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
+          
+          {isLoading && (
+            <div className="mt-6">
+              <div className="inline-flex items-center px-4 py-2 bg-gray-50 dark:bg-gray-900/20 rounded-full border border-gray-200 dark:border-gray-800">
+                <span className="text-gray-800 dark:text-gray-200 text-sm font-medium">
+                  🔄 Sincronizando con Confluence...
+                </span>
+              </div>
+            </div>
+          )}
+          
+          {error && (
+            <div className="mt-6">
+              <div className="inline-flex items-center px-4 py-2 bg-orange-50 dark:bg-orange-900/20 rounded-full border border-orange-200 dark:border-orange-800">
+                <span className="text-orange-800 dark:text-orange-200 text-sm font-medium">
+                  ⚠️ Contenido estático (sin conexión a Confluence)
+                </span>
+              </div>
+            </div>
+          )}
+          
+          {confluenceData && !error && (
+            <div className="mt-6">
+              <div className="inline-flex items-center px-4 py-2 bg-green-50 dark:bg-green-900/20 rounded-full border border-green-200 dark:border-green-800">
+                <span className="text-green-800 dark:text-green-200 text-sm font-medium">
+                  📊 Basado en el plan estratégico de {companyName}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>

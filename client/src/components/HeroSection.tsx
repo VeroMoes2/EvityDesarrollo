@@ -4,7 +4,7 @@ import heroImage from "@assets/generated_images/Hero_mountain_landscape_12ea45bd
 import { useConfluenceData } from "@/hooks/useConfluenceData";
 
 export default function HeroSection() {
-  const { data: confluenceData, isLoading } = useConfluenceData();
+  const { data: confluenceData, isLoading, error } = useConfluenceData();
   
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -77,13 +77,31 @@ export default function HeroSection() {
             </Button>
           </div>
           
-          {confluenceData && (
+          {(isLoading || confluenceData || error) && (
             <div className="mt-12 text-center">
-              <div className="inline-flex items-center px-6 py-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
-                <span className="text-white font-medium">
-                  ✨ Contenido actualizado desde nuestro plan de negocio
-                </span>
-              </div>
+              {isLoading && (
+                <div className="inline-flex items-center px-6 py-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
+                  <span className="text-white font-medium">
+                    🔄 Conectando con Confluence...
+                  </span>
+                </div>
+              )}
+              
+              {error && !isLoading && (
+                <div className="inline-flex items-center px-6 py-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
+                  <span className="text-white font-medium">
+                    ⚠️ Modo offline - Datos locales
+                  </span>
+                </div>
+              )}
+              
+              {confluenceData && !error && !isLoading && (
+                <div className="inline-flex items-center px-6 py-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20">
+                  <span className="text-white font-medium">
+                    ✨ Contenido actualizado desde nuestro plan de negocio
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </div>

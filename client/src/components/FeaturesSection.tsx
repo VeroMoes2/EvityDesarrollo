@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Brain, Heart, Activity, Shield, Users, Lightbulb } from "lucide-react";
+import { useConfluenceData } from "@/hooks/useConfluenceData";
 
 const features = [
   {
@@ -35,16 +36,19 @@ const features = [
 ];
 
 export default function FeaturesSection() {
+  const { data: confluenceData, isLoading, error } = useConfluenceData();
+  
+  const companyName = confluenceData?.companyName || "Evity";
+  
   return (
     <section className="py-20 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-            ¿Por Qué Elegir LongeVida?
+            ¿Por Qué Elegir {companyName}?
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Nuestra plataforma combina ciencia de vanguardia con herramientas prácticas 
-            para ayudarte a vivir una vida más larga, saludable y plena.
+            {confluenceData?.valueProposition || confluenceData?.vision || "Nuestra plataforma combina ciencia de vanguardia con herramientas prácticas para ayudarte a vivir una vida más larga, saludable y plena."}
           </p>
         </div>
 
@@ -76,6 +80,35 @@ export default function FeaturesSection() {
               🏆 Respaldado por más de 500 estudios científicos
             </span>
           </div>
+          {isLoading && (
+            <div className="mt-4">
+              <div className="inline-flex items-center px-4 py-2 bg-gray-50 dark:bg-gray-900/20 rounded-full border border-gray-200 dark:border-gray-800">
+                <span className="text-gray-800 dark:text-gray-200 text-sm font-medium">
+                  🔄 Cargando información desde Confluence...
+                </span>
+              </div>
+            </div>
+          )}
+          
+          {error && (
+            <div className="mt-4">
+              <div className="inline-flex items-center px-4 py-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-full border border-yellow-200 dark:border-yellow-800">
+                <span className="text-yellow-800 dark:text-yellow-200 text-sm font-medium">
+                  ⚠️ Usando contenido predeterminado (Confluence no disponible)
+                </span>
+              </div>
+            </div>
+          )}
+          
+          {confluenceData && !error && (
+            <div className="mt-4">
+              <div className="inline-flex items-center px-4 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-full border border-blue-200 dark:border-blue-800">
+                <span className="text-blue-800 dark:text-blue-200 text-sm font-medium">
+                  ✨ Información actualizada desde nuestro plan de negocio
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>
