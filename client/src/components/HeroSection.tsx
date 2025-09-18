@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import heroImage from "@assets/generated_images/Hero_mountain_landscape_12ea45bd.png";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
 
 export default function HeroSection() {
-  const { data: confluenceData, isLoading, error } = useConfluenceData();
+  const { data: confluenceData } = useConfluenceData();
   
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -33,12 +33,6 @@ export default function HeroSection() {
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="max-w-4xl mx-auto">
-          {isLoading ? (
-            <div className="flex items-center justify-center mb-8">
-              <Loader2 className="h-8 w-8 animate-spin text-white" />
-              <span className="ml-2 text-white">Cargando información de {companyName}...</span>
-            </div>
-          ) : null}
           
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
             Bienvenido a
