@@ -1,8 +1,33 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import multer from "multer";
 import { storage } from "./storage";
 import { ConfluenceService } from "./confluenceService";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+
+// Configure multer for file uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = [
+      'application/pdf',
+      'image/jpeg',
+      'image/png', 
+      'image/jpg',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Tipo de archivo no permitido'));
+    }
+  }
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -76,6 +101,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting medical document:", error);
       res.status(500).json({ message: "Failed to delete medical document" });
+    }
+  });
+
+  // File upload endpoint
+  app.post('/api/profile/medical-documents/upload', isAuthenticated, upload.single('file'), async (req: any, res) => {
+    try {
+      // Import validation schema
+      const { insertMedicalDocumentSchema } = await import("@shared/schema");
+      
+      const userId = req.user.claims.sub;
+      const file = req.file;
+      const { fileType, originalName } = req.body;
+
+      if (!file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      // Create document record with file data
+      const documentData = {
+        userId,
+        fileType,
+        originalName: originalName || file.originalname,
+        filename: `${Date.now()}_${file.originalname}`,
+        fileSize: file.size.toString(),
+        mimeType: file.mimetype,
+        fileData: file.buffer.toString('base64'), // Store file as base64 in database
+      };
+
+      // Validate document data with schema
+      const validationResult = insertMedicalDocumentSchema.safeParse(documentData);
+      
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Invalid file data", 
+          errors: validationResult.error.issues 
+        });
+      }
+
+      const document = await storage.createMedicalDocument(validationResult.data);
+      
+      res.json({ 
+        message: "File uploaded successfully",
+        document: {
+          id: document.id,
+          originalName: document.originalName,
+          fileSize: document.fileSize,
+          uploadedAt: document.uploadedAt
+        }
+      });
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      res.status(500).json({ message: "Failed to upload file" });
     }
   });
 

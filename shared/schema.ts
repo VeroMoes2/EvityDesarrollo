@@ -43,6 +43,7 @@ export const medicalDocuments = pgTable("medical_documents", {
   fileType: varchar("file_type").notNull(), // 'study' or 'lab'
   mimeType: varchar("mime_type").notNull(),
   fileSize: varchar("file_size").notNull(),
+  fileData: text("file_data"), // Store file content as base64 or use external storage
   uploadedAt: timestamp("uploaded_at").defaultNow(),
 });
 

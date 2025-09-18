@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Upload, FileText, Trash2, User, Mail, Calendar, ArrowLeft, Shield, Activity } from "lucide-react";
 import { Link } from "wouter";
+import FileUpload from "@/components/FileUpload";
 
 export default function Profile() {
   const { toast } = useToast();
@@ -192,22 +193,24 @@ export default function Profile() {
               {/* Studies Section */}
               <Card data-testid="card-studies">
                 <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center space-x-2">
-                      <FileText className="h-5 w-5" />
-                      <span>Estudios Médicos</span>
-                      <Badge variant="secondary">{studyDocuments.length}</Badge>
-                    </CardTitle>
-                    <Button size="sm" className="flex items-center space-x-2" data-testid="button-upload-study">
-                      <Upload className="h-4 w-4" />
-                      <span>Subir Estudio</span>
-                    </Button>
-                  </div>
+                  <CardTitle className="flex items-center space-x-2">
+                    <FileText className="h-5 w-5" />
+                    <span>Estudios Médicos</span>
+                    <Badge variant="secondary">{studyDocuments.length}</Badge>
+                  </CardTitle>
                   <CardDescription>
                     Carga tus estudios médicos, radiografías, resonancias y otros estudios de imagen
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6">
+                  <FileUpload 
+                    fileType="study" 
+                    onUploadSuccess={() => {
+                      queryClient.invalidateQueries({ queryKey: ["/api/profile/medical-documents"] });
+                    }}
+                    disabled={isLoading}
+                  />
+                  
                   {documentsLoading ? (
                     <div className="text-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
@@ -268,22 +271,24 @@ export default function Profile() {
               {/* Labs Section */}
               <Card data-testid="card-labs">
                 <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center space-x-2">
-                      <FileText className="h-5 w-5" />
-                      <span>Resultados de Laboratorios</span>
-                      <Badge variant="secondary">{labDocuments.length}</Badge>
-                    </CardTitle>
-                    <Button size="sm" className="flex items-center space-x-2" data-testid="button-upload-lab">
-                      <Upload className="h-4 w-4" />
-                      <span>Subir Laboratorio</span>
-                    </Button>
-                  </div>
+                  <CardTitle className="flex items-center space-x-2">
+                    <FileText className="h-5 w-5" />
+                    <span>Resultados de Laboratorios</span>
+                    <Badge variant="secondary">{labDocuments.length}</Badge>
+                  </CardTitle>
                   <CardDescription>
                     Carga tus análisis de sangre, orina y otros resultados de laboratorio
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6">
+                  <FileUpload 
+                    fileType="lab" 
+                    onUploadSuccess={() => {
+                      queryClient.invalidateQueries({ queryKey: ["/api/profile/medical-documents"] });
+                    }}
+                    disabled={isLoading}
+                  />
+                  
                   {documentsLoading ? (
                     <div className="text-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
