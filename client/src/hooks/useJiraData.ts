@@ -64,7 +64,7 @@ export function useJiraProjects() {
 // Get recent issues
 export function useJiraRecentIssues(limit: number = 10) {
   return useQuery<{ issues: JiraIssue[] }>({
-    queryKey: ['/api/jira/issues/recent', limit],
+    queryKey: [`/api/jira/issues/recent?limit=${limit}`],
     staleTime: 2 * 60 * 1000, // 2 minutes
     retry: 1,
   });
@@ -73,7 +73,7 @@ export function useJiraRecentIssues(limit: number = 10) {
 // Get issues for a specific project
 export function useJiraProjectIssues(projectKey: string, limit: number = 20) {
   return useQuery<{ issues: JiraIssue[] }>({
-    queryKey: ['/api/jira/projects', projectKey, 'issues', limit],
+    queryKey: [`/api/jira/projects/${projectKey}/issues?limit=${limit}`],
     enabled: !!projectKey,
     staleTime: 2 * 60 * 1000, // 2 minutes
     retry: 1,
@@ -83,7 +83,7 @@ export function useJiraProjectIssues(projectKey: string, limit: number = 20) {
 // Get project statistics
 export function useJiraProjectStats(projectKey: string) {
   return useQuery<JiraProjectStats>({
-    queryKey: ['/api/jira/projects', projectKey, 'stats'],
+    queryKey: [`/api/jira/projects/${projectKey}/stats`],
     enabled: !!projectKey,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 1,
