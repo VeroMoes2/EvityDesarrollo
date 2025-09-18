@@ -246,9 +246,14 @@ export class ConfluenceService {
 
   // Helper method to clean HTML content and extract key information
   extractKeyInfo(htmlContent: string): any {
+    console.log('Original HTML content (first 200 chars):', htmlContent.substring(0, 200));
+    
     // First decode HTML entities, then remove HTML tags and extract key sections
     let cleanText = this.decodeHtmlEntities(htmlContent);
+    console.log('After decoding entities (first 200 chars):', cleanText.substring(0, 200));
+    
     cleanText = cleanText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    console.log('Final clean text (first 200 chars):', cleanText.substring(0, 200));
     
     // Try to extract mission, vision, value proposition
     const sections = {
