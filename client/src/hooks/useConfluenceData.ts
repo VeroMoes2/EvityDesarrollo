@@ -12,11 +12,9 @@ export interface ConfluenceData {
 
 export function useConfluenceData() {
   return useQuery<ConfluenceData>({
-    queryKey: ['/api/confluence/content', Date.now()], // Force fresh requests every time
-    staleTime: 0, // No cache - always fresh data
-    cacheTime: 0, // Don't store in cache
-    refetchOnMount: true,
-    retry: 2,
+    queryKey: ['/api/confluence/content'], // Use consistent cache key
+    staleTime: 2 * 60 * 1000, // 2 minutes cache
+    retry: 1,
   });
 }
 

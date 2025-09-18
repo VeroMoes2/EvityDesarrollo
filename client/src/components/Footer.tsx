@@ -10,7 +10,22 @@ export default function Footer() {
   };
 
   const companyName = confluenceData?.companyName || "Evity";
-  const companyDescription = confluenceData?.valueProposition || confluenceData?.mission || "Tu plataforma de longevidad personalizada. Basado en ciencia, diseñado para ti.";
+  
+  // Build comprehensive company description using all available content
+  let companyDescription = "Tu plataforma de longevidad personalizada. Basado en ciencia, diseñado para ti.";
+  
+  if (confluenceData?.mission) {
+    companyDescription = confluenceData.mission;
+  }
+  
+  if (confluenceData?.vision) {
+    // If we have both mission and vision, combine them
+    if (confluenceData?.mission) {
+      companyDescription = `${confluenceData.mission} ${confluenceData.vision}`;
+    } else {
+      companyDescription = confluenceData.vision;
+    }
+  }
 
   return (
     <footer className="bg-card border-t border-card-border">

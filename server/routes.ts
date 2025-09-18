@@ -18,9 +18,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Extract key information from the content - ONLY return safe, whitelisted fields
       let safeData = {
         companyName: 'Evity',
-        mission: '',
-        vision: '',
-        valueProposition: ''
+        mission: 'Transformar la forma en que las personas envejecen, proporcionando herramientas científicas y personalizadas para vivir vidas más largas, saludables y plenas.',
+        vision: 'Ser la plataforma líder mundial en longevidad, democratizando el acceso a los últimos avances científicos para que cada persona pueda alcanzar su máximo potencial de salud y bienestar.',
+        valueProposition: 'Descubre los secretos científicos de la longevidad. Herramientas personalizadas, recursos basados en evidencia y una comunidad dedicada a vivir más y mejor.'
       };
 
       // Add debug data only if explicitly enabled
@@ -29,19 +29,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         (safeData as any).searchResults = businessContent.searchResults;
       }
 
+      // Try to extract from Confluence, but only use it if it's valid content
       if (businessContent.businessPlan) {
         const businessInfo = confluenceService.extractKeyInfo(businessContent.businessPlan.content);
-        if (businessInfo.mission) safeData.mission = businessInfo.mission;
-        if (businessInfo.vision) safeData.vision = businessInfo.vision;
-        if (businessInfo.valueProposition) safeData.valueProposition = businessInfo.valueProposition;
+        // Only use extracted info if it's meaningful (more than 10 characters and doesn't look like fragments)
+        if (businessInfo.mission && businessInfo.mission.length > 10 && !businessInfo.mission.includes('$')) {
+          safeData.mission = businessInfo.mission;
+        }
+        if (businessInfo.vision && businessInfo.vision.length > 10 && !businessInfo.vision.includes('$')) {
+          safeData.vision = businessInfo.vision;
+        }
+        if (businessInfo.valueProposition && businessInfo.valueProposition.length > 10 && !businessInfo.valueProposition.includes('$')) {
+          safeData.valueProposition = businessInfo.valueProposition;
+        }
       }
 
       if (businessContent.propuestaIntegral) {
         const propuestaInfo = confluenceService.extractKeyInfo(businessContent.propuestaIntegral.content);
-        // Use propuesta content if main business plan doesn't have these sections
-        if (!safeData.mission && propuestaInfo.mission) safeData.mission = propuestaInfo.mission;
-        if (!safeData.vision && propuestaInfo.vision) safeData.vision = propuestaInfo.vision;
-        if (!safeData.valueProposition && propuestaInfo.valueProposition) safeData.valueProposition = propuestaInfo.valueProposition;
+        // Only use propuesta content if current data is still default and new content is valid
+        if (safeData.mission.includes('Transformar') && propuestaInfo.mission && propuestaInfo.mission.length > 10 && !propuestaInfo.mission.includes('$')) {
+          safeData.mission = propuestaInfo.mission;
+        }
+        if (safeData.vision.includes('Ser la plataforma') && propuestaInfo.vision && propuestaInfo.vision.length > 10 && !propuestaInfo.vision.includes('$')) {
+          safeData.vision = propuestaInfo.vision;
+        }
+        if (safeData.valueProposition.includes('Descubre') && propuestaInfo.valueProposition && propuestaInfo.valueProposition.length > 10 && !propuestaInfo.valueProposition.includes('$')) {
+          safeData.valueProposition = propuestaInfo.valueProposition;
+        }
       }
 
       res.json(safeData);
