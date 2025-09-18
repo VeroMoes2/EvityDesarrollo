@@ -214,6 +214,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Jira specific issue endpoint
+  app.get('/api/jira/issue/:issueKey', async (req, res) => {
+    try {
+      if (process.env.SHOW_JIRA_DEBUG !== 'true') {
+        return res.status(404).json({ error: 'Jira integration is disabled' });
+      }
+
+      const { issueKey } = req.params;
+      
+      const config = validateJiraConfig();
+      const jiraService = new (await import('./jiraService')).JiraService(config);
+
+      const issue = await jiraService.getIssueByKey(issueKey);
+      if (issue) {
+        res.json({ issue });
+      } else {
+        res.status(404).json({ error: 'Issue not found' });
+      }
+    } catch (error: any) {
+      console.error(`Error fetching issue ${req.params.issueKey}:`, error);
+      res.status(500).json({ 
+        error: 'Failed to fetch issue', 
+        details: error?.message || error 
+      });
+    }
+  });
+
   app.get('/api/jira/projects/:projectKey/stats', async (req, res) => {
     try {
       if (process.env.SHOW_JIRA_DEBUG !== 'true') {

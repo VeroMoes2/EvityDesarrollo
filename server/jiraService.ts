@@ -94,12 +94,13 @@ export class JiraService {
   }
 
   /**
-   * Get issues from a specific project
+   * Get issues from a specific project with fallback methods
    */
   async getProjectIssues(projectKey: string, maxResults: number = 20): Promise<JiraIssue[]> {
     try {
+      // Try a simpler query first
       const searchResult = await this.client.issueSearch.searchForIssuesUsingJql({
-        jql: `project = "${projectKey}" ORDER BY updated DESC`,
+        jql: `project = ${projectKey} ORDER BY updated DESC`,
         maxResults,
         fields: ['summary', 'description', 'status', 'assignee', 'priority', 'created', 'updated', 'issuetype', 'project']
       });
@@ -128,12 +129,47 @@ export class JiraService {
   }
 
   /**
-   * Get recent issues across all projects
+   * Search for a specific issue by key
+   */
+  async getIssueByKey(issueKey: string): Promise<JiraIssue | null> {
+    try {
+      const issue = await this.client.issues.getIssue({
+        issueIdOrKey: issueKey,
+        fields: ['summary', 'description', 'status', 'assignee', 'priority', 'created', 'updated', 'issuetype', 'project']
+      });
+
+      return {
+        id: issue.id!,
+        key: issue.key!,
+        summary: issue.fields?.summary || '',
+        description: typeof issue.fields?.description === 'string' ? issue.fields.description : '',
+        status: issue.fields?.status?.name || '',
+        assignee: issue.fields?.assignee ? {
+          displayName: issue.fields.assignee.displayName
+        } : undefined,
+        priority: issue.fields?.priority?.name || '',
+        created: issue.fields?.created || '',
+        updated: issue.fields?.updated || '',
+        issueType: issue.fields?.issuetype?.name || '',
+        project: {
+          key: issue.fields?.project?.key || '',
+          name: issue.fields?.project?.name || ''
+        }
+      };
+    } catch (error) {
+      console.error(`Failed to fetch issue ${issueKey}:`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Get recent issues across all projects with simpler JQL
    */
   async getRecentIssues(maxResults: number = 10): Promise<JiraIssue[]> {
     try {
+      // Try a simpler query first
       const searchResult = await this.client.issueSearch.searchForIssuesUsingJql({
-        jql: `assignee = currentUser() OR reporter = currentUser() ORDER BY updated DESC`,
+        jql: `ORDER BY updated DESC`,
         maxResults,
         fields: ['summary', 'description', 'status', 'assignee', 'priority', 'created', 'updated', 'issuetype', 'project']
       });
