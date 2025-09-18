@@ -1,12 +1,18 @@
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, Menu } from "lucide-react";
+import { Moon, Sun, Menu, User, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
+import { useAuth } from "@/hooks/useAuth";
+import { useLocation } from "wouter";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export default function Header() {
   const [isDark, setIsDark] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { data: confluenceData } = useConfluenceData();
+  const { user, isAuthenticated, isLoading } = useAuth();
+  const [, navigate] = useLocation();
 
   useEffect(() => {
     const saved = localStorage.getItem("theme");
@@ -90,6 +96,42 @@ export default function Header() {
               Contacto
             </Button>
 
+            {/* LS-96-8: User Profile Menu - Desktop */}
+            {isAuthenticated && user && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="hidden md:flex items-center space-x-2 p-2" data-testid="button-user-menu">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={(user as any)?.profileImageUrl} alt="Perfil" />
+                      <AvatarFallback>
+                        {(user as any)?.firstName?.[0]}{(user as any)?.lastName?.[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm font-medium">{(user as any)?.firstName}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem 
+                    onSelect={() => navigate('/perfil')}
+                    className="cursor-pointer"
+                    data-testid="menu-item-profile"
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Mi Perfil</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={() => window.location.href = '/api/logout'}
+                    className="cursor-pointer text-red-600 hover:text-red-700"
+                    data-testid="menu-item-logout"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Cerrar Sesión</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
             {/* Mobile menu button */}
             <Button 
               variant="ghost" 
@@ -142,6 +184,47 @@ export default function Header() {
               >
                 Contacto
               </Button>
+              
+              {/* LS-96-8: User Profile Navigation - Mobile */}
+              {isAuthenticated && user && (
+                <>
+                  <div className="border-t border-border pt-4 mt-4">
+                    <div className="flex items-center space-x-3 mb-3 px-1">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={(user as any)?.profileImageUrl} alt="Perfil" />
+                        <AvatarFallback>
+                          {(user as any)?.firstName?.[0]}{(user as any)?.lastName?.[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-medium text-sm">{(user as any)?.firstName} {(user as any)?.lastName}</p>
+                        <p className="text-xs text-gray-500">{(user as any)?.email}</p>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start mb-2"
+                      data-testid="button-mobile-profile"
+                      onClick={() => {
+                        navigate('/perfil');
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      <User className="mr-2 h-4 w-4" />
+                      Mi Perfil
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
+                      onClick={() => window.location.href = '/api/logout'}
+                      data-testid="button-mobile-logout"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Cerrar Sesión
+                    </Button>
+                  </div>
+                </>
+              )}
             </nav>
           </div>
         )}
