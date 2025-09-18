@@ -9,7 +9,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Upload, FileText, Trash2, User, Mail, Calendar } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Upload, FileText, Trash2, User, Mail, Calendar, ArrowLeft, Shield, Activity } from "lucide-react";
+import { Link } from "wouter";
 
 export default function Profile() {
   const { toast } = useToast();
@@ -34,6 +36,18 @@ export default function Profile() {
   const { data: documentsData, isLoading: documentsLoading } = useQuery({
     queryKey: ["/api/profile/medical-documents"],
     enabled: isAuthenticated,
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "No autorizado",
+          description: "Tu sesión ha expirado. Iniciando sesión nuevamente...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+      }
+    },
   });
 
   // Delete document mutation
@@ -93,7 +107,20 @@ export default function Profile() {
       <div className="bg-white border-b">
         <div className="container mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900">Mi Perfil</h1>
+            <div className="flex items-center space-x-4">
+              <Link href="/">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  data-testid="button-back-home"
+                  className="flex items-center space-x-2"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  <span>Inicio</span>
+                </Button>
+              </Link>
+              <h1 className="text-2xl font-bold text-gray-900">Mi Perfil</h1>
+            </div>
             <Button 
               variant="outline" 
               onClick={() => window.location.href = '/api/logout'}
@@ -137,11 +164,23 @@ export default function Profile() {
                 
                 <Separator />
                 
-                <div className="flex items-center text-gray-600">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  <span className="text-sm">
-                    Miembro desde {new Date((user as any)?.createdAt).toLocaleDateString('es-ES')}
-                  </span>
+                <div className="space-y-3">
+                  <div className="flex items-center text-gray-600">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    <span className="text-sm">
+                      Miembro desde {new Date((user as any)?.createdAt).toLocaleDateString('es-ES')}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center text-gray-600">
+                    <Shield className="h-4 w-4 mr-2" />
+                    <span className="text-sm">Perfil verificado</span>
+                  </div>
+                  
+                  <div className="flex items-center text-gray-600">
+                    <Activity className="h-4 w-4 mr-2" />
+                    <span className="text-sm">{studyDocuments.length + labDocuments.length} documentos cargados</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -193,15 +232,32 @@ export default function Profile() {
                               </p>
                             </div>
                           </div>
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={() => deleteMutation.mutate(doc.id)}
-                            disabled={deleteMutation.isPending}
-                            data-testid={`button-delete-study-${doc.id}`}
-                          >
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                disabled={deleteMutation.isPending}
+                                data-testid={`button-delete-study-${doc.id}`}
+                              >
+                                <Trash2 className="h-4 w-4 text-red-500" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>¿Eliminar estudio médico?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Esta acción no se puede deshacer. El documento "{doc.originalName}" será eliminado permanentemente.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => deleteMutation.mutate(doc.id)}>
+                                  Eliminar
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       ))}
                     </div>
@@ -252,15 +308,32 @@ export default function Profile() {
                               </p>
                             </div>
                           </div>
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            onClick={() => deleteMutation.mutate(doc.id)}
-                            disabled={deleteMutation.isPending}
-                            data-testid={`button-delete-lab-${doc.id}`}
-                          >
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                disabled={deleteMutation.isPending}
+                                data-testid={`button-delete-lab-${doc.id}`}
+                              >
+                                <Trash2 className="h-4 w-4 text-red-500" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>¿Eliminar resultado de laboratorio?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Esta acción no se puede deshacer. El documento "{doc.originalName}" será eliminado permanentemente.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => deleteMutation.mutate(doc.id)}>
+                                  Eliminar
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       ))}
                     </div>
