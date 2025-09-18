@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -10,13 +10,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Upload, FileText, Trash2, User, Mail, Calendar, ArrowLeft, Shield, Activity, Download, Eye } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Upload, FileText, Trash2, User, Mail, Calendar, ArrowLeft, Shield, Activity, Download, Eye, Search } from "lucide-react";
 import { Link } from "wouter";
 import FileUpload from "@/components/FileUpload";
 
 export default function Profile() {
   const { toast } = useToast();
   const { user, isAuthenticated, isLoading } = useAuth();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedFileType, setSelectedFileType] = useState("all");
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -99,8 +103,17 @@ export default function Profile() {
   }
 
   const documents = (documentsData as any)?.documents || [];
-  const studyDocuments = documents.filter((doc: any) => doc.fileType === 'study');
-  const labDocuments = documents.filter((doc: any) => doc.fileType === 'lab');
+  
+  // Filter documents based on search and type
+  const filteredDocuments = documents.filter((doc: any) => {
+    const matchesSearch = searchTerm === "" || 
+      doc.originalName.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = selectedFileType === "all" || doc.fileType === selectedFileType;
+    return matchesSearch && matchesType;
+  });
+  
+  const studyDocuments = filteredDocuments.filter((doc: any) => doc.fileType === 'study');
+  const labDocuments = filteredDocuments.filter((doc: any) => doc.fileType === 'lab');
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -180,7 +193,7 @@ export default function Profile() {
                   
                   <div className="flex items-center text-gray-600">
                     <Activity className="h-4 w-4 mr-2" />
-                    <span className="text-sm">{studyDocuments.length + labDocuments.length} documentos cargados</span>
+                    <span className="text-sm">{documents.length} documentos cargados</span>
                   </div>
                 </div>
               </CardContent>
@@ -190,6 +203,63 @@ export default function Profile() {
           {/* Medical Documents */}
           <div className="lg:col-span-2">
             <div className="space-y-8">
+              {/* Search and Filters */}
+              <Card data-testid="card-search-filters">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Search className="h-5 w-5" />
+                    <span>Buscar y Filtrar Documentos</span>
+                  </CardTitle>
+                  <CardDescription>
+                    Encuentra rápidamente tus estudios y laboratorios
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="flex-1">
+                      <Input
+                        placeholder="Buscar por nombre de archivo..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full"
+                        data-testid="input-search"
+                      />
+                    </div>
+                    <div className="w-full sm:w-48">
+                      <Select value={selectedFileType} onValueChange={setSelectedFileType}>
+                        <SelectTrigger data-testid="select-file-type">
+                          <SelectValue placeholder="Tipo de documento" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Todos los documentos</SelectItem>
+                          <SelectItem value="study">Solo estudios médicos</SelectItem>
+                          <SelectItem value="lab">Solo laboratorios</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
+                  {(searchTerm || selectedFileType !== "all") && (
+                    <div className="mt-4 flex items-center justify-between">
+                      <p className="text-sm text-gray-600">
+                        Mostrando {filteredDocuments.length} de {documents.length} documentos
+                      </p>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          setSearchTerm("");
+                          setSelectedFileType("all");
+                        }}
+                        data-testid="button-clear-filters"
+                      >
+                        Limpiar filtros
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
               {/* Studies Section */}
               <Card data-testid="card-studies">
                 <CardHeader>
