@@ -184,12 +184,16 @@ export class ConfluenceService {
   // Helper method to decode HTML entities
   private decodeHtmlEntities(text: string): string {
     const htmlEntities: { [key: string]: string } = {
+      // Basic HTML entities
       '&amp;': '&',
       '&lt;': '<',
       '&gt;': '>',
       '&quot;': '"',
       '&#x27;': "'",
       '&#x2F;': '/',
+      '&nbsp;': ' ',
+      
+      // Spanish accented characters
       '&aacute;': 'á',
       '&eacute;': 'é',
       '&iacute;': 'í',
@@ -219,9 +223,35 @@ export class ConfluenceService {
       '&iuml;': 'ï',
       '&ouml;': 'ö',
       '&uuml;': 'ü',
-      '&nbsp;': ' ',
       '&iexcl;': '¡',
-      '&iquest;': '¿'
+      '&iquest;': '¿',
+      
+      // Typography and punctuation
+      '&ndash;': '–',
+      '&mdash;': '—',
+      '&ldquo;': '"',
+      '&rdquo;': '"',
+      '&lsquo;': "'",
+      '&rsquo;': "'",
+      '&hellip;': '…',
+      '&bull;': '•',
+      '&trade;': '™',
+      '&copy;': '©',
+      '&reg;': '®',
+      '&deg;': '°',
+      '&plusmn;': '±',
+      '&micro;': 'µ',
+      '&para;': '¶',
+      '&sect;': '§',
+      '&middot;': '·',
+      '&laquo;': '«',
+      '&raquo;': '»',
+      '&frac14;': '¼',
+      '&frac12;': '½',
+      '&frac34;': '¾',
+      '&sup1;': '¹',
+      '&sup2;': '²',
+      '&sup3;': '³'
     };
 
     let decodedText = text;

@@ -14,7 +14,7 @@ export interface ConfluenceData {
 export function useConfluenceData() {
   return useQuery<ConfluenceData>({
     queryKey: ['/api/confluence/content'],
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 0, // No cache - always fresh data
     retry: 2,
   });
 }
