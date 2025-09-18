@@ -181,10 +181,74 @@ export class ConfluenceService {
     }
   }
 
+  // Helper method to decode HTML entities
+  private decodeHtmlEntities(text: string): string {
+    const htmlEntities: { [key: string]: string } = {
+      '&amp;': '&',
+      '&lt;': '<',
+      '&gt;': '>',
+      '&quot;': '"',
+      '&#x27;': "'",
+      '&#x2F;': '/',
+      '&aacute;': 'á',
+      '&eacute;': 'é',
+      '&iacute;': 'í',
+      '&oacute;': 'ó',
+      '&uacute;': 'ú',
+      '&Aacute;': 'Á',
+      '&Eacute;': 'É',
+      '&Iacute;': 'Í',
+      '&Oacute;': 'Ó',
+      '&Uacute;': 'Ú',
+      '&ntilde;': 'ñ',
+      '&Ntilde;': 'Ñ',
+      '&ccedil;': 'ç',
+      '&Ccedil;': 'Ç',
+      '&agrave;': 'à',
+      '&egrave;': 'è',
+      '&igrave;': 'ì',
+      '&ograve;': 'ò',
+      '&ugrave;': 'ù',
+      '&acirc;': 'â',
+      '&ecirc;': 'ê',
+      '&icirc;': 'î',
+      '&ocirc;': 'ô',
+      '&ucirc;': 'û',
+      '&auml;': 'ä',
+      '&euml;': 'ë',
+      '&iuml;': 'ï',
+      '&ouml;': 'ö',
+      '&uuml;': 'ü',
+      '&nbsp;': ' ',
+      '&iexcl;': '¡',
+      '&iquest;': '¿'
+    };
+
+    let decodedText = text;
+    
+    // Replace known HTML entities
+    for (const [entity, character] of Object.entries(htmlEntities)) {
+      decodedText = decodedText.replace(new RegExp(entity, 'g'), character);
+    }
+    
+    // Handle numeric entities like &#233; (é)
+    decodedText = decodedText.replace(/&#(\d+);/g, (match, dec) => {
+      return String.fromCharCode(dec);
+    });
+    
+    // Handle hex entities like &#x27; (')
+    decodedText = decodedText.replace(/&#x([0-9a-f]+);/gi, (match, hex) => {
+      return String.fromCharCode(parseInt(hex, 16));
+    });
+    
+    return decodedText;
+  }
+
   // Helper method to clean HTML content and extract key information
   extractKeyInfo(htmlContent: string): any {
-    // Remove HTML tags and extract key sections
-    const cleanText = htmlContent.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    // First decode HTML entities, then remove HTML tags and extract key sections
+    let cleanText = this.decodeHtmlEntities(htmlContent);
+    cleanText = cleanText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
     
     // Try to extract mission, vision, value proposition
     const sections = {
