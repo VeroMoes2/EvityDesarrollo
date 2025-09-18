@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Upload, FileText, Trash2, User, Mail, Calendar, ArrowLeft, Shield, Activity } from "lucide-react";
+import { Upload, FileText, Trash2, User, Mail, Calendar, ArrowLeft, Shield, Activity, Download, Eye } from "lucide-react";
 import { Link } from "wouter";
 import FileUpload from "@/components/FileUpload";
 
@@ -235,32 +235,53 @@ export default function Profile() {
                               </p>
                             </div>
                           </div>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                disabled={deleteMutation.isPending}
-                                data-testid={`button-delete-study-${doc.id}`}
-                              >
-                                <Trash2 className="h-4 w-4 text-red-500" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>¿Eliminar estudio médico?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Esta acción no se puede deshacer. El documento "{doc.originalName}" será eliminado permanentemente.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => deleteMutation.mutate(doc.id)}>
-                                  Eliminar
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+                          <div className="flex items-center space-x-2">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => window.open(`/api/profile/medical-documents/${doc.id}/preview`, '_blank')}
+                              data-testid={`button-preview-study-${doc.id}`}
+                              title="Vista previa"
+                            >
+                              <Eye className="h-4 w-4 text-blue-500" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => window.open(`/api/profile/medical-documents/${doc.id}/download`, '_blank')}
+                              data-testid={`button-download-study-${doc.id}`}
+                              title="Descargar"
+                            >
+                              <Download className="h-4 w-4 text-green-500" />
+                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  disabled={deleteMutation.isPending}
+                                  data-testid={`button-delete-study-${doc.id}`}
+                                  title="Eliminar"
+                                >
+                                  <Trash2 className="h-4 w-4 text-red-500" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>¿Eliminar estudio médico?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Esta acción no se puede deshacer. El documento "{doc.originalName}" será eliminado permanentemente.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => deleteMutation.mutate(doc.id)}>
+                                    Eliminar
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -313,32 +334,53 @@ export default function Profile() {
                               </p>
                             </div>
                           </div>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                disabled={deleteMutation.isPending}
-                                data-testid={`button-delete-lab-${doc.id}`}
-                              >
-                                <Trash2 className="h-4 w-4 text-red-500" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>¿Eliminar resultado de laboratorio?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Esta acción no se puede deshacer. El documento "{doc.originalName}" será eliminado permanentemente.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => deleteMutation.mutate(doc.id)}>
-                                  Eliminar
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+                          <div className="flex items-center space-x-2">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => window.open(`/api/profile/medical-documents/${doc.id}/preview`, '_blank')}
+                              data-testid={`button-preview-lab-${doc.id}`}
+                              title="Vista previa"
+                            >
+                              <Eye className="h-4 w-4 text-blue-500" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => window.open(`/api/profile/medical-documents/${doc.id}/download`, '_blank')}
+                              data-testid={`button-download-lab-${doc.id}`}
+                              title="Descargar"
+                            >
+                              <Download className="h-4 w-4 text-green-500" />
+                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  disabled={deleteMutation.isPending}
+                                  data-testid={`button-delete-lab-${doc.id}`}
+                                  title="Eliminar"
+                                >
+                                  <Trash2 className="h-4 w-4 text-red-500" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>¿Eliminar resultado de laboratorio?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Esta acción no se puede deshacer. El documento "{doc.originalName}" será eliminado permanentemente.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => deleteMutation.mutate(doc.id)}>
+                                    Eliminar
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
                         </div>
                       ))}
                     </div>

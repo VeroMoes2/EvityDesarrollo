@@ -156,6 +156,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // File download endpoint
+  app.get('/api/profile/medical-documents/:id/download', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const documentId = req.params.id;
+
+      const document = await storage.getMedicalDocumentByOwner(documentId, userId);
+      
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Decode base64 file data
+      const fileBuffer = Buffer.from(document.fileData, 'base64');
+      
+      // Set appropriate headers
+      res.set({
+        'Content-Type': document.mimeType,
+        'Content-Disposition': `attachment; filename="${document.originalName}"`,
+        'Content-Length': fileBuffer.length.toString(),
+      });
+
+      res.send(fileBuffer);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      res.status(500).json({ message: "Failed to download file" });
+    }
+  });
+
+  // File preview endpoint (inline display)
+  app.get('/api/profile/medical-documents/:id/preview', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const documentId = req.params.id;
+
+      const document = await storage.getMedicalDocumentByOwner(documentId, userId);
+      
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Only allow preview for safe file types
+      const previewableMimeTypes = [
+        'application/pdf',
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/gif',
+        'image/webp'
+      ];
+
+      if (!previewableMimeTypes.includes(document.mimeType)) {
+        return res.status(400).json({ message: "File type not previewable" });
+      }
+
+      // Decode base64 file data
+      const fileBuffer = Buffer.from(document.fileData, 'base64');
+      
+      // Set appropriate headers for inline display
+      res.set({
+        'Content-Type': document.mimeType,
+        'Content-Disposition': `inline; filename="${document.originalName}"`,
+        'Content-Length': fileBuffer.length.toString(),
+      });
+
+      res.send(fileBuffer);
+    } catch (error) {
+      console.error("Error previewing file:", error);
+      res.status(500).json({ message: "Failed to preview file" });
+    }
+  });
+
   // Confluence integration endpoint
   app.get('/api/confluence/content', async (req, res) => {
     try {

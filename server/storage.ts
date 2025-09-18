@@ -18,6 +18,7 @@ export interface IStorage {
   
   // LS-96: Medical documents operations for user profile system
   getUserMedicalDocuments(userId: string): Promise<MedicalDocument[]>;
+  getMedicalDocumentByOwner(documentId: string, userId: string): Promise<MedicalDocument | undefined>;
   createMedicalDocument(document: InsertMedicalDocument): Promise<MedicalDocument>;
   deleteMedicalDocument(id: string): Promise<void>;
   deleteMedicalDocumentByOwner(userId: string, documentId: string): Promise<number>;
@@ -50,6 +51,22 @@ export class DatabaseStorage implements IStorage {
   // LS-96: Medical documents operations for user profile system
   async getUserMedicalDocuments(userId: string): Promise<MedicalDocument[]> {
     return await db.select().from(medicalDocuments).where(eq(medicalDocuments.userId, userId));
+  }
+
+  async getMedicalDocumentByOwner(documentId: string, userId: string): Promise<MedicalDocument | undefined> {
+    const { and } = await import("drizzle-orm");
+    
+    const [document] = await db
+      .select()
+      .from(medicalDocuments)
+      .where(
+        and(
+          eq(medicalDocuments.id, documentId),
+          eq(medicalDocuments.userId, userId)
+        )
+      );
+    
+    return document;
   }
 
   async createMedicalDocument(document: InsertMedicalDocument): Promise<MedicalDocument> {
