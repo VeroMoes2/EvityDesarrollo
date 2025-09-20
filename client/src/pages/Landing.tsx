@@ -2,6 +2,7 @@ import { useConfluenceData } from "@/hooks/useConfluenceData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Brain, Dna, Shield, Microscope, Activity } from "lucide-react";
+import { Link } from "wouter";
 import heroImage from "@assets/image_1758350191302.png";
 
 export default function Landing() {
@@ -75,23 +76,25 @@ export default function Landing() {
             {data?.mission || 'Transformar la forma en que las personas envejecen, proporcionando herramientas científicas y personalizadas para vivir vidas más largas, saludables y plenas.'}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button 
-              size="lg" 
-              className="bg-primary text-primary-foreground px-8 py-3 text-lg"
-              onClick={() => window.location.href = '/api/login'}
-              data-testid="button-login"
-            >
-              Acceder a mi Perfil
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              className="px-8 py-3 text-lg bg-white/10 border-white/30 text-white backdrop-blur-sm"
-              onClick={() => window.location.href = '/register'}
-              data-testid="button-register"
-            >
-              Crear Cuenta
-            </Button>
+            <Link href="/login">
+              <Button 
+                size="lg" 
+                className="bg-primary text-primary-foreground px-8 py-3 text-lg"
+                data-testid="button-login"
+              >
+                Acceder a mi Perfil
+              </Button>
+            </Link>
+            <Link href="/register">
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="px-8 py-3 text-lg bg-white/10 border-white/30 text-white backdrop-blur-sm"
+                data-testid="button-register"
+              >
+                Crear Cuenta
+              </Button>
+            </Link>
           </div>
           <p className="mt-4 text-sm text-white/70">
             Inicia sesión o crea una cuenta para cargar tus estudios y laboratorios
