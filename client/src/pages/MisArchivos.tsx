@@ -70,6 +70,26 @@ export default function MisArchivos() {
   // Query for fetching paginated medical documents
   const { data: documentsData, isLoading, error, refetch } = useQuery<DocumentsResponse>({
     queryKey: ['/api/profile/medical-documents', page, limit, search],
+    queryFn: async () => {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+      });
+      
+      if (search.trim()) {
+        params.append('search', search.trim());
+      }
+      
+      const response = await fetch(`/api/profile/medical-documents?${params}`, {
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      return response.json();
+    },
     refetchInterval: 30000, // Auto-refresh every 30 seconds for LS-102 requirement
   });
 
