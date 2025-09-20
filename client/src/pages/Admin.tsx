@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, FileText, TrendingUp, Calendar, Mail, User, Clock, HardDrive } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Users, FileText, TrendingUp, Calendar, Mail, User, Clock, HardDrive, Download, Eye } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useAuth } from "@/hooks/useAuth";
@@ -305,7 +306,7 @@ export default function Admin() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex flex-col gap-1 items-end">
+                    <div className="flex flex-col gap-2 items-end">
                       <Badge 
                         variant={doc.fileType === 'study' ? 'default' : 'secondary'}
                         data-testid={`document-type-${doc.id}`}
@@ -315,6 +316,35 @@ export default function Admin() {
                       <span className="text-xs text-muted-foreground" data-testid={`document-size-${doc.id}`}>
                         {formatFileSize(doc.fileSize)}
                       </span>
+                      <div className="flex gap-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            const downloadUrl = `/api/admin/documents/${doc.id}/download`;
+                            const link = document.createElement('a');
+                            link.href = downloadUrl;
+                            link.download = doc.originalName;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          }}
+                          data-testid={`button-download-${doc.id}`}
+                        >
+                          <Download className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            const previewUrl = `/api/admin/documents/${doc.id}/preview`;
+                            window.open(previewUrl, '_blank');
+                          }}
+                          data-testid={`button-preview-${doc.id}`}
+                        >
+                          <Eye className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ))}
