@@ -56,13 +56,39 @@ export const medicalDocuments = pgTable("medical_documents", {
   uploadedAt: timestamp("uploaded_at").defaultNow(),
 });
 
+// LS-101: Unified gender enum for consistency across the system
+export const genderEnum = z.enum(["masculino", "femenino", "otro", "prefiero_no_decir"], {
+  errorMap: () => ({ message: "Selecciona una opción válida" })
+});
+
+// LS-101: Gender mapping for legacy values 
+export const genderLegacyMap = {
+  "M": "masculino",
+  "F": "femenino", 
+  "Other": "otro",
+  "Prefer not to say": "prefiero_no_decir"
+} as const;
+
+// Helper function to normalize gender values
+export function normalizeGender(gender: string | undefined | null): string | undefined {
+  if (!gender) return undefined;
+  
+  // If it's already a modern value, return as-is
+  if (["masculino", "femenino", "otro", "prefiero_no_decir"].includes(gender)) {
+    return gender;
+  }
+  
+  // Map legacy values to modern ones
+  return genderLegacyMap[gender as keyof typeof genderLegacyMap] || gender;
+}
+
 // Create schemas for the tables
 export const insertUserSchema = createInsertSchema(users, {
   email: z.string().email("Email inválido"),
   firstName: z.string().min(1, "Nombre es requerido"),
   lastName: z.string().min(1, "Apellido es requerido"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
-  gender: z.enum(["M", "F", "Other", "Prefer not to say"]).optional(),
+  gender: genderEnum.optional(),
 }).omit({
   id: true,
   createdAt: true,
@@ -72,6 +98,26 @@ export const insertUserSchema = createInsertSchema(users, {
   emailVerificationToken: true,
   emailVerificationExpires: true,
   lastLoginAt: true,
+});
+
+// LS-101: Schema for updating user profile
+export const updateUserProfileSchema = z.object({
+  firstName: z.string()
+    .min(2, "El nombre debe tener al menos 2 caracteres")
+    .max(50, "El nombre no puede exceder 50 caracteres")
+    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "El nombre solo puede contener letras y espacios")
+    .optional(),
+  lastName: z.string()
+    .min(2, "El apellido debe tener al menos 2 caracteres")
+    .max(50, "El apellido no puede exceder 50 caracteres")
+    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "El apellido solo puede contener letras y espacios")
+    .optional(),
+  email: z.string()
+    .email("Ingresa un email válido")
+    .min(1, "El email es requerido")
+    .max(100, "El email no puede exceder 100 caracteres")
+    .optional(),
+  gender: genderEnum.optional(),
 });
 
 export const loginUserSchema = z.object({
@@ -88,5 +134,6 @@ export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type LoginUser = z.infer<typeof loginUserSchema>;
+export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
 export type InsertMedicalDocument = z.infer<typeof insertMedicalDocumentSchema>;
 export type MedicalDocument = typeof medicalDocuments.$inferSelect;

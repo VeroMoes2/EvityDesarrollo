@@ -20,6 +20,15 @@ export interface IStorage {
   upsertUser(userData: UpsertUser): Promise<User>;
   updateUserLastLogin(userId: string): Promise<void>;
   updateUserPassword(userId: string, hashedPassword: string): Promise<void>;
+  updateUserProfile(userId: string, profileData: { 
+    firstName?: string; 
+    lastName?: string; 
+    email?: string; 
+    gender?: string; 
+    isEmailVerified?: string; 
+    emailVerificationToken?: string | null; 
+    emailVerificationExpires?: Date | null; 
+  }): Promise<User>;
   setPasswordResetToken(userId: string, token: string, expires: Date): Promise<void>;
   clearPasswordResetToken(userId: string): Promise<void>;
   
@@ -137,6 +146,38 @@ export class DatabaseStorage implements IStorage {
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId));
+  }
+
+  // LS-101: Update user profile information
+  async updateUserProfile(userId: string, profileData: { 
+    firstName?: string; 
+    lastName?: string; 
+    email?: string; 
+    gender?: string;
+    isEmailVerified?: string;
+    emailVerificationToken?: string | null;
+    emailVerificationExpires?: Date | null;
+  }): Promise<User> {
+    const updateData: any = {
+      updatedAt: new Date(),
+    };
+
+    // Only update fields that are provided
+    if (profileData.firstName !== undefined) updateData.firstName = profileData.firstName;
+    if (profileData.lastName !== undefined) updateData.lastName = profileData.lastName;
+    if (profileData.email !== undefined) updateData.email = profileData.email;
+    if (profileData.gender !== undefined) updateData.gender = profileData.gender;
+    if (profileData.isEmailVerified !== undefined) updateData.isEmailVerified = profileData.isEmailVerified;
+    if (profileData.emailVerificationToken !== undefined) updateData.emailVerificationToken = profileData.emailVerificationToken;
+    if (profileData.emailVerificationExpires !== undefined) updateData.emailVerificationExpires = profileData.emailVerificationExpires;
+
+    const [updatedUser] = await db
+      .update(users)
+      .set(updateData)
+      .where(eq(users.id, userId))
+      .returning();
+
+    return updatedUser;
   }
 
   async setPasswordResetToken(userId: string, token: string, expires: Date): Promise<void> {

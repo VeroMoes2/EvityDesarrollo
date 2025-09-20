@@ -5,6 +5,7 @@ import { storage } from "./storage";
 import { ConfluenceService } from "./confluenceService";
 import { setupAuth, isAuthenticated, isAdmin } from "./localAuth";
 import { uploadRateLimit, downloadRateLimit, previewRateLimit } from "./rateLimiter";
+import { updateUserProfileSchema } from "@shared/schema";
 
 // Configure multer for file uploads
 const upload = multer({
@@ -100,6 +101,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting medical document:", error);
       res.status(500).json({ message: "Failed to delete medical document" });
+    }
+  });
+
+  // LS-101: Update user profile endpoint
+  app.patch('/api/profile/update', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get current user data to check for email changes
+      const currentUser = await storage.getUser(userId);
+      if (!currentUser) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+      
+      // Validate request body with schema
+      const validationResult = updateUserProfileSchema.safeParse(req.body);
+      
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Datos inválidos", 
+          errors: validationResult.error.issues 
+        });
+      }
+
+      // Check if trying to update email to an existing one
+      const { email, ...otherData } = validationResult.data;
+      let emailChanged = false;
+      
+      if (email && email.toLowerCase() !== currentUser.email.toLowerCase()) {
+        emailChanged = true;
+        const existingUser = await storage.getUserByEmail(email.toLowerCase());
+        if (existingUser && existingUser.id !== userId) {
+          return res.status(400).json({ 
+            message: "Este email ya está registrado",
+            field: "email"
+          });
+        }
+      }
+
+      // Prepare update data with email verification reset if email changed
+      const updateData: any = { ...otherData };
+      if (email) {
+        updateData.email = email.toLowerCase();
+        if (emailChanged) {
+          // Reset email verification status when email changes
+          updateData.isEmailVerified = "false";
+          updateData.emailVerificationToken = null;
+          updateData.emailVerificationExpires = null;
+        }
+      }
+
+      // Update user profile
+      const updatedUser = await storage.updateUserProfile(userId, updateData);
+
+      // Remove sensitive data from response
+      const { password, passwordResetToken, passwordResetExpires, emailVerificationToken, emailVerificationExpires, ...userResponse } = updatedUser;
+
+      res.json({ 
+        message: "Perfil actualizado exitosamente",
+        user: userResponse,
+        emailChanged: emailChanged
+      });
+    } catch (error: any) {
+      console.error("Error updating user profile:", error);
+      
+      // Handle database unique constraint errors (email already exists)
+      if (error.code === '23505' && error.detail?.includes('email')) {
+        return res.status(400).json({ 
+          field: "email",
+          message: "Este email ya está registrado" 
+        });
+      }
+      
+      res.status(500).json({ message: "Error interno del servidor" });
     }
   });
 

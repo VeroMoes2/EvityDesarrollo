@@ -10,10 +10,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload, FileText, Trash2, User, Mail, Calendar, ArrowLeft, Shield, Activity, Download, Eye, Search } from "lucide-react";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Upload, FileText, Trash2, User, Mail, Calendar, ArrowLeft, Shield, Activity, Download, Eye, Search, Edit } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { updateUserProfileSchema, type UpdateUserProfile, normalizeGender } from "@shared/schema";
 import { Link } from "wouter";
 import FileUpload from "@/components/FileUpload";
 
@@ -22,6 +28,30 @@ export default function Profile() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFileType, setSelectedFileType] = useState("all");
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
+  // LS-101: Form for profile editing
+  const form = useForm<UpdateUserProfile>({
+    resolver: zodResolver(updateUserProfileSchema),
+    defaultValues: {
+      firstName: (user as any)?.firstName || "",
+      lastName: (user as any)?.lastName || "",
+      email: (user as any)?.email || "",
+      gender: normalizeGender((user as any)?.gender) || "",
+    },
+  });
+
+  // Update form when user data changes
+  useEffect(() => {
+    if (user) {
+      form.reset({
+        firstName: (user as any)?.firstName || "",
+        lastName: (user as any)?.lastName || "",
+        email: (user as any)?.email || "",
+        gender: normalizeGender((user as any)?.gender) || "",
+      });
+    }
+  }, [user, form]);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -88,6 +118,82 @@ export default function Profile() {
     },
   });
 
+  // LS-101: Update profile mutation
+  const updateProfileMutation = useMutation({
+    mutationFn: async (data: UpdateUserProfile) => {
+      const response = await apiRequest("PATCH", "/api/profile/update", data);
+      return await response.json();
+    },
+    onSuccess: (response) => {
+      // Update auth context with new user data
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      setIsEditDialogOpen(false);
+      toast({
+        title: "Perfil actualizado",
+        description: response.emailChanged 
+          ? "Tu información personal se ha actualizado. Si cambiaste tu email, revisa tu bandeja de entrada para verificarlo."
+          : "Tu información personal se ha actualizado correctamente",
+      });
+    },
+    onError: (error: any) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "No autorizado",
+          description: "Tu sesión ha expirado. Iniciando sesión nuevamente...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      
+      // Handle validation errors
+      if (error?.response?.data?.field) {
+        form.setError(error.response.data.field as keyof UpdateUserProfile, {
+          message: error.response.data.message
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: error?.response?.data?.message || "No se pudo actualizar el perfil",
+          variant: "destructive",
+        });
+      }
+    },
+  });
+
+  // LS-101: Handle form submission
+  const onSubmit = (data: UpdateUserProfile) => {
+    // Only send fields that have changed
+    const changedData: Partial<UpdateUserProfile> = {};
+    
+    if (data.firstName !== (user as any)?.firstName) {
+      changedData.firstName = data.firstName;
+    }
+    if (data.lastName !== (user as any)?.lastName) {
+      changedData.lastName = data.lastName;
+    }
+    if (data.email !== (user as any)?.email) {
+      changedData.email = data.email;
+    }
+    if (data.gender !== (user as any)?.gender) {
+      changedData.gender = data.gender;
+    }
+
+    // Only submit if there are changes
+    if (Object.keys(changedData).length === 0) {
+      toast({
+        title: "Sin cambios",
+        description: "No has realizado ningún cambio en tu perfil",
+      });
+      setIsEditDialogOpen(false);
+      return;
+    }
+
+    updateProfileMutation.mutate(changedData as UpdateUserProfile);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -153,9 +259,135 @@ export default function Profile() {
           <div className="lg:col-span-1">
             <Card data-testid="card-user-info">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <User className="h-5 w-5" />
-                  <span>Información Personal</span>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <User className="h-5 w-5" />
+                    <span>Información Personal</span>
+                  </div>
+                  <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        data-testid="button-edit-profile"
+                        className="flex items-center space-x-1"
+                      >
+                        <Edit className="h-4 w-4" />
+                        <span>Editar</span>
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]" data-testid="dialog-edit-profile">
+                      <DialogHeader>
+                        <DialogTitle>Editar Información Personal</DialogTitle>
+                        <DialogDescription>
+                          Actualiza tu información personal. Los cambios se guardarán inmediatamente.
+                        </DialogDescription>
+                      </DialogHeader>
+                      
+                      <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="firstName"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Nombre</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      {...field} 
+                                      placeholder="Tu nombre"
+                                      data-testid="input-first-name"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            
+                            <FormField
+                              control={form.control}
+                              name="lastName"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Apellido</FormLabel>
+                                  <FormControl>
+                                    <Input 
+                                      {...field} 
+                                      placeholder="Tu apellido"
+                                      data-testid="input-last-name"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                          
+                          <FormField
+                            control={form.control}
+                            name="email"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Email</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    {...field} 
+                                    type="email"
+                                    placeholder="tu@email.com"
+                                    data-testid="input-email"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={form.control}
+                            name="gender"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Género</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger data-testid="select-gender">
+                                      <SelectValue placeholder="Selecciona tu género" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="prefiero_no_decir">Prefiero no decirlo</SelectItem>
+                                    <SelectItem value="masculino">Masculino</SelectItem>
+                                    <SelectItem value="femenino">Femenino</SelectItem>
+                                    <SelectItem value="otro">Otro</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <DialogFooter>
+                            <Button 
+                              type="button" 
+                              variant="outline" 
+                              onClick={() => setIsEditDialogOpen(false)}
+                              data-testid="button-cancel-edit"
+                            >
+                              Cancelar
+                            </Button>
+                            <Button 
+                              type="submit" 
+                              disabled={updateProfileMutation.isPending}
+                              data-testid="button-save-profile"
+                            >
+                              {updateProfileMutation.isPending ? "Guardando..." : "Guardar"}
+                            </Button>
+                          </DialogFooter>
+                        </form>
+                      </Form>
+                    </DialogContent>
+                  </Dialog>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
