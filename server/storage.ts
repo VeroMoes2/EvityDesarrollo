@@ -109,6 +109,16 @@ export class DatabaseStorage implements IStorage {
     return document;
   }
 
+  // Admin method: Get any medical document by ID (no user filtering)
+  async getMedicalDocumentById(documentId: string): Promise<MedicalDocument | undefined> {
+    const [document] = await db
+      .select()
+      .from(medicalDocuments)
+      .where(eq(medicalDocuments.id, documentId));
+    
+    return document;
+  }
+
   async createMedicalDocument(document: InsertMedicalDocument): Promise<MedicalDocument> {
     const [createdDocument] = await db
       .insert(medicalDocuments)

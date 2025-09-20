@@ -584,6 +584,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin document download/preview endpoints
+  app.get('/api/admin/documents/:id/download', isAdmin, async (req: any, res) => {
+    try {
+      // Import security utilities
+      const { getSecureFileHeaders } = await import("./fileValidation");
+      
+      const documentId = req.params.id;
+      console.log(`ADMIN ACCESS: Admin ${req.user.claims.email} downloading document ${documentId}`);
+
+      // Admin can access any document - get document directly by ID
+      const document = await storage.getMedicalDocumentById(documentId);
+      
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Validate fileData exists
+      if (!document.fileData) {
+        console.error(`AUDIT: File data not found for document ${documentId} - Admin: ${req.user.claims.email}`);
+        return res.status(500).json({ message: "File data not available" });
+      }
+
+      // Decode base64 file data
+      const fileBuffer = Buffer.from(document.fileData, 'base64');
+      
+      // Enhanced security headers for file downloads
+      const secureHeaders = getSecureFileHeaders(document.originalName, document.mimeType, false);
+      res.set({
+        ...secureHeaders,
+        'Content-Length': fileBuffer.length.toString(),
+      });
+
+      // Audit logging for admin document downloads
+      console.log(`AUDIT: Admin document download - Admin: ${req.user.claims.email}, Document: ${documentId}, Size: ${fileBuffer.length}`);
+
+      res.send(fileBuffer);
+    } catch (error) {
+      console.error("Error downloading admin file:", error);
+      res.status(500).json({ message: "Failed to download file" });
+    }
+  });
+
+  app.get('/api/admin/documents/:id/preview', isAdmin, async (req: any, res) => {
+    try {
+      // Import security utilities
+      const { getSecureFileHeaders, PREVIEWABLE_MIME_TYPES } = await import("./fileValidation");
+      
+      const documentId = req.params.id;
+      console.log(`ADMIN ACCESS: Admin ${req.user.claims.email} previewing document ${documentId}`);
+
+      // Admin can access any document - get document directly by ID
+      const document = await storage.getMedicalDocumentById(documentId);
+      
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Validate fileData exists
+      if (!document.fileData) {
+        console.error(`AUDIT: File data not found for document ${documentId} - Admin: ${req.user.claims.email}`);
+        return res.status(500).json({ message: "File data not available" });
+      }
+
+      // Check if file type can be previewed
+      if (!PREVIEWABLE_MIME_TYPES.includes(document.mimeType as any)) {
+        return res.status(400).json({ message: "File type cannot be previewed" });
+      }
+
+      // Decode base64 file data
+      const fileBuffer = Buffer.from(document.fileData, 'base64');
+      
+      // Enhanced security headers for inline preview
+      const secureHeaders = getSecureFileHeaders(document.originalName, document.mimeType, true);
+      res.set({
+        ...secureHeaders,
+        'Content-Length': fileBuffer.length.toString(),
+      });
+
+      // Audit logging for admin document previews
+      console.log(`AUDIT: Admin document preview - Admin: ${req.user.claims.email}, Document: ${documentId}, Size: ${fileBuffer.length}`);
+
+      res.send(fileBuffer);
+    } catch (error) {
+      console.error("Error previewing admin file:", error);
+      res.status(500).json({ message: "Failed to preview file" });
+    }
+  });
+
   // Admin routes for monitoring users and files (SECURED)
   app.get('/api/admin/users', isAdmin, async (req: any, res) => {
     try {
