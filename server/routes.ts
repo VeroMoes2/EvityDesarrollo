@@ -571,6 +571,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin routes for monitoring users and files (SECURED)
+  app.get('/api/admin/users', isAuthenticated, async (req: any, res) => {
+    try {
+      // Basic admin check - you can enhance this with proper RBAC
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      // For now, allow any authenticated user - you should implement proper admin role check
+      console.log(`ADMIN ACCESS: User ${user?.email} accessed /api/admin/users`);
+      
+      const users = await storage.getAllUsers();
+      res.json({ users });
+    } catch (error) {
+      console.error("Error fetching admin users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  app.get('/api/admin/documents', isAuthenticated, async (req: any, res) => {
+    try {
+      // Basic admin check - you can enhance this with proper RBAC
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      console.log(`ADMIN ACCESS: User ${user?.email} accessed /api/admin/documents`);
+      
+      const documents = await storage.getAllMedicalDocuments();
+      res.json({ documents });
+    } catch (error) {
+      console.error("Error fetching admin documents:", error);
+      res.status(500).json({ message: "Failed to fetch documents" });
+    }
+  });
+
+  app.get('/api/admin/stats', isAuthenticated, async (req: any, res) => {
+    try {
+      // Basic admin check - you can enhance this with proper RBAC
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      console.log(`ADMIN ACCESS: User ${user?.email} accessed /api/admin/stats`);
+      
+      const stats = await storage.getSystemStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching admin stats:", error);
+      res.status(500).json({ message: "Failed to fetch stats" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

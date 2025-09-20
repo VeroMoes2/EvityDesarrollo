@@ -22,6 +22,17 @@ export interface IStorage {
   createMedicalDocument(document: InsertMedicalDocument): Promise<MedicalDocument>;
   deleteMedicalDocument(id: string): Promise<void>;
   deleteMedicalDocumentByOwner(userId: string, documentId: string): Promise<number>;
+
+  // Admin operations
+  getAllUsers(): Promise<Array<User & { documentsCount: number }>>;
+  getAllMedicalDocuments(): Promise<Array<Omit<MedicalDocument, 'fileData'> & { userEmail: string | null; userName: string }>>;
+  getSystemStats(): Promise<{
+    totalUsers: number;
+    totalDocuments: number;
+    documentsToday: number;
+    usersToday: number;
+    storageUsed: string;
+  }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -96,6 +107,106 @@ export class DatabaseStorage implements IStorage {
       .returning({ id: medicalDocuments.id });
     
     return result.length;
+  }
+
+  // Admin operations
+  async getAllUsers(): Promise<Array<User & { documentsCount: number }>> {
+    const { count, sql } = await import("drizzle-orm");
+    
+    const result = await db
+      .select({
+        id: users.id,
+        email: users.email,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        profileImageUrl: users.profileImageUrl,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+        documentsCount: count(medicalDocuments.id)
+      })
+      .from(users)
+      .leftJoin(medicalDocuments, eq(users.id, medicalDocuments.userId))
+      .groupBy(users.id)
+      .orderBy(sql`${users.createdAt} DESC`);
+    
+    return result;
+  }
+
+  async getAllMedicalDocuments(): Promise<Array<Omit<MedicalDocument, 'fileData'> & { userEmail: string | null; userName: string }>> {
+    const { sql } = await import("drizzle-orm");
+    
+    const result = await db
+      .select({
+        id: medicalDocuments.id,
+        userId: medicalDocuments.userId,
+        filename: medicalDocuments.filename,
+        originalName: medicalDocuments.originalName,
+        fileType: medicalDocuments.fileType,
+        mimeType: medicalDocuments.mimeType,
+        fileSize: medicalDocuments.fileSize,
+        // fileData: REMOVED for security - don't expose file content in lists
+        uploadedAt: medicalDocuments.uploadedAt,
+        userEmail: users.email,
+        userName: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email})`
+      })
+      .from(medicalDocuments)
+      .innerJoin(users, eq(medicalDocuments.userId, users.id))
+      .orderBy(sql`${medicalDocuments.uploadedAt} DESC`);
+    
+    return result;
+  }
+
+  async getSystemStats(): Promise<{
+    totalUsers: number;
+    totalDocuments: number;
+    documentsToday: number;
+    usersToday: number;
+    storageUsed: string;
+  }> {
+    const { count, sql, gte } = await import("drizzle-orm");
+    
+    // Get today's date at midnight
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const [userStats] = await db
+      .select({
+        totalUsers: count(users.id),
+        usersToday: sql<number>`COUNT(CASE WHEN ${users.createdAt} >= ${today.toISOString()} THEN 1 END)`
+      })
+      .from(users);
+    
+    const [documentStats] = await db
+      .select({
+        totalDocuments: count(medicalDocuments.id),
+        documentsToday: sql<number>`COUNT(CASE WHEN ${medicalDocuments.uploadedAt} >= ${today.toISOString()} THEN 1 END)`,
+        totalSizeBytes: sql<number>`SUM(CAST(${medicalDocuments.fileSize} AS BIGINT))`
+      })
+      .from(medicalDocuments);
+    
+    // Convert bytes to human readable format
+    const totalBytes = Number(documentStats.totalSizeBytes) || 0;
+    let storageUsed = "0 bytes";
+    if (totalBytes > 0) {
+      const units = ['bytes', 'KB', 'MB', 'GB'];
+      let size = totalBytes;
+      let unitIndex = 0;
+      
+      while (size >= 1024 && unitIndex < units.length - 1) {
+        size /= 1024;
+        unitIndex++;
+      }
+      
+      storageUsed = `${size.toFixed(1)} ${units[unitIndex]}`;
+    }
+    
+    return {
+      totalUsers: userStats.totalUsers,
+      totalDocuments: documentStats.totalDocuments,
+      documentsToday: Number(documentStats.documentsToday),
+      usersToday: Number(userStats.usersToday),
+      storageUsed
+    };
   }
 }
 

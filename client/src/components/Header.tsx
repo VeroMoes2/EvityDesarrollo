@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, Menu, User, LogOut } from "lucide-react";
+import { Moon, Sun, Menu, User, LogOut, Settings } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
 import { useAuth } from "@/hooks/useAuth";
@@ -107,7 +107,7 @@ export default function Header() {
                         {(user as any)?.firstName?.[0]}{(user as any)?.lastName?.[0]}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="text-sm font-medium">{(user as any)?.firstName}</span>
+                    <span className="text-sm font-medium">{(user as any)?.firstName || 'Usuario'}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -118,6 +118,14 @@ export default function Header() {
                   >
                     <User className="mr-2 h-4 w-4" />
                     <span>Mi Perfil</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onSelect={() => navigate('/admin')}
+                    className="cursor-pointer"
+                    data-testid="menu-item-admin"
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Panel Admin</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
@@ -197,7 +205,7 @@ export default function Header() {
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium text-sm">{(user as any)?.firstName} {(user as any)?.lastName}</p>
+                        <p className="font-medium text-sm">{((user as any)?.firstName || '') + ' ' + ((user as any)?.lastName || '')}</p>
                         <p className="text-xs text-gray-500">{(user as any)?.email}</p>
                       </div>
                     </div>
@@ -212,6 +220,18 @@ export default function Header() {
                     >
                       <User className="mr-2 h-4 w-4" />
                       Mi Perfil
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start mb-2"
+                      data-testid="button-mobile-admin"
+                      onClick={() => {
+                        navigate('/admin');
+                        setIsMenuOpen(false);
+                      }}
+                    >
+                      <Settings className="mr-2 h-4 w-4" />
+                      Panel Admin
                     </Button>
                     <Button 
                       variant="outline" 
