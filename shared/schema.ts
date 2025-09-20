@@ -36,6 +36,8 @@ export const users = pgTable("users", {
   isAdmin: varchar("is_admin").default("false"), // 'true' or 'false' - admin privileges
   passwordResetToken: varchar("password_reset_token"),
   passwordResetExpires: timestamp("password_reset_expires"),
+  emailVerificationToken: varchar("email_verification_token"),
+  emailVerificationExpires: timestamp("email_verification_expires"),
   lastLoginAt: timestamp("last_login_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -67,6 +69,8 @@ export const insertUserSchema = createInsertSchema(users, {
   updatedAt: true,
   passwordResetToken: true,
   passwordResetExpires: true,
+  emailVerificationToken: true,
+  emailVerificationExpires: true,
   lastLoginAt: true,
 });
 
