@@ -10,9 +10,9 @@ import { useLocation } from "wouter";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
-// Helper function to check if user is admin (case-insensitive)
+// Helper function to check if user is admin using isAdmin field
 const isUserAdmin = (user: any): boolean => {
-  return user?.email?.toLowerCase() === 'veromoes@evity.mx';
+  return user?.isAdmin === "true";
 };
 
 interface AdminUser {
@@ -20,7 +20,11 @@ interface AdminUser {
   email: string | null;
   firstName: string | null;
   lastName: string | null;
+  gender: string | null;
   profileImageUrl: string | null;
+  isAdmin: string | null;
+  isEmailVerified: string | null;
+  lastLoginAt: string | null;
   createdAt: string | null;
   updatedAt: string | null;
   documentsCount: number;
@@ -233,11 +237,11 @@ export default function Admin() {
                     className="flex items-center justify-between p-4 border rounded-lg hover-elevate"
                     data-testid={`user-item-${user.id}`}
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-1">
                       <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                         <User className="h-5 w-5 text-primary" />
                       </div>
-                      <div>
+                      <div className="flex-1 min-w-0">
                         <div className="font-medium" data-testid={`user-name-${user.id}`}>
                           {user.firstName && user.lastName
                             ? `${user.firstName} ${user.lastName}`
@@ -247,15 +251,43 @@ export default function Admin() {
                           <Mail className="h-3 w-3" />
                           {user.email || 'Sin email'}
                         </div>
-                        <div className="text-xs text-muted-foreground flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {formatDate(user.createdAt)}
+                        <div className="flex gap-4 mt-1">
+                          <div className="text-xs text-muted-foreground">
+                            Género: {user.gender || 'No especificado'}
+                          </div>
+                          <div className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            Registro: {formatDate(user.createdAt)}
+                          </div>
+                          {user.lastLoginAt && (
+                            <div className="text-xs text-muted-foreground">
+                              Último acceso: {formatDate(user.lastLoginAt)}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
-                    <Badge variant="secondary" data-testid={`user-documents-count-${user.id}`}>
-                      {user.documentsCount} archivos
-                    </Badge>
+                    <div className="flex flex-col gap-2 items-end">
+                      <div className="flex gap-2">
+                        {user.isAdmin === "true" && (
+                          <Badge className="bg-primary text-primary-foreground">
+                            Admin
+                          </Badge>
+                        )}
+                        {user.isEmailVerified === "true" ? (
+                          <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                            Verificado
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-yellow-600 border-yellow-600">
+                            Pendiente
+                          </Badge>
+                        )}
+                      </div>
+                      <Badge variant="secondary" data-testid={`user-documents-count-${user.id}`}>
+                        {user.documentsCount} archivo{user.documentsCount !== 1 ? 's' : ''}
+                      </Badge>
+                    </div>
                   </div>
                 ))}
                 {!usersData?.users?.length && (

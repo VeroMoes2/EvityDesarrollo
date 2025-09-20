@@ -391,10 +391,9 @@ export const isAdmin: RequestHandler = async (req, res, next) => {
       return res.status(401).json({ message: "Usuario no encontrado" });
     }
 
-    // Check if user is admin (case-insensitive)
-    const userEmail = user.email?.toLowerCase();
-    if (userEmail !== 'veromoes@evity.mx') {
-      console.log(`ADMIN ACCESS DENIED: User ${userEmail} attempted to access admin endpoints`);
+    // Check if user has admin privileges
+    if (user.isAdmin !== "true") {
+      console.log(`ADMIN ACCESS DENIED: User ${user.email} (isAdmin: ${user.isAdmin}) attempted to access admin endpoints`);
       return res.status(403).json({ message: "Acceso denegado: Se requieren privilegios de administrador" });
     }
 
@@ -412,7 +411,7 @@ export const isAdmin: RequestHandler = async (req, res, next) => {
       }
     };
 
-    console.log(`ADMIN ACCESS GRANTED: User ${userEmail} accessing admin endpoint`);
+    console.log(`ADMIN ACCESS GRANTED: User ${user.email} accessing admin endpoint`);
     next();
   } catch (error) {
     console.error("Admin middleware error:", error);
