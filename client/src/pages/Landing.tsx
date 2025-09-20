@@ -87,7 +87,7 @@ export default function Landing() {
               size="lg" 
               variant="outline"
               className="px-8 py-3 text-lg bg-white/10 border-white/30 text-white backdrop-blur-sm"
-              onClick={() => window.location.href = '/api/login'}
+              onClick={() => window.location.href = '/register'}
               data-testid="button-register"
             >
               Crear Cuenta
