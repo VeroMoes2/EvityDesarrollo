@@ -139,7 +139,7 @@ export default function Landing() {
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-foreground mb-6">Nuestra Visión</h2>
           <p className="text-lg text-muted-foreground max-w-4xl mx-auto" data-testid="text-vision">
-            {data?.vision || 'Ser la plataforma líder mundial en longevidad, democratizando el acceso a los últimos avances científicos para que cada persona pueda alcanzar su máximo potencial de salud y bienestar.'}
+            {data?.vision || 'Ayudarte a vivir más y a vivir mejor'}
           </p>
         </div>
       </section>
