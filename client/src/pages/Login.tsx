@@ -59,6 +59,7 @@ export default function Login() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // CRITICAL: Include cookies for session management
         body: JSON.stringify(data),
       });
       
