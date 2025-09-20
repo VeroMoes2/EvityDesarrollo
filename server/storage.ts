@@ -45,18 +45,47 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(userData)
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          ...userData,
-          updatedAt: new Date(),
-        },
-      })
-      .returning();
-    return user;
+    try {
+      const [user] = await db
+        .insert(users)
+        .values(userData)
+        .onConflictDoUpdate({
+          target: users.email, // Handle email conflicts
+          set: {
+            // DON'T update id - it breaks foreign key constraints!
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            profileImageUrl: userData.profileImageUrl,
+            updatedAt: new Date(),
+          },
+        })
+        .returning();
+      return user;
+    } catch (error: any) {
+      console.error('Error in upsertUser:', error);
+      
+      // If it's still a constraint error, try to update by email without changing ID
+      if (error.code === '23505' || error.code === '23503') {
+        console.log('Attempting to update existing user by email (without ID change):', userData.email);
+        const [existingUser] = await db
+          .update(users)
+          .set({
+            // DON'T update id - preserve existing ID to maintain foreign key integrity
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            profileImageUrl: userData.profileImageUrl,
+            updatedAt: new Date(),
+          })
+          .where(eq(users.email, userData.email!))
+          .returning();
+        
+        if (existingUser) {
+          return existingUser;
+        }
+      }
+      
+      throw error;
+    }
   }
 
   // LS-96: Medical documents operations for user profile system

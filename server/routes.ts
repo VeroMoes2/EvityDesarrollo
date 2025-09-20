@@ -41,11 +41,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const claims = req.user.claims;
+      
+      // Ensure user exists in DB - upsert on each auth check
+      const userData = {
+        id: claims.sub,
+        email: claims.email,
+        firstName: claims.first_name || 'Usuario',
+        lastName: claims.last_name || '',
+        profileImageUrl: claims.picture || null,
+      };
+      
+      // This will create user if doesn't exist or update if exists
+      const user = await storage.upsertUser(userData);
+      
+      console.log("User authenticated:", user.email, "ID:", user.id);
       res.json(user);
     } catch (error) {
-      console.error("Error fetching user:", error);
+      console.error("Error fetching/upserting user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
     }
   });
