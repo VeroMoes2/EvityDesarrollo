@@ -235,6 +235,7 @@ export class DatabaseStorage implements IStorage {
         password: users.password,
         profileImageUrl: users.profileImageUrl,
         isEmailVerified: users.isEmailVerified,
+        isAdmin: users.isAdmin,
         passwordResetToken: users.passwordResetToken,
         passwordResetExpires: users.passwordResetExpires,
         lastLoginAt: users.lastLoginAt,
@@ -248,6 +249,26 @@ export class DatabaseStorage implements IStorage {
       .orderBy(sql`${users.createdAt} DESC`);
     
     return result;
+  }
+
+  async makeUserAdmin(userId: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ 
+        isAdmin: "true",
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId));
+  }
+
+  async removeUserAdmin(userId: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ 
+        isAdmin: "false",
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId));
   }
 
   async getAllMedicalDocuments(): Promise<Array<Omit<MedicalDocument, 'fileData'> & { userEmail: string | null; userName: string }>> {

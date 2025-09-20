@@ -33,6 +33,7 @@ export const users = pgTable("users", {
   password: varchar("password").notNull(), // Hashed password
   profileImageUrl: varchar("profile_image_url"),
   isEmailVerified: varchar("is_email_verified").default("false"), // 'true' or 'false'
+  isAdmin: varchar("is_admin").default("false"), // 'true' or 'false' - admin privileges
   passwordResetToken: varchar("password_reset_token"),
   passwordResetExpires: timestamp("password_reset_expires"),
   lastLoginAt: timestamp("last_login_at"),
