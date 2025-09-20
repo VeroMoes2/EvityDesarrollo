@@ -700,22 +700,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Temporary endpoint to fetch LS-99 details
-  app.get('/api/jira/LS-99', async (req, res) => {
-    try {
-      const { JiraService } = await import("./jiraService");
-      const jiraService = new JiraService({
-        host: process.env.JIRA_DOMAIN || '',
-        email: process.env.JIRA_EMAIL || '',
-        apiToken: process.env.JIRA_API_TOKEN || ''
-      });
-      const issue = await jiraService.getIssueByKey('LS-99');
-      res.json(issue);
-    } catch (error: any) {
-      console.error("Error fetching LS-99:", error);
-      res.status(500).json({ message: "Failed to fetch LS-99", error: error?.message || 'Unknown error' });
-    }
-  });
 
   const httpServer = createServer(app);
 
