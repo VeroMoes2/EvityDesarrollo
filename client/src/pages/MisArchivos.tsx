@@ -442,10 +442,10 @@ export default function MisArchivos() {
                                 variant="outline"
                                 onClick={() => handleDeleteDocument(document.id, document.originalName)}
                                 data-testid={`button-delete-${document.id}`}
-                                disabled={deleteDocumentMutation.isPending}
+                                disabled={deleteDocumentMutation.isPending || (documentToDelete?.id === document.id)}
                               >
                                 <Trash2 className="h-4 w-4" />
-                                Eliminar
+                                {documentToDelete?.id === document.id ? "Eliminando..." : "Eliminar"}
                               </Button>
                             </div>
                           </TableCell>
