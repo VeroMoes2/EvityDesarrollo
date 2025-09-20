@@ -23,13 +23,19 @@ export const sessions = pgTable(
 );
 
 // User storage table.
-// (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
+// LS-98: Enhanced user authentication with complete profile information
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  email: varchar("email").unique(),
-  firstName: varchar("first_name"),
-  lastName: varchar("last_name"),
+  email: varchar("email").unique().notNull(),
+  firstName: varchar("first_name").notNull(),
+  lastName: varchar("last_name").notNull(),
+  gender: varchar("gender"), // 'M', 'F', 'Other', 'Prefer not to say'
+  password: varchar("password").notNull(), // Hashed password
   profileImageUrl: varchar("profile_image_url"),
+  isEmailVerified: varchar("is_email_verified").default("false"), // 'true' or 'false'
+  passwordResetToken: varchar("password_reset_token"),
+  passwordResetExpires: timestamp("password_reset_expires"),
+  lastLoginAt: timestamp("last_login_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -48,7 +54,26 @@ export const medicalDocuments = pgTable("medical_documents", {
 });
 
 // Create schemas for the tables
-export const insertUserSchema = createInsertSchema(users);
+export const insertUserSchema = createInsertSchema(users, {
+  email: z.string().email("Email inválido"),
+  firstName: z.string().min(1, "Nombre es requerido"),
+  lastName: z.string().min(1, "Apellido es requerido"),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  gender: z.enum(["M", "F", "Other", "Prefer not to say"]).optional(),
+}).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  passwordResetToken: true,
+  passwordResetExpires: true,
+  lastLoginAt: true,
+});
+
+export const loginUserSchema = z.object({
+  email: z.string().email("Email inválido"),
+  password: z.string().min(1, "Contraseña es requerida"),
+});
+
 export const insertMedicalDocumentSchema = createInsertSchema(medicalDocuments).omit({
   id: true,
   uploadedAt: true,
@@ -56,5 +81,7 @@ export const insertMedicalDocumentSchema = createInsertSchema(medicalDocuments).
 
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
+export type LoginUser = z.infer<typeof loginUserSchema>;
 export type InsertMedicalDocument = z.infer<typeof insertMedicalDocumentSchema>;
 export type MedicalDocument = typeof medicalDocuments.$inferSelect;
