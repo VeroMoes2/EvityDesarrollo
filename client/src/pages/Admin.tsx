@@ -320,16 +320,22 @@ export default function Admin() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => {
-                            const downloadUrl = `/api/admin/documents/${doc.id}/download`;
-                            const link = document.createElement('a');
-                            link.href = downloadUrl;
-                            link.download = doc.originalName;
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
+                          onClick={async () => {
+                            try {
+                              const downloadUrl = `/api/admin/documents/${doc.id}/download`;
+                              const link = document.createElement('a');
+                              link.href = downloadUrl;
+                              link.download = doc.originalName;
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                            } catch (error) {
+                              console.error('Error downloading document:', error);
+                              // Handle error gracefully
+                            }
                           }}
                           data-testid={`button-download-${doc.id}`}
+                          title="Descargar documento"
                         >
                           <Download className="h-3 w-3" />
                         </Button>
@@ -337,10 +343,16 @@ export default function Admin() {
                           size="sm"
                           variant="outline"
                           onClick={() => {
-                            const previewUrl = `/api/admin/documents/${doc.id}/preview`;
-                            window.open(previewUrl, '_blank');
+                            try {
+                              const previewUrl = `/api/admin/documents/${doc.id}/preview`;
+                              window.open(previewUrl, '_blank');
+                            } catch (error) {
+                              console.error('Error previewing document:', error);
+                              // Handle error gracefully
+                            }
                           }}
                           data-testid={`button-preview-${doc.id}`}
+                          title="Previsualizar documento"
                         >
                           <Eye className="h-3 w-3" />
                         </Button>

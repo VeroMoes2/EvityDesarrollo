@@ -584,8 +584,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin document download/preview endpoints
-  app.get('/api/admin/documents/:id/download', isAdmin, async (req: any, res) => {
+  // Admin document download/preview endpoints  
+  app.get('/api/admin/documents/:id/download', isAdmin, downloadRateLimit, async (req: any, res) => {
     try {
       // Import security utilities
       const { getSecureFileHeaders } = await import("./fileValidation");
@@ -626,7 +626,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/admin/documents/:id/preview', isAdmin, async (req: any, res) => {
+  app.get('/api/admin/documents/:id/preview', isAdmin, previewRateLimit, async (req: any, res) => {
     try {
       // Import security utilities
       const { getSecureFileHeaders, PREVIEWABLE_MIME_TYPES } = await import("./fileValidation");
