@@ -17,6 +17,7 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import ForgotPassword from "@/pages/ForgotPassword";
 import ResetPassword from "@/pages/ResetPassword";
+import VerifyEmail from "@/pages/VerifyEmail";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -44,6 +45,7 @@ function Router() {
           <Route path="/register" component={Register} />
           <Route path="/forgot-password" component={ForgotPassword} />
           <Route path="/reset-password" component={ResetPassword} />
+          <Route path="/verify-email" component={VerifyEmail} />
           <Route path="/perfil" component={Landing} />
           <Route path="/admin" component={Landing} />
           <Route path="/debug" component={Landing} />
@@ -64,6 +66,7 @@ function Router() {
           <Route path="/register" component={Profile} />
           <Route path="/forgot-password" component={Profile} />
           <Route path="/reset-password" component={Profile} />
+          <Route path="/verify-email" component={VerifyEmail} />
           <Route path="/blog/:slug" component={BlogPost} />
           <Route path="/recurso/:slug" component={Resource} />
           <Route path="/blog" component={AllBlog} />

@@ -100,6 +100,41 @@ export async function sendPasswordResetEmail(email: string, resetToken: string, 
   }
 }
 
+// LS-99: Email verification functionality
+export async function sendEmailVerification(email: string, verificationToken: string, baseUrl?: string): Promise<boolean> {
+  const transporter = getEmailTransporter();
+  if (!transporter) {
+    return false;
+  }
+
+  // Use provided baseUrl or detect from environment
+  const base = baseUrl || process.env.BASE_URL || 'http://localhost:5000';
+  const verificationUrl = `${base}/verify-email?token=${verificationToken}`;
+  
+  try {
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+      to: email,
+      subject: "Verificación de Email - Evity",
+      html: `
+        <h2>¡Bienvenido a Evity!</h2>
+        <p>Gracias por registrarte en Evity. Para activar tu cuenta, necesitas verificar tu email.</p>
+        <p>Haz clic en el siguiente enlace para verificar tu email:</p>
+        <p><a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 14px 20px; text-decoration: none; border-radius: 4px;">Verificar Email</a></p>
+        <p>Este enlace expirará en 24 horas.</p>
+        <p>Si no te registraste en Evity, puedes ignorar este email.</p>
+        <br>
+        <p>¡Bienvenido al futuro de la longevidad!</p>
+        <p>Equipo de Evity</p>
+      `,
+    });
+    return true;
+  } catch (error) {
+    console.error("Error sending email verification:", error);
+    return false;
+  }
+}
+
 // Set up local authentication system
 export async function setupAuth(app: Express) {
   app.set("trust proxy", 1);
@@ -197,12 +232,29 @@ export async function setupAuth(app: Express) {
         isEmailVerified: "false",
       });
 
+      // LS-99: Send email verification
+      const verificationToken = generateResetToken(); // Reuse the secure token generator
+      const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+      
+      await storage.setEmailVerificationToken(newUser.id, verificationToken, verificationExpires);
+      
+      // Get the base URL from the request
+      const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+      const host = req.headers['x-forwarded-host'] || req.headers.host;
+      const baseUrl = `${protocol}://${host}`;
+      
+      const emailSent = await sendEmailVerification(newUser.email, verificationToken, baseUrl);
+      
+      if (!emailSent) {
+        console.error("Failed to send verification email, but user was created");
+      }
+
       // Create session
       (req.session as any).userId = newUser.id;
       (req.session as any).userEmail = newUser.email;
 
       res.status(201).json({ 
-        message: "Usuario registrado exitosamente",
+        message: "Usuario registrado exitosamente. Revisa tu email para verificar tu cuenta.",
         user: {
           id: newUser.id,
           email: newUser.email,
@@ -290,6 +342,36 @@ export async function setupAuth(app: Express) {
       });
     } catch (error) {
       console.error("Reset password error:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // LS-99: Email verification endpoint
+  app.post("/api/verify-email", async (req, res) => {
+    try {
+      const { token } = req.body;
+      
+      if (!token) {
+        return res.status(400).json({ 
+          message: "Token de verificación es requerido"
+        });
+      }
+
+      const user = await storage.getUserByEmailVerificationToken(token);
+      if (!user || !user.emailVerificationExpires || user.emailVerificationExpires < new Date()) {
+        return res.status(400).json({ 
+          message: "Token de verificación inválido o expirado"
+        });
+      }
+
+      // Verify the email
+      await storage.verifyEmail(user.id);
+
+      res.json({ 
+        message: "Email verificado exitosamente. Tu cuenta está ahora activada."
+      });
+    } catch (error) {
+      console.error("Email verification error:", error);
       res.status(500).json({ message: "Error interno del servidor" });
     }
   });

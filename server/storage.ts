@@ -150,6 +150,35 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId));
   }
 
+  // LS-99: Email verification functionality
+  async setEmailVerificationToken(userId: string, token: string, expires: Date): Promise<void> {
+    await db
+      .update(users)
+      .set({
+        emailVerificationToken: token,
+        emailVerificationExpires: expires,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+  }
+
+  async getUserByEmailVerificationToken(token: string): Promise<User | null> {
+    const result = await db.select().from(users).where(eq(users.emailVerificationToken, token));
+    return result[0] || null;
+  }
+
+  async verifyEmail(userId: string): Promise<void> {
+    await db
+      .update(users)
+      .set({
+        isEmailVerified: "true",
+        emailVerificationToken: null,
+        emailVerificationExpires: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+  }
+
   async clearPasswordResetToken(userId: string): Promise<void> {
     await db
       .update(users)
@@ -238,6 +267,8 @@ export class DatabaseStorage implements IStorage {
         isAdmin: users.isAdmin,
         passwordResetToken: users.passwordResetToken,
         passwordResetExpires: users.passwordResetExpires,
+        emailVerificationToken: users.emailVerificationToken,
+        emailVerificationExpires: users.emailVerificationExpires,
         lastLoginAt: users.lastLoginAt,
         createdAt: users.createdAt,
         updatedAt: users.updatedAt,
