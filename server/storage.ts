@@ -12,9 +12,16 @@ import { eq } from "drizzle-orm";
 // Interface for storage operations
 export interface IStorage {
   // User operations
-  // (IMPORTANT) these user operations are mandatory for Replit Auth.
+  // LS-98: Enhanced user operations for local authentication
   getUser(id: string): Promise<User | undefined>;
-  upsertUser(user: UpsertUser): Promise<User>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByResetToken(token: string): Promise<User | undefined>;
+  createUser(userData: Omit<UpsertUser, 'id' | 'createdAt' | 'updatedAt'>): Promise<User>;
+  upsertUser(userData: UpsertUser): Promise<User>;
+  updateUserLastLogin(userId: string): Promise<void>;
+  updateUserPassword(userId: string, hashedPassword: string): Promise<void>;
+  setPasswordResetToken(userId: string, token: string, expires: Date): Promise<void>;
+  clearPasswordResetToken(userId: string): Promise<void>;
   
   // LS-96: Medical documents operations for user profile system
   getUserMedicalDocuments(userId: string): Promise<MedicalDocument[]>;
@@ -26,6 +33,7 @@ export interface IStorage {
   // Admin operations
   getAllUsers(): Promise<Array<User & { documentsCount: number }>>;
   getAllMedicalDocuments(): Promise<Array<Omit<MedicalDocument, 'fileData'> & { userEmail: string | null; userName: string }>>;
+  getMedicalDocumentById(documentId: string): Promise<MedicalDocument | undefined>;
   getSystemStats(): Promise<{
     totalUsers: number;
     totalDocuments: number;
@@ -86,6 +94,71 @@ export class DatabaseStorage implements IStorage {
       
       throw error;
     }
+  }
+
+  // LS-98: Enhanced user operations for local authentication
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async getUserByResetToken(token: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.passwordResetToken, token));
+    return user;
+  }
+
+  async createUser(userData: Omit<UpsertUser, 'id' | 'createdAt' | 'updatedAt'>): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values({
+        ...userData,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning();
+    return user;
+  }
+
+  async updateUserLastLogin(userId: string): Promise<void> {
+    await db
+      .update(users)
+      .set({
+        lastLoginAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+  }
+
+  async updateUserPassword(userId: string, hashedPassword: string): Promise<void> {
+    await db
+      .update(users)
+      .set({
+        password: hashedPassword,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+  }
+
+  async setPasswordResetToken(userId: string, token: string, expires: Date): Promise<void> {
+    await db
+      .update(users)
+      .set({
+        passwordResetToken: token,
+        passwordResetExpires: expires,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+  }
+
+  async clearPasswordResetToken(userId: string): Promise<void> {
+    await db
+      .update(users)
+      .set({
+        passwordResetToken: null,
+        passwordResetExpires: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
   }
 
   // LS-96: Medical documents operations for user profile system
@@ -158,7 +231,13 @@ export class DatabaseStorage implements IStorage {
         email: users.email,
         firstName: users.firstName,
         lastName: users.lastName,
+        gender: users.gender,
+        password: users.password,
         profileImageUrl: users.profileImageUrl,
+        isEmailVerified: users.isEmailVerified,
+        passwordResetToken: users.passwordResetToken,
+        passwordResetExpires: users.passwordResetExpires,
+        lastLoginAt: users.lastLoginAt,
         createdAt: users.createdAt,
         updatedAt: users.updatedAt,
         documentsCount: count(medicalDocuments.id)
