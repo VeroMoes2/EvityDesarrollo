@@ -230,6 +230,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Document not found" });
       }
 
+      // Validate fileData exists
+      if (!document.fileData) {
+        console.error(`AUDIT: File data not found for document ${documentId} - User: ${userId}`);
+        return res.status(500).json({ message: "File data not available" });
+      }
+
       // Decode base64 file data
       const fileBuffer = Buffer.from(document.fileData, 'base64');
       
@@ -263,6 +269,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!document) {
         return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Validate fileData exists
+      if (!document.fileData) {
+        console.error(`AUDIT: File data not found for document ${documentId} - User: ${userId}`);
+        return res.status(500).json({ message: "File data not available" });
       }
 
       // LS-96-7: Enhanced type checking for previewable files
