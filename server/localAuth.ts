@@ -87,7 +87,7 @@ export async function sendPasswordResetEmail(email: string, resetToken: string, 
         <p>Has solicitado restablecer tu contraseña en Evity.</p>
         <p>Haz clic en el siguiente enlace para crear una nueva contraseña:</p>
         <p><a href="${resetUrl}" style="background-color: #4CAF50; color: white; padding: 14px 20px; text-decoration: none; border-radius: 4px;">Restablecer Contraseña</a></p>
-        <p>Este enlace expirará en 1 hora.</p>
+        <p>Este enlace expirará en 24 horas.</p>
         <p>Si no solicitaste este cambio, puedes ignorar este email.</p>
         <br>
         <p>Equipo de Evity</p>
@@ -291,7 +291,7 @@ export async function setupAuth(app: Express) {
       }
 
       const resetToken = generateResetToken();
-      const resetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+      const resetExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
       await storage.setPasswordResetToken(user.id, resetToken, resetExpires);
       

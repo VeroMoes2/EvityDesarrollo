@@ -112,7 +112,7 @@ export default function ForgotPassword() {
           <CardContent className="space-y-4">
             <div className="text-center text-sm text-muted-foreground">
               <p>Revisa tu bandeja de entrada y también tu carpeta de spam.</p>
-              <p className="mt-2">El enlace de recuperación expirará en 1 hora.</p>
+              <p className="mt-2">El enlace de recuperación expirará en 24 horas.</p>
             </div>
             
             <div className="flex flex-col gap-2">
