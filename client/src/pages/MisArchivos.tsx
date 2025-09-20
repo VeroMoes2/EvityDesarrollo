@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 import {
   Card,
   CardContent,
@@ -14,6 +15,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -36,6 +48,7 @@ import {
   Filter,
   Calendar,
   FileType,
+  Trash2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -66,6 +79,45 @@ export default function MisArchivos() {
   const [limit, setLimit] = useState(20);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
+  const [documentToDelete, setDocumentToDelete] = useState<{id: string, name: string} | null>(null);
+
+  // Mutation for deleting documents
+  const deleteDocumentMutation = useMutation({
+    mutationFn: async (documentId: string) => {
+      const response = await fetch(`/api/profile/medical-documents/${documentId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data, documentId) => {
+      // Invalidate and refetch the documents list
+      queryClient.invalidateQueries({ queryKey: ['/api/profile/medical-documents'] });
+      
+      toast({
+        title: "Archivo eliminado",
+        description: "El archivo se eliminó correctamente",
+      });
+      
+      setDocumentToDelete(null);
+    },
+    onError: (error: Error) => {
+      console.error('Error deleting document:', error);
+      toast({
+        title: "Error al eliminar",
+        description: error.message || "No se pudo eliminar el archivo",
+        variant: "destructive",
+      });
+      
+      setDocumentToDelete(null);
+    }
+  });
 
   // Query for fetching paginated medical documents
   const { data: documentsData, isLoading, error, refetch } = useQuery<DocumentsResponse>({
@@ -131,6 +183,18 @@ export default function MisArchivos() {
         description: "No se pudo previsualizar el archivo",
         variant: "destructive",
       });
+    }
+  };
+
+  // Handle delete document
+  const handleDeleteDocument = (documentId: string, originalName: string) => {
+    setDocumentToDelete({ id: documentId, name: originalName });
+  };
+
+  // Confirm delete document
+  const confirmDeleteDocument = () => {
+    if (documentToDelete) {
+      deleteDocumentMutation.mutate(documentToDelete.id);
     }
   };
 
@@ -373,6 +437,16 @@ export default function MisArchivos() {
                                 <Download className="h-4 w-4" />
                                 Descargar
                               </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleDeleteDocument(document.id, document.originalName)}
+                                data-testid={`button-delete-${document.id}`}
+                                disabled={deleteDocumentMutation.isPending}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                                Eliminar
+                              </Button>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -421,6 +495,33 @@ export default function MisArchivos() {
           )}
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!documentToDelete} onOpenChange={() => setDocumentToDelete(null)}>
+        <AlertDialogContent data-testid="dialog-delete-confirmation">
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar archivo?</AlertDialogTitle>
+            <AlertDialogDescription>
+              ¿Estás seguro que deseas eliminar el archivo <strong>"{documentToDelete?.name}"</strong>?
+              <br />
+              <span className="text-red-600 font-medium">Esta acción no se puede deshacer.</span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-delete">
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteDocument}
+              disabled={deleteDocumentMutation.isPending}
+              className="bg-red-600 hover:bg-red-700 text-white"
+              data-testid="button-confirm-delete"
+            >
+              {deleteDocumentMutation.isPending ? "Eliminando..." : "Eliminar"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
