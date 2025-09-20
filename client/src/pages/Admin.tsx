@@ -4,6 +4,15 @@ import { Badge } from "@/components/ui/badge";
 import { Users, FileText, TrendingUp, Calendar, Mail, User, Clock, HardDrive } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { useAuth } from "@/hooks/useAuth";
+import { useLocation } from "wouter";
+import { useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+
+// Helper function to check if user is admin (case-insensitive)
+const isUserAdmin = (user: any): boolean => {
+  return user?.email?.toLowerCase() === 'veromoes@evity.mx';
+};
 
 interface AdminUser {
   id: string;
@@ -39,16 +48,42 @@ interface AdminStats {
 }
 
 export default function Admin() {
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const [, navigate] = useLocation();
+  const { toast } = useToast();
+  const userIsAdmin = isUserAdmin(user);
+
+  // Redirect non-admin users and non-authenticated users
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      // Redirect unauthenticated users to home
+      navigate('/');
+      return;
+    }
+    
+    if (!authLoading && isAuthenticated && !userIsAdmin) {
+      toast({
+        title: "Acceso Denegado",
+        description: "No tienes permisos para acceder al panel de administración.",
+        variant: "destructive",
+      });
+      navigate('/');
+    }
+  }, [authLoading, isAuthenticated, userIsAdmin, navigate, toast]);
+
   const { data: usersData, isLoading: usersLoading } = useQuery<{ users: AdminUser[] }>({
-    queryKey: ['/api/admin/users']
+    queryKey: ['/api/admin/users'],
+    enabled: userIsAdmin // Only fetch if user is admin
   });
 
   const { data: documentsData, isLoading: documentsLoading } = useQuery<{ documents: AdminDocument[] }>({
-    queryKey: ['/api/admin/documents']
+    queryKey: ['/api/admin/documents'],
+    enabled: userIsAdmin // Only fetch if user is admin
   });
 
   const { data: statsData, isLoading: statsLoading } = useQuery<AdminStats>({
-    queryKey: ['/api/admin/stats']
+    queryKey: ['/api/admin/stats'],
+    enabled: userIsAdmin // Only fetch if user is admin
   });
 
   const formatFileSize = (sizeStr: string) => {
@@ -67,6 +102,22 @@ export default function Admin() {
       return 'Fecha inválida';
     }
   };
+
+  // Don't render anything if user is not admin
+  if (!authLoading && (!isAuthenticated || !userIsAdmin)) {
+    return null;
+  }
+
+  // Show loading state during auth check
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background p-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center">Verificando permisos...</div>
+        </div>
+      </div>
+    );
+  }
 
   if (usersLoading || documentsLoading || statsLoading) {
     return (

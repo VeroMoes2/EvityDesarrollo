@@ -164,3 +164,46 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
     return;
   }
 };
+
+// Middleware to check if user is admin (only veromoes@evity.mx)
+export const isAdmin: RequestHandler = async (req, res, next) => {
+  // Use the same authentication logic as isAuthenticated
+  const user = req.user as any;
+
+  if (!req.isAuthenticated() || !user?.expires_at) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+  if (now > user.expires_at) {
+    const refreshToken = user.refresh_token;
+    if (!refreshToken) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+      const config = await getOidcConfig();
+      const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
+      updateUserSession(user, tokenResponse);
+      
+      // Ensure session persistence after token refresh
+      (req as any).session.save((err: any) => {
+        if (err) {
+          console.error("Session save error after token refresh:", err);
+        }
+      });
+    } catch (error) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+  }
+  
+  // Check if user is admin (case-insensitive)
+  const userEmail = user.claims?.email?.toLowerCase();
+  if (userEmail !== 'veromoes@evity.mx') {
+    console.log(`ADMIN ACCESS DENIED: User ${userEmail} attempted to access admin endpoints`);
+    return res.status(403).json({ message: "Forbidden: Admin access required" });
+  }
+  
+  console.log(`ADMIN ACCESS GRANTED: User ${userEmail} accessing admin endpoint`);
+  next();
+};

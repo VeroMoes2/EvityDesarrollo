@@ -7,12 +7,18 @@ import { useLocation } from "wouter";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
+// Helper function to check if user is admin (case-insensitive)
+const isUserAdmin = (user: any): boolean => {
+  return user?.email?.toLowerCase() === 'veromoes@evity.mx';
+};
+
 export default function Header() {
   const [isDark, setIsDark] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { data: confluenceData } = useConfluenceData();
   const { user, isAuthenticated, isLoading } = useAuth();
   const [, navigate] = useLocation();
+  const userIsAdmin = isUserAdmin(user);
 
   useEffect(() => {
     const saved = localStorage.getItem("theme");
@@ -119,14 +125,16 @@ export default function Header() {
                     <User className="mr-2 h-4 w-4" />
                     <span>Mi Perfil</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onSelect={() => navigate('/admin')}
-                    className="cursor-pointer"
-                    data-testid="menu-item-admin"
-                  >
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Panel Admin</span>
-                  </DropdownMenuItem>
+                  {userIsAdmin && (
+                    <DropdownMenuItem 
+                      onSelect={() => navigate('/admin')}
+                      className="cursor-pointer"
+                      data-testid="menu-item-admin"
+                    >
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Panel Admin</span>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
                     onClick={() => window.location.href = '/api/logout'}
@@ -221,18 +229,20 @@ export default function Header() {
                       <User className="mr-2 h-4 w-4" />
                       Mi Perfil
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      className="w-full justify-start mb-2"
-                      data-testid="button-mobile-admin"
-                      onClick={() => {
-                        navigate('/admin');
-                        setIsMenuOpen(false);
-                      }}
-                    >
-                      <Settings className="mr-2 h-4 w-4" />
-                      Panel Admin
-                    </Button>
+                    {userIsAdmin && (
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-start mb-2"
+                        data-testid="button-mobile-admin"
+                        onClick={() => {
+                          navigate('/admin');
+                          setIsMenuOpen(false);
+                        }}
+                      >
+                        <Settings className="mr-2 h-4 w-4" />
+                        Panel Admin
+                      </Button>
+                    )}
                     <Button 
                       variant="outline" 
                       className="w-full justify-start text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"

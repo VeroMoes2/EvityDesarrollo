@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import multer from "multer";
 import { storage } from "./storage";
 import { ConfluenceService } from "./confluenceService";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, isAuthenticated, isAdmin } from "./replitAuth";
 import { uploadRateLimit, downloadRateLimit, previewRateLimit } from "./rateLimiter";
 
 // Configure multer for file uploads
@@ -572,7 +572,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin routes for monitoring users and files (SECURED)
-  app.get('/api/admin/users', isAuthenticated, async (req: any, res) => {
+  app.get('/api/admin/users', isAdmin, async (req: any, res) => {
     try {
       // Basic admin check - you can enhance this with proper RBAC
       const userId = req.user.claims.sub;
@@ -589,7 +589,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/admin/documents', isAuthenticated, async (req: any, res) => {
+  app.get('/api/admin/documents', isAdmin, async (req: any, res) => {
     try {
       // Basic admin check - you can enhance this with proper RBAC
       const userId = req.user.claims.sub;
@@ -605,7 +605,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/admin/stats', isAuthenticated, async (req: any, res) => {
+  app.get('/api/admin/stats', isAdmin, async (req: any, res) => {
     try {
       // Basic admin check - you can enhance this with proper RBAC
       const userId = req.user.claims.sub;
