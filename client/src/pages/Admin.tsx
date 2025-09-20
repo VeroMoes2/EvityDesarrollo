@@ -28,6 +28,7 @@ interface AdminUser {
   createdAt: string | null;
   updatedAt: string | null;
   documentsCount: number;
+  deletedDocumentsCount: number; // LS-103: Count of deleted files
 }
 
 interface AdminDocument {
@@ -284,9 +285,16 @@ export default function Admin() {
                           </Badge>
                         )}
                       </div>
-                      <Badge variant="secondary" data-testid={`user-documents-count-${user.id}`}>
-                        {user.documentsCount} archivo{user.documentsCount !== 1 ? 's' : ''}
-                      </Badge>
+                      <div className="flex flex-col gap-1 items-end">
+                        <Badge variant="secondary" data-testid={`user-documents-count-${user.id}`}>
+                          {user.documentsCount} archivo{user.documentsCount !== 1 ? 's' : ''} activo{user.documentsCount !== 1 ? 's' : ''}
+                        </Badge>
+                        {user.deletedDocumentsCount > 0 && (
+                          <Badge variant="outline" className="text-red-600 border-red-600" data-testid={`user-deleted-count-${user.id}`}>
+                            {user.deletedDocumentsCount} eliminado{user.deletedDocumentsCount !== 1 ? 's' : ''}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}

@@ -80,6 +80,7 @@ export default function MisArchivos() {
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [documentToDelete, setDocumentToDelete] = useState<{id: string, name: string} | null>(null);
+  const [deleteError, setDeleteError] = useState<{documentId: string, documentName: string, error: string} | null>(null);
 
   // Mutation for deleting documents
   const deleteDocumentMutation = useMutation({
@@ -107,12 +108,14 @@ export default function MisArchivos() {
       
       setDocumentToDelete(null);
     },
-    onError: (error: Error) => {
+    onError: (error: Error, documentId: string) => {
       console.error('Error deleting document:', error);
-      toast({
-        title: "Error al eliminar",
-        description: error.message || "No se pudo eliminar el archivo",
-        variant: "destructive",
+      const documentName = documentToDelete?.name || 'archivo';
+      
+      setDeleteError({
+        documentId,
+        documentName,
+        error: error.message || "No se pudo eliminar el archivo"
       });
       
       setDocumentToDelete(null);
@@ -195,6 +198,14 @@ export default function MisArchivos() {
   const confirmDeleteDocument = () => {
     if (documentToDelete) {
       deleteDocumentMutation.mutate(documentToDelete.id);
+    }
+  };
+
+  // Retry delete document after error
+  const retryDeleteDocument = () => {
+    if (deleteError) {
+      deleteDocumentMutation.mutate(deleteError.documentId);
+      setDeleteError(null);
     }
   };
 
@@ -518,6 +529,32 @@ export default function MisArchivos() {
               data-testid="button-confirm-delete"
             >
               {deleteDocumentMutation.isPending ? "Eliminando..." : "Eliminar"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Error Dialog with Retry Option */}
+      <AlertDialog open={!!deleteError} onOpenChange={() => setDeleteError(null)}>
+        <AlertDialogContent data-testid="dialog-delete-error">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Error al eliminar archivo</AlertDialogTitle>
+            <AlertDialogDescription>
+              No se pudo eliminar el archivo <strong>"{deleteError?.documentName}"</strong>.
+              <br />
+              <span className="text-gray-600 text-sm mt-2 block">{deleteError?.error}</span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-dismiss-error">
+              Cerrar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={retryDeleteDocument}
+              disabled={deleteDocumentMutation.isPending}
+              data-testid="button-retry-delete"
+            >
+              {deleteDocumentMutation.isPending ? "Reintentando..." : "Reintentar"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

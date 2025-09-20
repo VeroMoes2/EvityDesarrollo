@@ -54,6 +54,7 @@ export const medicalDocuments = pgTable("medical_documents", {
   fileSize: varchar("file_size").notNull(),
   fileData: text("file_data"), // Store file content as base64 or use external storage
   uploadedAt: timestamp("uploaded_at").defaultNow(),
+  deletedAt: timestamp("deleted_at"), // LS-103: Soft delete timestamp for tracking eliminated files
 });
 
 // LS-101: Unified gender enum for consistency across the system

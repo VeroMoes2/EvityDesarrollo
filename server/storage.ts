@@ -52,7 +52,7 @@ export interface IStorage {
   deleteMedicalDocumentByOwner(userId: string, documentId: string): Promise<number>;
 
   // Admin operations
-  getAllUsers(): Promise<Array<User & { documentsCount: number }>>;
+  getAllUsers(): Promise<Array<User & { documentsCount: number; deletedDocumentsCount: number }>>;
   getAllMedicalDocuments(): Promise<Array<Omit<MedicalDocument, 'fileData'> & { userEmail: string | null; userName: string }>>;
   getMedicalDocumentById(documentId: string): Promise<MedicalDocument | undefined>;
   getSystemStats(): Promise<{
@@ -260,14 +260,17 @@ export class DatabaseStorage implements IStorage {
     limit: number;
     hasNext: boolean;
   }> {
-    const { ilike, and, count, desc } = await import("drizzle-orm");
+    const { ilike, and, count, desc, isNull } = await import("drizzle-orm");
     
     const page = Math.max(1, options.page || 1);
     const limit = Math.min(50, Math.max(1, options.limit || 20)); // Max 50, default 20
     const offset = (page - 1) * limit;
     
-    // Build where conditions
-    let whereConditions = eq(medicalDocuments.userId, userId);
+    // Build where conditions - only show non-deleted documents
+    let whereConditions = and(
+      eq(medicalDocuments.userId, userId),
+      isNull(medicalDocuments.deletedAt)
+    );
     
     if (options.search) {
       const searchPattern = `%${options.search}%`;
@@ -296,6 +299,7 @@ export class DatabaseStorage implements IStorage {
         mimeType: medicalDocuments.mimeType,
         fileSize: medicalDocuments.fileSize,
         uploadedAt: medicalDocuments.uploadedAt,
+        deletedAt: medicalDocuments.deletedAt,
       })
       .from(medicalDocuments)
       .where(whereConditions)
@@ -352,16 +356,18 @@ export class DatabaseStorage implements IStorage {
     await db.delete(medicalDocuments).where(eq(medicalDocuments.id, id));
   }
 
-  // Security: Delete document only if owned by user
+  // Security: Soft delete document only if owned by user (LS-103)
   async deleteMedicalDocumentByOwner(userId: string, documentId: string): Promise<number> {
-    const { and } = await import("drizzle-orm");
+    const { and, isNull } = await import("drizzle-orm");
     
     const result = await db
-      .delete(medicalDocuments)
+      .update(medicalDocuments)
+      .set({ deletedAt: new Date() })
       .where(
         and(
           eq(medicalDocuments.id, documentId),
-          eq(medicalDocuments.userId, userId)
+          eq(medicalDocuments.userId, userId),
+          isNull(medicalDocuments.deletedAt) // Only delete active documents
         )
       )
       .returning({ id: medicalDocuments.id });
@@ -369,9 +375,9 @@ export class DatabaseStorage implements IStorage {
     return result.length;
   }
 
-  // Admin operations
-  async getAllUsers(): Promise<Array<User & { documentsCount: number }>> {
-    const { count, sql } = await import("drizzle-orm");
+  // Admin operations - LS-103: Include deleted documents count
+  async getAllUsers(): Promise<Array<User & { documentsCount: number; deletedDocumentsCount: number }>> {
+    const { count, sql, isNull, isNotNull } = await import("drizzle-orm");
     
     const result = await db
       .select({
@@ -391,7 +397,8 @@ export class DatabaseStorage implements IStorage {
         lastLoginAt: users.lastLoginAt,
         createdAt: users.createdAt,
         updatedAt: users.updatedAt,
-        documentsCount: count(medicalDocuments.id)
+        documentsCount: sql<number>`COUNT(CASE WHEN ${medicalDocuments.deletedAt} IS NULL THEN 1 END)`,
+        deletedDocumentsCount: sql<number>`COUNT(CASE WHEN ${medicalDocuments.deletedAt} IS NOT NULL THEN 1 END)`
       })
       .from(users)
       .leftJoin(medicalDocuments, eq(users.id, medicalDocuments.userId))
@@ -422,7 +429,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllMedicalDocuments(): Promise<Array<Omit<MedicalDocument, 'fileData'> & { userEmail: string | null; userName: string }>> {
-    const { sql } = await import("drizzle-orm");
+    const { sql, isNull } = await import("drizzle-orm");
     
     const result = await db
       .select({
@@ -435,11 +442,13 @@ export class DatabaseStorage implements IStorage {
         fileSize: medicalDocuments.fileSize,
         // fileData: REMOVED for security - don't expose file content in lists
         uploadedAt: medicalDocuments.uploadedAt,
+        deletedAt: medicalDocuments.deletedAt,
         userEmail: users.email,
         userName: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email})`
       })
       .from(medicalDocuments)
       .innerJoin(users, eq(medicalDocuments.userId, users.id))
+      .where(isNull(medicalDocuments.deletedAt)) // Only show active documents
       .orderBy(sql`${medicalDocuments.uploadedAt} DESC`);
     
     return result;
