@@ -13,6 +13,10 @@ import BlogPost from "@/pages/BlogPost";
 import Resource from "@/pages/Resource";
 import AllBlog from "@/pages/AllBlog";
 import AllResources from "@/pages/AllResources";
+import Login from "@/pages/Login";
+import Register from "@/pages/Register";
+import ForgotPassword from "@/pages/ForgotPassword";
+import ResetPassword from "@/pages/ResetPassword";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -33,9 +37,13 @@ function Router() {
   return (
     <Switch>
       {!isAuthenticated ? (
-        // When not authenticated, redirect all protected routes to landing
+        // When not authenticated, show public pages and auth pages
         <>
           <Route path="/" component={Landing} />
+          <Route path="/login" component={Login} />
+          <Route path="/register" component={Register} />
+          <Route path="/forgot-password" component={ForgotPassword} />
+          <Route path="/reset-password" component={ResetPassword} />
           <Route path="/perfil" component={Landing} />
           <Route path="/admin" component={Landing} />
           <Route path="/debug" component={Landing} />
@@ -45,12 +53,17 @@ function Router() {
           <Route path="/recursos" component={AllResources} />
         </>
       ) : (
-        // When authenticated, show protected routes
+        // When authenticated, show protected routes and redirect auth pages to profile
         <>
           <Route path="/" component={Home} />
+          <Route path="/profile" component={Profile} />
           <Route path="/perfil" component={Profile} />
           <Route path="/admin" component={Admin} />
           <Route path="/debug" component={Debug} />
+          <Route path="/login" component={Profile} />
+          <Route path="/register" component={Profile} />
+          <Route path="/forgot-password" component={Profile} />
+          <Route path="/reset-password" component={Profile} />
           <Route path="/blog/:slug" component={BlogPost} />
           <Route path="/recurso/:slug" component={Resource} />
           <Route path="/blog" component={AllBlog} />

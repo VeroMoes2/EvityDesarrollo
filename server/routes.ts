@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import multer from "multer";
 import { storage } from "./storage";
 import { ConfluenceService } from "./confluenceService";
-import { setupAuth, isAuthenticated, isAdmin } from "./replitAuth";
+import { setupAuth, isAuthenticated, isAdmin } from "./localAuth";
 import { uploadRateLimit, downloadRateLimit, previewRateLimit } from "./rateLimiter";
 
 // Configure multer for file uploads
@@ -38,30 +38,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const claims = req.user.claims;
-      
-      // Ensure user exists in DB - upsert on each auth check
-      const userData = {
-        id: claims.sub,
-        email: claims.email,
-        firstName: claims.first_name || 'Usuario',
-        lastName: claims.last_name || '',
-        profileImageUrl: claims.picture || null,
-      };
-      
-      // This will create user if doesn't exist or update if exists
-      const user = await storage.upsertUser(userData);
-      
-      console.log("User authenticated:", user.email, "ID:", user.id);
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching/upserting user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
+  // Auth routes - handled by localAuth.ts now
+  // The /api/auth/user endpoint is now handled in localAuth.ts
 
   // LS-96: Medical documents endpoints for user profile system
   app.get('/api/profile/medical-documents', isAuthenticated, async (req: any, res) => {
