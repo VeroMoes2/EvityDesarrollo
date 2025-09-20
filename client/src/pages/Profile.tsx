@@ -431,6 +431,36 @@ export default function Profile() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* LS-102: Quick Actions */}
+            <Card data-testid="card-quick-actions">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Activity className="h-5 w-5" />
+                  <span>Acciones Rápidas</span>
+                </CardTitle>
+                <CardDescription>
+                  Accede rápidamente a tus funciones más usadas
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Link href="/mis-archivos">
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    data-testid="button-mis-archivos"
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Ver Mis Archivos
+                    <Badge variant="secondary" className="ml-auto">
+                      {documents.length}
+                    </Badge>
+                  </Button>
+                </Link>
+                
+                <FileUpload />
+              </CardContent>
+            </Card>
           </div>
 
           {/* Medical Documents */}

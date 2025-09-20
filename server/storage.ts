@@ -34,6 +34,18 @@ export interface IStorage {
   
   // LS-96: Medical documents operations for user profile system
   getUserMedicalDocuments(userId: string): Promise<MedicalDocument[]>;
+  // LS-102: Enhanced method with pagination and search for medical documents listing
+  getUserMedicalDocumentsPaginated(userId: string, options?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+  }): Promise<{
+    documents: Omit<MedicalDocument, 'fileData'>[];
+    total: number;
+    page: number;
+    limit: number;
+    hasNext: boolean;
+  }>;
   getMedicalDocumentByOwner(documentId: string, userId: string): Promise<MedicalDocument | undefined>;
   createMedicalDocument(document: InsertMedicalDocument): Promise<MedicalDocument>;
   deleteMedicalDocument(id: string): Promise<void>;
@@ -234,6 +246,72 @@ export class DatabaseStorage implements IStorage {
   // LS-96: Medical documents operations for user profile system
   async getUserMedicalDocuments(userId: string): Promise<MedicalDocument[]> {
     return await db.select().from(medicalDocuments).where(eq(medicalDocuments.userId, userId));
+  }
+
+  // LS-102: Enhanced method with pagination and search for medical documents listing
+  async getUserMedicalDocumentsPaginated(userId: string, options: {
+    page?: number;
+    limit?: number;
+    search?: string;
+  } = {}): Promise<{
+    documents: Omit<MedicalDocument, 'fileData'>[];
+    total: number;
+    page: number;
+    limit: number;
+    hasNext: boolean;
+  }> {
+    const { ilike, and, count, desc } = await import("drizzle-orm");
+    
+    const page = Math.max(1, options.page || 1);
+    const limit = Math.min(50, Math.max(1, options.limit || 20)); // Max 50, default 20
+    const offset = (page - 1) * limit;
+    
+    // Build where conditions
+    let whereConditions = eq(medicalDocuments.userId, userId);
+    
+    if (options.search) {
+      const searchPattern = `%${options.search}%`;
+      whereConditions = and(
+        whereConditions,
+        ilike(medicalDocuments.originalName, searchPattern)
+      );
+    }
+    
+    // Get total count for pagination
+    const [totalResult] = await db
+      .select({ count: count() })
+      .from(medicalDocuments)
+      .where(whereConditions);
+    
+    const total = totalResult.count;
+    
+    // Get paginated documents (excluding fileData for performance)
+    const documents = await db
+      .select({
+        id: medicalDocuments.id,
+        userId: medicalDocuments.userId,
+        filename: medicalDocuments.filename,
+        originalName: medicalDocuments.originalName,
+        fileType: medicalDocuments.fileType,
+        mimeType: medicalDocuments.mimeType,
+        fileSize: medicalDocuments.fileSize,
+        uploadedAt: medicalDocuments.uploadedAt,
+      })
+      .from(medicalDocuments)
+      .where(whereConditions)
+      .orderBy(desc(medicalDocuments.uploadedAt))
+      .limit(limit)
+      .offset(offset);
+    
+    const hasNext = offset + limit < total;
+    
+    return {
+      documents,
+      total,
+      page,
+      limit,
+      hasNext
+    };
   }
 
   async getMedicalDocumentByOwner(documentId: string, userId: string): Promise<MedicalDocument | undefined> {

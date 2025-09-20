@@ -43,14 +43,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // The /api/auth/user endpoint is now handled in localAuth.ts
 
   // LS-96: Medical documents endpoints for user profile system
+  // LS-102: Enhanced endpoint with pagination and search for medical documents listing
   app.get('/api/profile/medical-documents', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const documents = await storage.getUserMedicalDocuments(userId);
-      res.json({ documents });
+      
+      // Parse query parameters for pagination and search
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 20;
+      const search = req.query.search as string || '';
+      
+      // Use paginated method for better performance and UX
+      const result = await storage.getUserMedicalDocumentsPaginated(userId, {
+        page,
+        limit,
+        search: search.trim() || undefined
+      });
+      
+      res.json(result);
     } catch (error) {
       console.error("Error fetching medical documents:", error);
-      res.status(500).json({ message: "Failed to fetch medical documents" });
+      res.status(500).json({ message: "Error al obtener los archivos médicos" });
     }
   });
 
