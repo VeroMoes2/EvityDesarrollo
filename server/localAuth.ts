@@ -149,6 +149,7 @@ export async function setupAuth(app: Express) {
           lastName: user.lastName,
           gender: user.gender,
           profileImageUrl: user.profileImageUrl,
+          isAdmin: user.isAdmin,
         }
       });
     } catch (error) {
@@ -315,6 +316,7 @@ export async function setupAuth(app: Express) {
         gender: user.gender,
         profileImageUrl: user.profileImageUrl,
         isEmailVerified: user.isEmailVerified,
+        isAdmin: user.isAdmin,
         lastLoginAt: user.lastLoginAt,
         createdAt: user.createdAt,
       });
