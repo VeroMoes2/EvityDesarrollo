@@ -67,13 +67,15 @@ export function generateResetToken(): string {
 }
 
 // Send password recovery email
-export async function sendPasswordResetEmail(email: string, resetToken: string): Promise<boolean> {
+export async function sendPasswordResetEmail(email: string, resetToken: string, baseUrl?: string): Promise<boolean> {
   const transporter = getEmailTransporter();
   if (!transporter) {
     return false;
   }
 
-  const resetUrl = `${process.env.BASE_URL || 'http://localhost:5000'}/reset-password?token=${resetToken}`;
+  // Use provided baseUrl or detect from environment
+  const base = baseUrl || process.env.BASE_URL || 'http://localhost:5000';
+  const resetUrl = `${base}/reset-password?token=${resetToken}`;
   
   try {
     await transporter.sendMail({
@@ -240,7 +242,12 @@ export async function setupAuth(app: Express) {
 
       await storage.setPasswordResetToken(user.id, resetToken, resetExpires);
       
-      const emailSent = await sendPasswordResetEmail(user.email, resetToken);
+      // Get the base URL from the request
+      const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+      const host = req.headers['x-forwarded-host'] || req.headers.host;
+      const baseUrl = `${protocol}://${host}`;
+      
+      const emailSent = await sendPasswordResetEmail(user.email, resetToken, baseUrl);
       
       if (!emailSent) {
         console.error("Failed to send password reset email");
