@@ -104,7 +104,7 @@ export default function Header() {
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={(user as any)?.profileImageUrl} alt="Perfil" />
                       <AvatarFallback>
-                        {(user as any)?.firstName?.[0]}{(user as any)?.lastName?.[0]}
+                        {(user as any)?.firstName?.[0] || 'U'}{(user as any)?.lastName?.[0] || 'S'}
                       </AvatarFallback>
                     </Avatar>
                     <span className="text-sm font-medium">{(user as any)?.firstName || 'Usuario'}</span>
@@ -205,7 +205,7 @@ export default function Header() {
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium text-sm">{((user as any)?.firstName || '') + ' ' + ((user as any)?.lastName || '')}</p>
+                        <p className="font-medium text-sm">{((user as any)?.firstName || 'Usuario') + ' ' + ((user as any)?.lastName || '')}</p>
                         <p className="text-xs text-gray-500">{(user as any)?.email}</p>
                       </div>
                     </div>
