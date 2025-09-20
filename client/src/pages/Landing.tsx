@@ -2,7 +2,7 @@ import { useConfluenceData } from "@/hooks/useConfluenceData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Brain, Dna, Shield, Microscope, Activity } from "lucide-react";
-import heroImage from "@assets/generated_images/Hero_mountain_landscape_12ea45bd.png";
+import heroImage from "@assets/image_1758350191302.png";
 
 export default function Landing() {
   const { data, isLoading } = useConfluenceData();
