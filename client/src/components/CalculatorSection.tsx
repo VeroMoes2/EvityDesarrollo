@@ -5,11 +5,13 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { useState } from "react";
-import { Calculator, TrendingUp, Heart, Activity } from "lucide-react";
+import { Calculator, TrendingUp, Heart, Activity, MessageCircle } from "lucide-react";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
+import { useLocation } from "wouter";
 
 export default function CalculatorSection() {
   const { data: confluenceData, isLoading, error } = useConfluenceData();
+  const [, navigate] = useLocation();
   const [formData, setFormData] = useState({
     age: "",
     gender: "",
@@ -209,14 +211,26 @@ export default function CalculatorSection() {
                       </ul>
                     </div>
 
-                    <Button 
-                      variant="outline" 
-                      className="w-full"
-                      onClick={() => console.log("Get detailed plan clicked")} // todo: remove mock functionality
-                      data-testid="button-detailed-plan"
-                    >
-                      Obtener Plan Personalizado
-                    </Button>
+                    <div className="space-y-3">
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={() => console.log("Get detailed plan clicked")} // todo: remove mock functionality
+                        data-testid="button-detailed-plan"
+                      >
+                        Obtener Plan Personalizado
+                      </Button>
+                      
+                      <Button 
+                        variant="default" 
+                        className="w-full"
+                        onClick={() => navigate('/contacto')}
+                        data-testid="button-contact-specialist"
+                      >
+                        <MessageCircle className="mr-2 h-4 w-4" />
+                        Contactar Especialista
+                      </Button>
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-12">
