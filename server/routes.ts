@@ -788,6 +788,141 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // LS-104: Contact form endpoint for email sending
+  app.post('/api/contacto', async (req, res) => {
+    try {
+      const { nombre, email, asunto, mensaje } = req.body;
+
+      // Basic validation
+      if (!nombre || !email || !asunto || !mensaje) {
+        return res.status(400).json({ 
+          message: "Todos los campos son requeridos" 
+        });
+      }
+
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ 
+          message: "El email no tiene un formato válido" 
+        });
+      }
+
+      // Import nodemailer dynamically
+      const nodemailer = await import('nodemailer');
+
+      // Create SMTP transporter using environment variables
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT || '587'),
+        secure: false, // true for 465, false for other ports
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      });
+
+      // Verify SMTP connection configuration
+      await transporter.verify();
+
+      // Send email to Evity team
+      const mailOptions = {
+        from: `"${nombre}" <${process.env.SMTP_USER}>`, // sender address
+        to: 'contacto@evity.mx', // Evity contact email
+        replyTo: email, // reply to user's email
+        subject: `Contacto Evity: ${asunto}`,
+        html: `
+          <h2>Nuevo mensaje de contacto - Evity</h2>
+          <div style="border-left: 4px solid #0066cc; padding-left: 20px; margin: 20px 0;">
+            <p><strong>Nombre:</strong> ${nombre}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Asunto:</strong> ${asunto}</p>
+          </div>
+          <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
+            <h3>Mensaje:</h3>
+            <p style="white-space: pre-wrap;">${mensaje}</p>
+          </div>
+          <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+          <p style="color: #666; font-size: 12px;">
+            Este mensaje fue enviado desde el formulario de contacto de Evity.
+            <br>
+            Para responder, contesta directamente a este email.
+          </p>
+        `,
+      };
+
+      // Send auto-reply to user
+      const autoReplyOptions = {
+        from: `"Evity - Longevidad y Bienestar" <${process.env.SMTP_USER}>`,
+        to: email,
+        subject: 'Gracias por contactar a Evity - Hemos recibido tu mensaje',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background-color: #0066cc; color: white; padding: 20px; text-align: center;">
+              <h1>Evity</h1>
+              <p>Longevidad y Bienestar</p>
+            </div>
+            <div style="padding: 30px;">
+              <h2>¡Hola ${nombre}!</h2>
+              <p>Gracias por contactarnos. Hemos recibido tu mensaje y nuestro equipo te responderá en menos de 24 horas.</p>
+              
+              <div style="background-color: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0;">
+                <h3>Resumen de tu mensaje:</h3>
+                <p><strong>Asunto:</strong> ${asunto}</p>
+                <p style="color: #666; font-size: 14px;">Si necesitas realizar algún cambio, envía un nuevo mensaje.</p>
+              </div>
+              
+              <p>Mientras tanto, te invitamos a:</p>
+              <ul>
+                <li>Explorar nuestros <a href="${req.protocol}://${req.get('host')}/recursos" style="color: #0066cc;">recursos sobre longevidad</a></li>
+                <li>Leer nuestro <a href="${req.protocol}://${req.get('host')}/blog" style="color: #0066cc;">blog especializado</a></li>
+                <li>Conocer más sobre <a href="${req.protocol}://${req.get('host')}/" style="color: #0066cc;">nuestra misión</a></li>
+              </ul>
+              
+              <p>¡Esperamos ayudarte en tu camino hacia una vida más larga y saludable!</p>
+              
+              <div style="background-color: #e8f4fd; padding: 15px; border-radius: 5px; margin-top: 30px;">
+                <p style="margin: 0; color: #0066cc; font-weight: bold;">
+                  💡 ¿Sabías que pequeños cambios en tu estilo de vida pueden agregar años saludables a tu vida?
+                </p>
+              </div>
+            </div>
+            <div style="background-color: #f8f9fa; padding: 20px; text-align: center; color: #666; font-size: 12px;">
+              <p>© ${new Date().getFullYear()} Evity. Transformando la forma en que envejecemos.</p>
+              <p>Este es un mensaje automático, por favor no respondas a este email.</p>
+            </div>
+          </div>
+        `,
+      };
+
+      // Send both emails
+      await Promise.all([
+        transporter.sendMail(mailOptions),
+        transporter.sendMail(autoReplyOptions)
+      ]);
+
+      // LS-104: Audit log for contact form submissions
+      console.log(`AUDIT: Contact form submitted - Name: ${nombre}, Email: ${email}, Subject: ${asunto}`);
+
+      res.json({ 
+        success: true, 
+        message: "Mensaje enviado correctamente" 
+      });
+
+    } catch (error: any) {
+      console.error('Error sending contact email:', error);
+      
+      // Don't expose internal errors to client
+      const errorMessage = error.code === 'EAUTH' ? 
+        'Error de configuración del servidor de email' :
+        'Error interno del servidor al enviar el mensaje';
+        
+      res.status(500).json({ 
+        success: false,
+        message: errorMessage 
+      });
+    }
+  });
 
   const httpServer = createServer(app);
 
