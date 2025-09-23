@@ -52,25 +52,12 @@ export default function Login() {
     },
   });
 
-  // LS-98: Login mutation with proper error handling and validation
+  // LS-98: Login mutation with proper error handling and CSRF token handling
   const loginMutation = useMutation({
     mutationFn: async (data: LoginForm) => {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // CRITICAL: Include cookies for session management
-        body: JSON.stringify(data),
-      });
-      
-      const result = await response.json();
-      
-      if (!response.ok) {
-        throw result;
-      }
-      
-      return result;
+      // LS-108: Use apiRequest helper that automatically handles CSRF tokens
+      const response = await apiRequest("POST", "/api/login", data);
+      return await response.json();
     },
     onSuccess: (data) => {
       notifications.success.login();

@@ -59,6 +59,35 @@ export async function apiRequest(
   return res;
 }
 
+/**
+ * Upload helper with automatic CSRF token handling for FormData
+ * LS-108: Handles file uploads with proper CSRF token inclusion
+ */
+export async function uploadWithCsrf(
+  url: string,
+  formData: FormData,
+): Promise<Response> {
+  try {
+    // LS-108: Get CSRF token for upload security
+    const csrfToken = await fetchCsrfToken();
+    
+    // Add CSRF token to FormData
+    formData.append('csrfToken', csrfToken);
+    
+    const res = await fetch(url, {
+      method: 'POST',
+      body: formData,
+      credentials: "include",
+    });
+
+    await throwIfResNotOk(res);
+    return res;
+  } catch (error) {
+    console.error('Upload failed:', error);
+    throw error;
+  }
+}
+
 type UnauthorizedBehavior = "returnNull" | "throw";
 export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;

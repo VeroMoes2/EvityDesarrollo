@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Upload, FileText, X, CheckCircle, AlertCircle } from "lucide-react";
 import { notifications } from "@/lib/notifications";
+import { uploadWithCsrf } from "@/lib/queryClient";
 
 interface FileUploadProps {
   fileType: "study" | "lab";
@@ -102,10 +103,8 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
         ));
       }, 200);
 
-      const response = await fetch('/api/profile/medical-documents/upload', {
-        method: 'POST',
-        body: formData,
-      });
+      // LS-108: Use uploadWithCsrf helper that automatically handles CSRF tokens
+      const response = await uploadWithCsrf('/api/profile/medical-documents/upload', formData);
 
       if (response.ok) {
         setFiles(prev => prev.map((f, i) => 
