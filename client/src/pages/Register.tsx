@@ -102,17 +102,18 @@ export default function Register() {
       
       return result;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       toast({
         title: "¡Registro exitoso!",
         description: "Tu cuenta ha sido creada correctamente. Bienvenido a Evity.",
       });
       
-      // Invalidate auth queries to refresh user state
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      // Refetch auth state and wait for it to complete before redirecting
+      // This prevents any timing issues during auth state refresh
+      await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
       
-      // LS-98: Redirect to profile after successful authentication
-      setLocation("/profile");
+      // Redirect to home after successful registration
+      setLocation("/");
     },
     onError: (error: any) => {
       console.error("Registration error:", error);
