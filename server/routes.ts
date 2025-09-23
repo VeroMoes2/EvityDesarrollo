@@ -51,14 +51,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // LS-108: Input sanitization for all requests
   app.use(inputSanitization);
   
-  // Auth middleware (BEFORE CSRF to initialize sessions)
+  // Auth middleware (handles CSRF individually)
   await setupAuth(app);
   
-  // LS-108: CSRF protection for all routes (AFTER session initialization)
-  app.use(csrfProtection);
+  // LS-108: CSRF protection for protected routes (not auth routes)
+  app.use('/api', (req, res, next) => {
+    // Skip CSRF for auth endpoints and GET requests
+    if (req.path === '/login' || req.path === '/logout' || req.path === '/register' || req.method === 'GET') {
+      return next();
+    }
+    return csrfProtection(req, res, next);
+  });
+  
+  // LS-108: CSRF protection applied selectively (not to auth routes)
+  // Auth routes handle CSRF individually to avoid token bootstrap issues
 
   // LS-108: CSRF token endpoint for frontend
-  app.get('/api/csrf-token', (req, res) => {
+  // LS-108: CSRF token endpoint with explicit protection to generate token
+  app.get('/api/csrf-token', csrfProtection, (req, res) => {
     res.json({ csrfToken: res.locals.csrfToken });
   });
 

@@ -9,15 +9,19 @@ import { storage } from "./storage";
 // LS-108: Import audit logger for security monitoring
 import AuditLogger from "./auditLogger";
 import { loginRateLimit as securityLoginRateLimit, csrfProtection } from "./securityMiddleware";
+// LS-108: Import encrypted session store
+import EncryptedSessionStore from "./encryptedSessionStore";
 
 // Session configuration with 30-minute timeout for LS-98
 export function getSession() {
-  const sessionTtl = 30 * 60 * 1000; // 30 minutes as required by LS-98
-  const pgStore = connectPg(session);
-  const sessionStore = new pgStore({
+  // LS-108: Fix TTL units - connect-pg-simple expects seconds, not milliseconds
+  const sessionTtlSeconds = 30 * 60; // 30 minutes in seconds (1800s)
+  
+  // LS-108: Use encrypted session store for data protection at rest
+  const sessionStore = new EncryptedSessionStore({
     conString: process.env.DATABASE_URL,
     createTableIfMissing: false,
-    ttl: sessionTtl,
+    ttl: sessionTtlSeconds, // Fixed: pass seconds instead of milliseconds
     tableName: "sessions",
   });
   
@@ -31,7 +35,7 @@ export function getSession() {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: 'lax', // LS-108: CSRF protection
-      maxAge: sessionTtl,
+      maxAge: 30 * 60 * 1000, // LS-108: Fix cookie TTL - 30 minutes in milliseconds
     },
   });
 }

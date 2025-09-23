@@ -10,17 +10,27 @@ import crypto from 'crypto';
  */
 export function securityHeaders(req: Request, res: Response, next: NextFunction) {
   // Content Security Policy - Prevents XSS attacks
-  res.setHeader(
-    'Content-Security-Policy',
-    "default-src 'self'; " +
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
-    "style-src 'self' 'unsafe-inline' fonts.googleapis.com; " +
-    "font-src 'self' fonts.gstatic.com; " +
-    "img-src 'self' data: blob:; " +
-    "connect-src 'self' ws: wss:; " +
-    "frame-ancestors 'none'; " +
-    "base-uri 'self';"
-  );
+  // LS-108: Environment-specific CSP - strict for production
+  const isProduction = process.env.NODE_ENV === 'production';
+  const cspPolicy = isProduction
+    ? "default-src 'self'; " +
+      "script-src 'self'; " +
+      "style-src 'self' 'unsafe-inline' fonts.googleapis.com; " +
+      "font-src 'self' fonts.gstatic.com; " +
+      "img-src 'self' data: blob:; " +
+      "connect-src 'self' wss:; " +
+      "frame-ancestors 'none'; " +
+      "base-uri 'self';"
+    : "default-src 'self'; " +
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+      "style-src 'self' 'unsafe-inline' fonts.googleapis.com; " +
+      "font-src 'self' fonts.gstatic.com; " +
+      "img-src 'self' data: blob:; " +
+      "connect-src 'self' ws: wss:; " +
+      "frame-ancestors 'none'; " +
+      "base-uri 'self';";
+  
+  res.setHeader('Content-Security-Policy', cspPolicy);
 
   // HTTP Strict Transport Security - Forces HTTPS
   if (process.env.NODE_ENV === 'production') {

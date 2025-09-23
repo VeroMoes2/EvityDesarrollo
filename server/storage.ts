@@ -9,6 +9,8 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, sql } from "drizzle-orm";
+// LS-108: Import encryption for sensitive data
+import { encryptSensitiveFields, decryptSensitiveFields } from "./encryption";
 
 // Interface for storage operations
 export interface IStorage {
@@ -553,7 +555,7 @@ export class DatabaseStorage implements IStorage {
     };
   }
 
-  // LS-108: Security audit log implementation
+  // LS-108: Security audit log implementation with encryption
   async createAuditLog(entry: {
     userId?: string | null;
     userEmail: string;
@@ -568,18 +570,21 @@ export class DatabaseStorage implements IStorage {
     timestamp: Date;
   }): Promise<void> {
     try {
+      // Encrypt sensitive fields
+      const encryptedEntry = encryptSensitiveFields(entry, ['userEmail', 'ipAddress', 'userAgent']);
+      
       await db.insert(securityAuditLog).values({
-        userId: entry.userId,
-        userEmail: entry.userEmail,
-        action: entry.action,
-        resource: entry.resource,
-        details: entry.details,
-        outcome: entry.outcome,
-        riskLevel: entry.riskLevel,
-        ipAddress: entry.ipAddress,
-        userAgent: entry.userAgent,
-        sessionId: entry.sessionId,
-        timestamp: entry.timestamp,
+        userId: encryptedEntry.userId,
+        userEmail: encryptedEntry.userEmail,
+        action: encryptedEntry.action,
+        resource: encryptedEntry.resource,
+        details: encryptedEntry.details,
+        outcome: encryptedEntry.outcome,
+        riskLevel: encryptedEntry.riskLevel,
+        ipAddress: encryptedEntry.ipAddress,
+        userAgent: encryptedEntry.userAgent,
+        sessionId: encryptedEntry.sessionId,
+        timestamp: encryptedEntry.timestamp,
       });
     } catch (error) {
       console.error('Failed to create audit log entry:', error);
@@ -647,20 +652,24 @@ export class DatabaseStorage implements IStorage {
         .orderBy(sql`${securityAuditLog.timestamp} DESC`);
 
       return {
-        logs: logs.map(log => ({
-          id: log.id!,
-          userId: log.userId,
-          userEmail: log.userEmail,
-          action: log.action,
-          resource: log.resource,
-          details: log.details,
-          outcome: log.outcome,
-          riskLevel: log.riskLevel,
-          ipAddress: log.ipAddress,
-          userAgent: log.userAgent,
-          sessionId: log.sessionId,
-          timestamp: log.timestamp!,
-        })),
+        logs: logs.map(log => {
+          // Decrypt sensitive fields for admin viewing
+          const decryptedLog = decryptSensitiveFields(log, ['userEmail', 'ipAddress', 'userAgent']);
+          return {
+            id: decryptedLog.id!,
+            userId: decryptedLog.userId,
+            userEmail: decryptedLog.userEmail,
+            action: decryptedLog.action,
+            resource: decryptedLog.resource,
+            details: decryptedLog.details,
+            outcome: decryptedLog.outcome,
+            riskLevel: decryptedLog.riskLevel,
+            ipAddress: decryptedLog.ipAddress,
+            userAgent: decryptedLog.userAgent,
+            sessionId: decryptedLog.sessionId,
+            timestamp: decryptedLog.timestamp!,
+          };
+        }),
         total,
         page,
         limit,
