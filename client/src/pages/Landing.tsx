@@ -162,23 +162,25 @@ export default function Landing() {
             Accede a tu perfil personal y carga tus estudios médicos para recibir análisis personalizados
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button 
-              size="lg" 
-              className="bg-primary text-primary-foreground px-8 py-3 text-lg"
-              onClick={() => window.location.href = '/api/login'}
-              data-testid="button-login-cta"
-            >
-              Iniciar Sesión
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              className="px-8 py-3 text-lg"
-              onClick={() => window.location.href = '/api/login'}
-              data-testid="button-register-cta"
-            >
-              Crear Cuenta
-            </Button>
+            <Link href="/login">
+              <Button 
+                size="lg" 
+                className="bg-primary text-primary-foreground px-8 py-3 text-lg"
+                data-testid="button-login-cta"
+              >
+                Iniciar Sesión
+              </Button>
+            </Link>
+            <Link href="/register">
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="px-8 py-3 text-lg"
+                data-testid="button-register-cta"
+              >
+                Crear Cuenta
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
