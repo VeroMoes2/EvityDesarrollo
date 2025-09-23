@@ -924,6 +924,226 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // LS-105: Newsletter subscription endpoints
+  app.post('/api/newsletter/subscribe', async (req, res) => {
+    try {
+      const { insertNewsletterSubscriptionSchema } = await import("@shared/schema");
+      
+      // Validate request body
+      const validationResult = insertNewsletterSubscriptionSchema.safeParse(req.body);
+      
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          success: false,
+          message: "Email inválido", 
+          errors: validationResult.error.issues 
+        });
+      }
+
+      const { email } = validationResult.data;
+
+      // Check if email is already subscribed
+      const existingSubscription = await storage.getNewsletterSubscriptionByEmail(email);
+      
+      if (existingSubscription) {
+        if (existingSubscription.status === "confirmed") {
+          return res.status(409).json({
+            success: false,
+            message: "Este email ya está suscrito a nuestro newsletter"
+          });
+        } else if (existingSubscription.status === "pending") {
+          return res.status(409).json({
+            success: false,
+            message: "Ya enviamos un email de confirmación a esta dirección. Revisa tu bandeja de entrada."
+          });
+        } else if (existingSubscription.status === "unsubscribed") {
+          // Re-subscribe: update existing record instead of creating new one
+          const crypto = await import("crypto");
+          const confirmationToken = crypto.randomBytes(32).toString('hex');
+          const confirmationExpires = new Date(Date.now() + 48 * 60 * 60 * 1000); // 48 hours
+          
+          const { db } = await import("../db/index");
+          const { newsletterSubscriptions } = await import("@shared/schema");
+          const { eq } = await import("drizzle-orm");
+          
+          const [resubscription] = await db
+            .update(newsletterSubscriptions)
+            .set({
+              status: "pending",
+              confirmationToken,
+              confirmationExpires,
+              subscribedAt: new Date(),
+              unsubscribedAt: null
+            })
+            .where(eq(newsletterSubscriptions.email, email.toLowerCase().trim()))
+            .returning();
+          
+          // Send confirmation email
+          const { sendNewsletterConfirmation } = await import("./localAuth");
+          const baseUrl = process.env.BASE_URL || 'http://localhost:5000';
+          
+          const emailSent = await sendNewsletterConfirmation(email, confirmationToken, baseUrl);
+
+          if (!emailSent) {
+            console.error("Failed to send newsletter confirmation email");
+            return res.status(500).json({
+              success: false,
+              message: "Error al enviar el email de confirmación. Inténtalo más tarde."
+            });
+          }
+
+          return res.json({
+            success: true,
+            message: "¡Suscripción reactivada exitosamente! Revisa tu email para confirmar.",
+            subscription: {
+              email: resubscription.email,
+              status: resubscription.status
+            }
+          });
+        }
+      }
+
+      // Create new subscription
+      const subscription = await storage.createNewsletterSubscription({ email });
+
+      // Send confirmation email
+      const { sendNewsletterConfirmation } = await import("./localAuth");
+      const baseUrl = process.env.BASE_URL || 'http://localhost:5000';
+      
+      const emailSent = await sendNewsletterConfirmation(email, subscription.confirmationToken, baseUrl);
+
+      if (!emailSent) {
+        console.error("Failed to send newsletter confirmation email");
+        return res.status(500).json({
+          success: false,
+          message: "Error al enviar el email de confirmación. Inténtalo más tarde."
+        });
+      }
+
+      res.json({
+        success: true,
+        message: "¡Suscripción creada exitosamente! Revisa tu email para confirmar.",
+        subscription: {
+          email: subscription.email,
+          status: subscription.status
+        }
+      });
+
+    } catch (error: any) {
+      console.error('Error in newsletter subscription:', error);
+      res.status(500).json({ 
+        success: false,
+        message: "Error interno del servidor" 
+      });
+    }
+  });
+
+  app.get('/api/newsletter/confirm/:token', async (req, res) => {
+    try {
+      const { token } = req.params;
+      
+      if (!token) {
+        return res.status(400).json({
+          success: false,
+          message: "Token de confirmación requerido"
+        });
+      }
+
+      const subscription = await storage.confirmNewsletterSubscription(token);
+
+      if (!subscription) {
+        return res.status(404).json({
+          success: false,
+          message: "Token inválido o expirado"
+        });
+      }
+
+      res.json({
+        success: true,
+        message: "¡Suscripción confirmada exitosamente!",
+        subscription: {
+          email: subscription.email,
+          status: subscription.status,
+          confirmedAt: subscription.confirmedAt
+        }
+      });
+
+    } catch (error: any) {
+      console.error('Error confirming newsletter subscription:', error);
+      res.status(500).json({ 
+        success: false,
+        message: "Error interno del servidor" 
+      });
+    }
+  });
+
+  app.post('/api/newsletter/unsubscribe', async (req, res) => {
+    try {
+      const { insertNewsletterSubscriptionSchema } = await import("@shared/schema");
+      
+      // Validate email format
+      const validationResult = insertNewsletterSubscriptionSchema.safeParse(req.body);
+      
+      if (!validationResult.success) {
+        return res.status(400).json({
+          success: false,
+          message: "Email inválido",
+          errors: validationResult.error.issues
+        });
+      }
+
+      const { email } = validationResult.data;
+      const result = await storage.unsubscribeNewsletter(email);
+
+      if (!result) {
+        return res.status(404).json({
+          success: false,
+          message: "Email no encontrado en nuestras suscripciones"
+        });
+      }
+
+      res.json({
+        success: true,
+        message: "Te has desuscrito exitosamente del newsletter"
+      });
+
+    } catch (error: any) {
+      console.error('Error unsubscribing from newsletter:', error);
+      res.status(500).json({ 
+        success: false,
+        message: "Error interno del servidor" 
+      });
+    }
+  });
+
+  // Admin endpoint for newsletter statistics
+  app.get('/api/admin/newsletter/stats', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = req.user?.claims;
+      
+      // Check if user is admin
+      if (!user || user.is_admin !== "true") {
+        return res.status(403).json({ 
+          message: "Acceso denegado. Se requieren privilegios de administrador." 
+        });
+      }
+
+      const stats = await storage.getNewsletterSubscriptionStats();
+      
+      res.json({
+        success: true,
+        stats
+      });
+
+    } catch (error: any) {
+      console.error('Error fetching newsletter stats:', error);
+      res.status(500).json({ 
+        success: false,
+        message: "Error interno del servidor" 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

@@ -135,6 +135,70 @@ export async function sendEmailVerification(email: string, verificationToken: st
   }
 }
 
+// LS-105: Newsletter confirmation functionality
+export async function sendNewsletterConfirmation(email: string, confirmationToken: string, baseUrl?: string): Promise<boolean> {
+  const transporter = getEmailTransporter();
+  if (!transporter) {
+    return false;
+  }
+
+  // Use provided baseUrl or detect from environment
+  const base = baseUrl || process.env.BASE_URL || 'http://localhost:5000';
+  const confirmationUrl = `${base}/api/newsletter/confirm/${confirmationToken}`;
+  
+  try {
+    await transporter.sendMail({
+      from: `"Evity - Longevidad y Bienestar" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: "Confirma tu suscripción al Newsletter de Evity",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background-color: #0066cc; color: white; padding: 20px; text-align: center;">
+            <h1>Evity</h1>
+            <p>Longevidad y Bienestar</p>
+          </div>
+          <div style="padding: 30px;">
+            <h2>¡Gracias por suscribirte!</h2>
+            <p>Has dado el primer paso hacia una vida más larga y saludable. Para completar tu suscripción al newsletter de Evity, confirma tu email haciendo clic en el botón de abajo:</p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${confirmationUrl}" style="background-color: #0066cc; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+                Confirmar Suscripción
+              </a>
+            </div>
+            
+            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0;">
+              <h3>¿Qué recibirás en nuestro newsletter?</h3>
+              <ul style="color: #666;">
+                <li>📚 Investigaciones semanales resumidas sobre longevidad</li>
+                <li>💡 Consejos prácticos personalizados para vivir más</li>
+                <li>🔬 Acceso temprano a nuevas herramientas y recursos</li>
+                <li>🎯 Contenido exclusivo sobre bienestar y anti-envejecimiento</li>
+              </ul>
+            </div>
+            
+            <p style="color: #666; font-size: 14px;">Si no te suscribiste a nuestro newsletter, puedes ignorar este email.</p>
+            
+            <div style="background-color: #e8f4fd; padding: 15px; border-radius: 5px; margin-top: 30px;">
+              <p style="margin: 0; color: #0066cc; font-weight: bold;">
+                💡 ¿Sabías que las personas que siguen rutinas de longevidad pueden agregar hasta 10 años saludables a su vida?
+              </p>
+            </div>
+          </div>
+          <div style="background-color: #f8f9fa; padding: 20px; text-align: center; color: #666; font-size: 12px;">
+            <p>© ${new Date().getFullYear()} Evity. Transformando la forma en que envejecemos.</p>
+            <p>Si tienes problemas con el botón, copia y pega este enlace: ${confirmationUrl}</p>
+          </div>
+        </div>
+      `,
+    });
+    return true;
+  } catch (error) {
+    console.error("Error sending newsletter confirmation:", error);
+    return false;
+  }
+}
+
 // Set up local authentication system
 export async function setupAuth(app: Express) {
   app.set("trust proxy", 1);
