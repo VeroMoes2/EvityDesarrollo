@@ -241,7 +241,7 @@ export async function setupAuth(app: Express) {
   // Register endpoint with CSRF protection
   app.post("/api/register", csrfProtection, async (req, res) => {
     try {
-      const { email, password, firstName, lastName, gender } = req.body;
+      const { email, password, firstName, lastName, gender, phoneNumber } = req.body;
       
       if (!email || !password || !firstName || !lastName) {
         return res.status(400).json({ 
@@ -274,6 +274,7 @@ export async function setupAuth(app: Express) {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         gender: gender || null,
+        phoneNumber: phoneNumber || null, // LS-110: Phone number
         isEmailVerified: "false",
       });
 
@@ -306,6 +307,7 @@ export async function setupAuth(app: Express) {
           firstName: newUser.firstName,
           lastName: newUser.lastName,
           gender: newUser.gender,
+          phoneNumber: newUser.phoneNumber, // LS-110: Phone number in response
           profileImageUrl: newUser.profileImageUrl,
         }
       });
@@ -441,6 +443,7 @@ export async function setupAuth(app: Express) {
         firstName: user.firstName,
         lastName: user.lastName,
         gender: user.gender,
+        phoneNumber: user.phoneNumber, // LS-110: Include phone number
         profileImageUrl: user.profileImageUrl,
         isEmailVerified: user.isEmailVerified,
         isAdmin: user.isAdmin,

@@ -402,6 +402,13 @@ export default function Profile() {
                       <Mail className="h-4 w-4 mr-1" />
                       <span className="text-sm" data-testid="text-email">{(user as any)?.email}</span>
                     </div>
+                    {/* LS-110: Display phone number if available */}
+                    {(user as any)?.phoneNumber && (
+                      <div className="flex items-center text-gray-600 mt-1">
+                        <Phone className="h-4 w-4 mr-1" />
+                        <span className="text-sm" data-testid="text-phone-number">{(user as any)?.phoneNumber}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
                 

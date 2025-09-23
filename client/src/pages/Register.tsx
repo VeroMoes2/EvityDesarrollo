@@ -86,24 +86,11 @@ export default function Register() {
     },
   });
 
-  // LS-98: Registration mutation with proper error handling
+  // LS-98: Registration mutation with proper CSRF protection
   const registerMutation = useMutation({
     mutationFn: async (data: Omit<RegisterForm, 'confirmPassword'>) => {
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      
-      const result = await response.json();
-      
-      if (!response.ok) {
-        throw result;
-      }
-      
-      return result;
+      const response = await apiRequest("POST", "/api/register", data);
+      return await response.json();
     },
     onSuccess: async (data) => {
       toast({
