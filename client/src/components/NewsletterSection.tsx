@@ -3,25 +3,46 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Mail, Check } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 export default function NewsletterSection() {
   const [email, setEmail] = useState("");
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const subscribeNewsletterMutation = useMutation({
+    mutationFn: async (email: string) => {
+      return await apiRequest("/api/newsletter/subscribe", {
+        method: "POST",
+        body: { email }
+      });
+    },
+    onSuccess: (data) => {
+      setIsSubscribed(true);
+      setEmail("");
+      toast({
+        title: "¡Suscripción exitosa!",
+        description: data.message || "Revisa tu email para confirmar tu suscripción.",
+        variant: "default"
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.message || "Error al suscribirse. Inténtalo más tarde.";
+      toast({
+        title: "Error en la suscripción",
+        description: errorMessage,
+        variant: "destructive"
+      });
+    }
+  });
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
-
-    setIsLoading(true);
+    if (!email.trim()) return;
     
-    // todo: remove mock functionality - replace with real subscription logic
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    console.log("Newsletter subscription:", email);
-    setIsSubscribed(true);
-    setEmail("");
-    setIsLoading(false);
+    subscribeNewsletterMutation.mutate(email.trim());
   };
 
   if (isSubscribed) {
@@ -42,10 +63,7 @@ export default function NewsletterSection() {
                 </p>
                 <Button 
                   variant="outline"
-                  onClick={() => {
-                    setIsSubscribed(false);
-                    console.log("Subscribe another email clicked"); // todo: remove mock functionality
-                  }}
+                  onClick={() => setIsSubscribed(false)}
                   data-testid="button-subscribe-another"
                 >
                   Suscribir otro email
@@ -108,10 +126,10 @@ export default function NewsletterSection() {
                     <Button 
                       type="submit" 
                       className="w-full h-12 text-lg"
-                      disabled={isLoading}
+                      disabled={subscribeNewsletterMutation.isPending}
                       data-testid="button-subscribe-newsletter"
                     >
-                      {isLoading ? "Suscribiendo..." : "Suscribirse Gratis"}
+                      {subscribeNewsletterMutation.isPending ? "Suscribiendo..." : "Suscribirse Gratis"}
                     </Button>
                   </form>
                   <p className="text-xs text-muted-foreground mt-4 text-center">
