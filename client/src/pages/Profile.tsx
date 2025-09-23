@@ -38,7 +38,7 @@ export default function Profile() {
       firstName: (user as any)?.firstName || "",
       lastName: (user as any)?.lastName || "",
       email: (user as any)?.email || "",
-      gender: normalizeGender((user as any)?.gender) || "",
+      gender: normalizeGender((user as any)?.gender) as "masculino" | "femenino" | "otro" | "prefiero_no_decir" | undefined,
     },
   });
 
@@ -49,7 +49,7 @@ export default function Profile() {
         firstName: (user as any)?.firstName || "",
         lastName: (user as any)?.lastName || "",
         email: (user as any)?.email || "",
-        gender: normalizeGender((user as any)?.gender) || "",
+        gender: normalizeGender((user as any)?.gender) as "masculino" | "femenino" | "otro" | "prefiero_no_decir" | undefined,
       });
     }
   }, [user, form]);
@@ -66,18 +66,18 @@ export default function Profile() {
   }, [isAuthenticated, isLoading]);
 
   // Fetch medical documents
-  const { data: documentsData, isLoading: documentsLoading } = useQuery({
+  const { data: documentsData, isLoading: documentsLoading, error: documentsError } = useQuery({
     queryKey: ["/api/profile/medical-documents"],
     enabled: isAuthenticated,
-    onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        notifications.error.unauthorized();
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-      }
-    },
   });
+
+  // Handle documents query error
+  if (documentsError && isUnauthorizedError(documentsError)) {
+    notifications.error.unauthorized();
+    setTimeout(() => {
+      window.location.href = "/api/login";
+    }, 500);
+  }
 
   // Delete document mutation
   const deleteMutation = useMutation({
@@ -424,7 +424,10 @@ export default function Profile() {
                   </Button>
                 </Link>
                 
-                <FileUpload />
+                <Button variant="outline" className="w-full justify-start" disabled>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Subir Documento Rápido
+                </Button>
               </CardContent>
             </Card>
           </div>
