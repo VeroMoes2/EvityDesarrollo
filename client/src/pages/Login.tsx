@@ -70,20 +70,16 @@ export default function Login() {
     },
     onError: (error: any) => {
       console.error("Login error:", error);
-      console.log("Login error field:", error.field);
-      console.log("Login error message:", error.message);
       
       const errorMessage = error.message || "Credenciales inválidas";
       
       // LS-98: Specific error messages for better UX
       if (error.field) {
-        console.log("Setting field error on:", error.field, "with message:", errorMessage);
         form.setError(error.field as keyof LoginForm, {
           type: "server",
           message: errorMessage,
         });
       } else {
-        console.log("No field specified, showing toast notification");
         // Clear form errors and show toast for general errors
         form.clearErrors();
         notifications.error.loginFailed(errorMessage);

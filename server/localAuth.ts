@@ -238,8 +238,8 @@ export async function setupAuth(app: Express) {
     }
   });
 
-  // Register endpoint
-  app.post("/api/register", async (req, res) => {
+  // Register endpoint with CSRF protection
+  app.post("/api/register", csrfProtection, async (req, res) => {
     try {
       const { email, password, firstName, lastName, gender } = req.body;
       
@@ -453,8 +453,8 @@ export async function setupAuth(app: Express) {
     }
   });
 
-  // Logout endpoint - LS-98: Redirect to profile after authentication
-  app.post("/api/logout", (req, res) => {
+  // Logout endpoint with CSRF protection - LS-98: Redirect to profile after authentication
+  app.post("/api/logout", csrfProtection, (req, res) => {
     req.session.destroy((err) => {
       if (err) {
         console.error("Logout error:", err);
@@ -466,14 +466,12 @@ export async function setupAuth(app: Express) {
     });
   });
 
-  // Legacy logout GET endpoint for backward compatibility
+  // Legacy logout GET endpoint disabled for security - use POST /api/logout instead
   app.get("/api/logout", (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        console.error("Logout error:", err);
-      }
-      res.clearCookie('connect.sid');
-      res.redirect('/');
+    res.status(405).json({ 
+      message: "Use POST method for logout to prevent CSRF attacks",
+      code: "METHOD_NOT_ALLOWED",
+      redirect: "/" 
     });
   });
 }

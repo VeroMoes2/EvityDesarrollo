@@ -54,10 +54,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware (handles CSRF individually)
   await setupAuth(app);
   
-  // LS-108: CSRF protection for protected routes (not auth routes)
+  // LS-108: CSRF protection for protected routes
   app.use('/api', (req, res, next) => {
-    // Skip CSRF for auth endpoints and GET requests
-    if (req.path === '/login' || req.path === '/logout' || req.path === '/register' || req.method === 'GET') {
+    // Skip CSRF for GET requests only (safe methods)
+    // POST auth endpoints now have individual CSRF protection in localAuth.ts
+    if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') {
       return next();
     }
     return csrfProtection(req, res, next);
@@ -67,8 +68,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes handle CSRF individually to avoid token bootstrap issues
 
   // LS-108: CSRF token endpoint for frontend
-  // LS-108: CSRF token endpoint with explicit protection to generate token
-  app.get('/api/csrf-token', csrfProtection, (req, res) => {
+  // LS-108: CSRF token endpoint with explicit protection and security headers
+  app.get('/api/csrf-token', (req, res, next) => {
+    // Security: Require X-Requested-With header to prevent cross-site requests
+    const requestedWith = req.headers['x-requested-with'];
+    if (requestedWith !== 'XMLHttpRequest') {
+      return res.status(403).json({ 
+        message: 'CSRF endpoint requires X-Requested-With header',
+        code: 'INVALID_REQUEST_HEADER'
+      });
+    }
+    
+    // Apply CSRF protection to get/generate token
+    csrfProtection(req, res, next);
+  }, (req, res) => {
+    // Security headers for CSRF endpoint
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    
     res.json({ csrfToken: res.locals.csrfToken });
   });
 

@@ -71,11 +71,21 @@ export function csrfProtection(req: Request, res: Response, next: NextFunction) 
   const sessionId = (req.session as any).id || req.sessionID;
   
   if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') {
-    // For safe methods, generate new CSRF token and store in session
-    const token = crypto.randomBytes(32).toString('hex');
-    (req.session as any).csrfToken = token;
-    (req.session as any).csrfExpires = Date.now() + (30 * 60 * 1000); // 30 minutes
-    res.locals.csrfToken = token;
+    // For safe methods, only generate token if missing or expired
+    const existingToken = (req.session as any).csrfToken;
+    const existingExpires = (req.session as any).csrfExpires;
+    const now = Date.now();
+    
+    // Only generate new token if none exists or current one is expired
+    if (!existingToken || !existingExpires || now > existingExpires) {
+      const token = crypto.randomBytes(32).toString('hex');
+      (req.session as any).csrfToken = token;
+      (req.session as any).csrfExpires = now + (30 * 60 * 1000); // 30 minutes
+      res.locals.csrfToken = token;
+    } else {
+      // Use existing valid token
+      res.locals.csrfToken = existingToken;
+    }
     
     return next();
   }
