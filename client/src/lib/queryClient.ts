@@ -7,14 +7,50 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+/**
+ * Fetch CSRF token from server
+ * LS-108: Required for secure state-changing operations
+ */
+async function fetchCsrfToken(): Promise<string> {
+  const res = await fetch("/api/csrf-token", {
+    method: "GET",
+    credentials: "include",
+  });
+  
+  if (!res.ok) {
+    throw new Error(`Failed to fetch CSRF token: ${res.status}`);
+  }
+  
+  const data = await res.json();
+  return data.csrfToken;
+}
+
+/**
+ * Enhanced apiRequest with automatic CSRF token handling
+ * LS-108: Automatically includes CSRF tokens for state-changing operations
+ */
 export async function apiRequest(
   method: string,
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
+  const headers: Record<string, string> = data ? { "Content-Type": "application/json" } : {};
+  
+  // LS-108: Add CSRF token for state-changing methods
+  const needsCsrfToken = ['POST', 'PUT', 'DELETE', 'PATCH'].includes(method.toUpperCase());
+  if (needsCsrfToken) {
+    try {
+      const csrfToken = await fetchCsrfToken();
+      headers['x-csrf-token'] = csrfToken;
+    } catch (error) {
+      console.error('Failed to get CSRF token:', error);
+      throw error;
+    }
+  }
+
   const res = await fetch(url, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers,
     body: data ? JSON.stringify(data) : undefined,
     credentials: "include",
   });
