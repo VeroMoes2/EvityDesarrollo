@@ -15,6 +15,7 @@ import Resource from "@/pages/Resource";
 import AllBlog from "@/pages/AllBlog";
 import AllResources from "@/pages/AllResources";
 import Contacto from "@/pages/Contacto";
+import About from "@/pages/About";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import ForgotPassword from "@/pages/ForgotPassword";
@@ -56,6 +57,8 @@ function Router() {
           <Route path="/blog" component={AllBlog} />
           <Route path="/recursos" component={AllResources} />
           <Route path="/contacto" component={Contacto} />
+          <Route path="/about" component={About} />
+          <Route path="/nosotros" component={About} />
         </>
       ) : (
         // When authenticated, show protected routes and redirect auth pages to profile
@@ -77,6 +80,8 @@ function Router() {
           <Route path="/blog" component={AllBlog} />
           <Route path="/recursos" component={AllResources} />
           <Route path="/contacto" component={Contacto} />
+          <Route path="/about" component={About} />
+          <Route path="/nosotros" component={About} />
         </>
       )}
       <Route component={NotFound} />
