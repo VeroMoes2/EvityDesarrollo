@@ -58,7 +58,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api', (req, res, next) => {
     // Skip CSRF for GET requests only (safe methods)
     // POST auth endpoints now have individual CSRF protection in localAuth.ts
+    // Skip upload endpoints that have CSRF protection after multer processing
     if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') {
+      return next();
+    }
+    // Skip upload endpoints - they have individual CSRF protection after multer
+    if (req.path.includes('/upload')) {
       return next();
     }
     return csrfProtection(req, res, next);
