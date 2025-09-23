@@ -59,13 +59,14 @@ export default function Login() {
       const response = await apiRequest("POST", "/api/login", data);
       return await response.json();
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       notifications.success.login();
       
-      // Invalidate auth queries to refresh user state
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      // Refetch auth state and wait for it to complete before redirecting
+      // This prevents the brief 404 flash that occurs during query invalidation
+      await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
       
-      // LS-98: Redirect to profile after successful authentication
+      // LS-98: Redirect to profile after successful authentication and auth state refresh
       setLocation("/profile");
     },
     onError: (error: any) => {
