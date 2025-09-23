@@ -225,6 +225,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // File upload endpoint with enhanced security validations and multer error handling
+  // LS-108: Explicit CSRF protection after multer processes FormData
   app.post('/api/profile/medical-documents/upload', isAuthenticated, uploadRateLimit, (req: any, res: any, next: any) => {
     upload.single('file')(req, res, (err: any) => {
       if (err) {
@@ -249,7 +250,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       next();
     });
-  }, async (req: any, res) => {
+  }, csrfProtection, async (req: any, res) => {
     try {
       // Import validation schema and security utilities
       const { insertMedicalDocumentSchema } = await import("@shared/schema");
