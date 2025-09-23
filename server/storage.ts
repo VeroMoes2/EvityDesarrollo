@@ -1,13 +1,14 @@
 import {
   users,
   medicalDocuments,
+  securityAuditLog,
   type User,
   type UpsertUser,
   type MedicalDocument,
   type InsertMedicalDocument,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
@@ -62,6 +63,50 @@ export interface IStorage {
     documentsToday: number;
     usersToday: number;
     storageUsed: string;
+  }>;
+
+  // LS-108: Security audit log operations
+  createAuditLog(entry: {
+    userId?: string | null;
+    userEmail: string;
+    action: string;
+    resource?: string | null;
+    details?: any;
+    outcome: string;
+    riskLevel: string;
+    ipAddress?: string | null;
+    userAgent?: string | null;
+    sessionId?: string | null;
+    timestamp: Date;
+  }): Promise<void>;
+  
+  getAuditLogs(options?: {
+    page?: number;
+    limit?: number;
+    userId?: string;
+    action?: string;
+    riskLevel?: string;
+    startDate?: Date;
+    endDate?: Date;
+  }): Promise<{
+    logs: Array<{
+      id: string;
+      userId: string | null;
+      userEmail: string;
+      action: string;
+      resource: string | null;
+      details: any;
+      outcome: string;
+      riskLevel: string;
+      ipAddress: string | null;
+      userAgent: string | null;
+      sessionId: string | null;
+      timestamp: Date;
+    }>;
+    total: number;
+    page: number;
+    limit: number;
+    hasNext: boolean;
   }>;
 }
 
@@ -506,6 +551,125 @@ export class DatabaseStorage implements IStorage {
       usersToday: Number(userStats.usersToday),
       storageUsed
     };
+  }
+
+  // LS-108: Security audit log implementation
+  async createAuditLog(entry: {
+    userId?: string | null;
+    userEmail: string;
+    action: string;
+    resource?: string | null;
+    details?: any;
+    outcome: string;
+    riskLevel: string;
+    ipAddress?: string | null;
+    userAgent?: string | null;
+    sessionId?: string | null;
+    timestamp: Date;
+  }): Promise<void> {
+    try {
+      await db.insert(securityAuditLog).values({
+        userId: entry.userId,
+        userEmail: entry.userEmail,
+        action: entry.action,
+        resource: entry.resource,
+        details: entry.details,
+        outcome: entry.outcome,
+        riskLevel: entry.riskLevel,
+        ipAddress: entry.ipAddress,
+        userAgent: entry.userAgent,
+        sessionId: entry.sessionId,
+        timestamp: entry.timestamp,
+      });
+    } catch (error) {
+      console.error('Failed to create audit log entry:', error);
+      throw error;
+    }
+  }
+
+  async getAuditLogs(options: {
+    page?: number;
+    limit?: number;
+    userId?: string;
+    action?: string;
+    riskLevel?: string;
+    startDate?: Date;
+    endDate?: Date;
+  } = {}): Promise<{
+    logs: Array<{
+      id: string;
+      userId: string | null;
+      userEmail: string;
+      action: string;
+      resource: string | null;
+      details: any;
+      outcome: string;
+      riskLevel: string;
+      ipAddress: string | null;
+      userAgent: string | null;
+      sessionId: string | null;
+      timestamp: Date;
+    }>;
+    total: number;
+    page: number;
+    limit: number;
+    hasNext: boolean;
+  }> {
+    const { page = 1, limit = 50 } = options;
+    const offset = (page - 1) * limit;
+
+    // Build query conditions
+    const conditions = [];
+    if (options.userId) {
+      conditions.push(eq(securityAuditLog.userId, options.userId));
+    }
+    if (options.action) {
+      conditions.push(eq(securityAuditLog.action, options.action));
+    }
+    if (options.riskLevel) {
+      conditions.push(eq(securityAuditLog.riskLevel, options.riskLevel));
+    }
+    // Note: Date filtering would need additional imports for gte/lte, simplified for now
+
+    try {
+      // Get total count
+      const totalResult = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(securityAuditLog);
+      const total = totalResult[0]?.count || 0;
+
+      // Get paginated logs
+      const logs = await db
+        .select()
+        .from(securityAuditLog)
+        .limit(limit)
+        .offset(offset)
+        .orderBy(sql`${securityAuditLog.timestamp} DESC`);
+
+      return {
+        logs: logs.map(log => ({
+          id: log.id!,
+          userId: log.userId,
+          userEmail: log.userEmail,
+          action: log.action,
+          resource: log.resource,
+          details: log.details,
+          outcome: log.outcome,
+          riskLevel: log.riskLevel,
+          ipAddress: log.ipAddress,
+          userAgent: log.userAgent,
+          sessionId: log.sessionId,
+          timestamp: log.timestamp!,
+        })),
+        total,
+        page,
+        limit,
+        hasNext: offset + limit < total,
+      };
+    } catch (error) {
+      console.error('Failed to get audit logs:', error);
+      throw error;
+    }
   }
 
 }

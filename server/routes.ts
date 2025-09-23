@@ -6,6 +6,15 @@ import { ConfluenceService } from "./confluenceService";
 import { setupAuth, isAuthenticated, isAdmin } from "./localAuth";
 import { uploadRateLimit, downloadRateLimit, previewRateLimit } from "./rateLimiter";
 import { updateUserProfileSchema } from "@shared/schema";
+// LS-108: Enhanced security middleware
+import { 
+  securityHeaders, 
+  inputSanitization,
+  csrfProtection,
+  loginRateLimit as securityLoginRateLimit,
+  adminRateLimit as securityAdminRateLimit
+} from "./securityMiddleware";
+import AuditLogger from "./auditLogger";
 
 // Configure multer for file uploads
 const upload = multer({
@@ -36,8 +45,22 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
+  // LS-108: Apply security headers to all routes
+  app.use(securityHeaders);
+  
+  // LS-108: Input sanitization for all requests
+  app.use(inputSanitization);
+  
+  // Auth middleware (BEFORE CSRF to initialize sessions)
   await setupAuth(app);
+  
+  // LS-108: CSRF protection for all routes (AFTER session initialization)
+  app.use(csrfProtection);
+
+  // LS-108: CSRF token endpoint for frontend
+  app.get('/api/csrf-token', (req, res) => {
+    res.json({ csrfToken: res.locals.csrfToken });
+  });
 
   // Auth routes - handled by localAuth.ts now
   // The /api/auth/user endpoint is now handled in localAuth.ts
@@ -820,6 +843,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching admin stats:", error);
       res.status(500).json({ message: "Failed to fetch stats" });
+    }
+  });
+
+  // LS-108: Security audit logs endpoint for administrators
+  app.get('/api/admin/audit-logs', isAdmin, securityAdminRateLimit.middleware, async (req: any, res) => {
+    try {
+      await AuditLogger.logAdminAccess(req, 'audit-logs');
+
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = Math.min(parseInt(req.query.limit as string) || 50, 100); // Max 100 per page
+      const action = req.query.action as string;
+      const riskLevel = req.query.riskLevel as string;
+      const userId = req.query.userId as string;
+
+      const auditLogs = await storage.getAuditLogs({
+        page,
+        limit,
+        action,
+        riskLevel,
+        userId
+      });
+
+      res.json({
+        success: true,
+        ...auditLogs
+      });
+    } catch (error) {
+      console.error('Error fetching audit logs:', error);
+      await AuditLogger.logFromRequest(req, 'ADMIN_ACCESS', 'ERROR', {
+        resource: 'audit-logs',
+        details: { error: error instanceof Error ? error.message : 'Unknown error' }
+      });
+      res.status(500).json({ 
+        success: false,
+        message: 'Error interno del servidor' 
+      });
     }
   });
 

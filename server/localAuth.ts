@@ -6,6 +6,9 @@ import connectPg from "connect-pg-simple";
 import nodemailer from "nodemailer";
 import type { Express, RequestHandler } from "express";
 import { storage } from "./storage";
+// LS-108: Import audit logger for security monitoring
+import AuditLogger from "./auditLogger";
+import { loginRateLimit as securityLoginRateLimit, csrfProtection } from "./securityMiddleware";
 
 // Session configuration with 30-minute timeout for LS-98
 export function getSession() {
@@ -27,6 +30,7 @@ export function getSession() {
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: 'lax', // LS-108: CSRF protection
       maxAge: sessionTtl,
     },
   });
@@ -141,8 +145,9 @@ export async function setupAuth(app: Express) {
   app.set("trust proxy", 1);
   app.use(getSession());
 
-  // Login endpoint
-  app.post("/api/login", async (req, res) => {
+  // Login endpoint with rate limiting and CSRF protection
+  // Apply CSRF protection directly to this critical endpoint
+  app.post("/api/login", securityLoginRateLimit.middleware, csrfProtection, async (req, res) => {
     try {
       const { email, password } = req.body;
       
@@ -155,6 +160,17 @@ export async function setupAuth(app: Express) {
 
       const user = await storage.getUserByEmail(email.toLowerCase());
       if (!user) {
+        // LS-108: Log failed login attempt with explicit email
+        await AuditLogger.log({
+          userEmail: email.toLowerCase(),
+          action: 'LOGIN',
+          outcome: 'FAILURE',
+          riskLevel: 'MEDIUM',
+          details: { reason: 'User not found' },
+          ipAddress: req.ip || req.connection.remoteAddress,
+          userAgent: req.get('User-Agent'),
+          sessionId: (req.session as any)?.id || req.sessionID
+        });
         return res.status(401).json({ 
           message: "Credenciales inválidas",
           field: "email"
@@ -163,6 +179,18 @@ export async function setupAuth(app: Express) {
 
       const isValidPassword = await verifyPassword(password, user.password);
       if (!isValidPassword) {
+        // LS-108: Log failed login attempt with explicit email
+        await AuditLogger.log({
+          userId: user.id,
+          userEmail: user.email,
+          action: 'LOGIN',
+          outcome: 'FAILURE',
+          riskLevel: 'MEDIUM',
+          details: { reason: 'Invalid password' },
+          ipAddress: req.ip || req.connection.remoteAddress,
+          userAgent: req.get('User-Agent'),
+          sessionId: (req.session as any)?.id || req.sessionID
+        });
         return res.status(401).json({ 
           message: "Credenciales inválidas",
           field: "password"
@@ -172,9 +200,21 @@ export async function setupAuth(app: Express) {
       // Update last login time
       await storage.updateUserLastLogin(user.id);
 
-      // Create session
+      // Create session (LS-108: Remove email for security)
       (req.session as any).userId = user.id;
-      (req.session as any).userEmail = user.email;
+
+      // LS-108: Log successful login with explicit email
+      await AuditLogger.log({
+        userId: user.id,
+        userEmail: user.email,
+        action: 'LOGIN',
+        outcome: 'SUCCESS',
+        riskLevel: 'LOW',
+        details: { loginSuccess: true },
+        ipAddress: req.ip || req.connection.remoteAddress,
+        userAgent: req.get('User-Agent'),
+        sessionId: (req.session as any)?.id || req.sessionID
+      });
 
       res.json({ 
         message: "Inicio de sesión exitoso",
@@ -486,6 +526,18 @@ export const isAdmin: RequestHandler = async (req, res, next) => {
     // Check if user has admin privileges
     if (user.isAdmin !== "true") {
       console.log(`ADMIN ACCESS DENIED: User ${user.email} (isAdmin: ${user.isAdmin}) attempted to access admin endpoints`);
+      // LS-108: Log admin access denial with explicit email
+      await AuditLogger.log({
+        userId: user.id,
+        userEmail: user.email,
+        action: 'ADMIN_ACCESS',
+        outcome: 'FAILURE',
+        riskLevel: 'HIGH',
+        details: { reason: 'Insufficient privileges', userRole: user.isAdmin, endpoint: req.path },
+        ipAddress: req.ip || req.connection.remoteAddress,
+        userAgent: req.get('User-Agent'),
+        sessionId: (req.session as any)?.id || req.sessionID
+      });
       return res.status(403).json({ message: "Acceso denegado: Se requieren privilegios de administrador" });
     }
 
@@ -504,6 +556,18 @@ export const isAdmin: RequestHandler = async (req, res, next) => {
     };
 
     console.log(`ADMIN ACCESS GRANTED: User ${user.email} accessing admin endpoint`);
+    // LS-108: Log successful admin access with explicit email
+    await AuditLogger.log({
+      userId: user.id,
+      userEmail: user.email,
+      action: 'ADMIN_ACCESS',
+      outcome: 'SUCCESS',
+      riskLevel: 'HIGH',
+      details: { endpoint: req.path, method: req.method },
+      ipAddress: req.ip || req.connection.remoteAddress,
+      userAgent: req.get('User-Agent'),
+      sessionId: (req.session as any)?.id || req.sessionID
+    });
     next();
   } catch (error) {
     console.error("Admin middleware error:", error);

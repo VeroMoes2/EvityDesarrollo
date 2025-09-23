@@ -57,6 +57,22 @@ export const medicalDocuments = pgTable("medical_documents", {
   deletedAt: timestamp("deleted_at"), // LS-103: Soft delete timestamp for tracking eliminated files
 });
 
+// LS-108: Security audit log table for tracking administrative actions
+export const securityAuditLog = pgTable("security_audit_log", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id),
+  userEmail: varchar("user_email").notNull(), // Store email for better tracking
+  action: varchar("action").notNull(), // e.g., "LOGIN", "PROFILE_UPDATE", "DOCUMENT_DELETE", "ADMIN_ACCESS"
+  resource: varchar("resource"), // What was affected (user ID, document ID, etc.)
+  details: jsonb("details"), // Additional context (IP, user agent, changes made, etc.)
+  outcome: varchar("outcome").notNull(), // "SUCCESS", "FAILURE", "ERROR"
+  riskLevel: varchar("risk_level").notNull().default("LOW"), // "LOW", "MEDIUM", "HIGH", "CRITICAL"
+  ipAddress: varchar("ip_address"),
+  userAgent: varchar("user_agent"),
+  sessionId: varchar("session_id"),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+});
+
 
 // LS-101: Unified gender enum for consistency across the system
 export const genderEnum = z.enum(["masculino", "femenino", "otro", "prefiero_no_decir"], {
