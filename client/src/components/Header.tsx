@@ -82,6 +82,13 @@ export default function Header() {
             >
               Blog
             </button>
+            <button 
+              onClick={() => navigate('/nosotros')} 
+              className="text-foreground hover:text-primary transition-colors"
+              data-testid="nav-nosotros"
+            >
+              Nosotros
+            </button>
           </nav>
 
           <div className="flex items-center space-x-4">
@@ -192,6 +199,16 @@ export default function Header() {
                 data-testid="nav-mobile-blog"
               >
                 Blog
+              </button>
+              <button 
+                onClick={() => {
+                  navigate('/nosotros');
+                  setIsMenuOpen(false);
+                }} 
+                className="block w-full text-left text-foreground hover:text-primary transition-colors"
+                data-testid="nav-mobile-nosotros"
+              >
+                Nosotros
               </button>
               <Button 
                 onClick={() => navigate('/contacto')}

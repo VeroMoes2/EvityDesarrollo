@@ -1,12 +1,18 @@
 import { Heart, Mail, MapPin, Phone } from "lucide-react";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
+import { useLocation } from "wouter";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const { data: confluenceData } = useConfluenceData();
+  const [, navigate] = useLocation();
 
   const handleLinkClick = (linkName: string) => {
-    console.log(`Footer link clicked: ${linkName}`); // todo: remove mock functionality
+    if (linkName === "Sobre Nosotros") {
+      navigate('/nosotros');
+    } else {
+      console.log(`Footer link clicked: ${linkName}`); // todo: remove mock functionality for other links
+    }
   };
 
   const companyName = confluenceData?.companyName || "Evity";
