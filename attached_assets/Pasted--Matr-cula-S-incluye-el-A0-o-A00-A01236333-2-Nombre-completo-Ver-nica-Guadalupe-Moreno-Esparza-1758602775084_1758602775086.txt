@@ -1,0 +1,42 @@
+.Matrícula (SÍ incluye el A0 o A00)
+A01236333
+2.Nombre completo
+Verónica Guadalupe Moreno Esparza
+3.¿A qué grupo estás inscrito?
+Grupo 501
+4.¿A qué equipo perteneces?
+Equipo 10
+5.Línea curricular a la que pertenece este reto
+Ingeniería Fisiológica (Neuro)
+6.Nombre de la problemática
+Rehabilitación motora-cognitiva post Ictus.
+7.Describe cuál es la problemática que se pretende resolver con este reto en particular. 
+NOTA: No debes incluir la propuesta de solución en este apartado aún.
+La falta de estrategias integrales de rehabilitación temprana, tanto cognitiva como motora, en pacientes de entre 30 y 50 años que han sufrido un accidente cerebrovascular, limita su recuperación temprana y funcional.
+8.Describe cuál es el QUÉ de la problemática propuesta, de acuerdo a la metodología de Engineering Design.
+La falta de estrategias integrales de rehabilitación temprana (cognitivas y motoras).
+9.Describe cuál es el QUIÉN de la problemática propuesta, de acuerdo a la metodología de Engineering Design.
+Pacientes de entre 30 y 50 años que han sufrido un accidente cerebrovascular.
+10.Describe cuál es el POR QUÉ de la problemática propuesta, de acuerdo a la metodología de Engineering Design.
+Porque esta ausencia de estrategias limita la posibilidad de una recuperación temprana y funcional.
+11.Describe cómo esta problemática se encuentra dentro del contexto del reto propuesto por Bioana.
+La problemática se integra al reto de BioAna porque exige el desarrollo de una solución tecnológica innovadora y regulada que responda a una necesidad clínica real: la rehabilitación temprana en pacientes post-ACV. Nuestro proyecto, una órtesis de mano controlada por intención motora mediante BCI, se alinea con este reto al combinar ingeniería biomédica y neurotecnología para mejorar la recuperación funcional, asegurando calidad y seguridad en su diseño.
+12.Describe cuál es el objetivo principal o general de la problemática propuesta, así como 3 sub objetivos específicos.
+Objetivo general: 
+-Diseñar y desarrollar un dispositivo ortopédico de rehabilitación para la mano, controlado mediante una interfaz cerebro-computadora basada en intención motora, con el fin de promover la recuperación temprana y funcional en pacientes de 30 a 50 años que han sufrido un accidente cerebrovascular en América Latina.
+
+Sub objetivos especificos:
+-Implementar un sistema de adquisición y procesamiento de señales cerebrales (EEG) que permita identificar patrones de intención motora asociados al movimiento de la mano.
+-Diseñar y construir una órtesis de mano que ejecute movimientos de agarre y apertura controlados por las señales procesadas, favoreciendo la rehabilitación motora.
+-Validar el potencial terapéutico del prototipo mediante pruebas piloto en usuarios simulados, valorando su contribución a la rehabilitación temprana y su capacidad de mejorar la autonomía funcional de la mano.
+13.¿Cuál será el producto tangible final de esta problemática?
+Prototipo funcional
+14.Describe la definición de cuál será el prototipo funcional, protocolo o proceso implementado que se deberá entregar al finalizar el curso (Protocolo, metodología, dispositivo, aplicación, etc.), dentro del contexto del reto propuesto por Bioana.
+El prototipo funcional a entregar será un dispositivo ortopédico de rehabilitación para la mano, controlado mediante una interfaz cerebro-computadora basada en intención motora. Este sistema integrará la adquisición y procesamiento de señales EEG con un mecanismo ortésico capaz de ejecutar movimientos de agarre y apertura.
+De esta manera, se cumple con el reto propuesto por BioAna, al desarrollar una tecnología biomédica innovadora, segura y regulada que responde a una problemática médica concreta.
+15.Especifica cuáles son los resultados esperados del prototipo funcional, protocolo o proceso implementado.
+Se espera que el prototipo permita la detección confiable de señales de intención motora y el control de una órtesis funcional capaz de ejecutar movimientos básicos de la mano. Asimismo, se busca lograr una validación en entorno controlado que demuestre su viabilidad y evidencie su potencial como apoyo en la rehabilitación temprana de pacientes post-ACV.
+16.Comentarios adicionales. (Incluye aquí a las personas que integran el equipo).
+
+Anna Fernanda Barraza Ahumada A01284954
+Juan Jose Robalino Romo Leroux A00832934
