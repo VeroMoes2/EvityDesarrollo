@@ -137,9 +137,6 @@ export default function About() {
                     <CardTitle className="text-xl font-semibold text-card-foreground" data-testid={`text-team-name-${member.id}`}>
                       {member.name}
                     </CardTitle>
-                    <CardDescription className="font-medium text-primary" data-testid={`text-team-role-${member.id}`}>
-                      {member.role}
-                    </CardDescription>
                   </CardHeader>
                   <CardContent className="text-center">
                     <div className="flex justify-center space-x-2">

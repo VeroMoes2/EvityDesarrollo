@@ -393,42 +393,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const businessContent = await confluenceService.getBusinessPlanContent();
       
-      // Real team data as provided
+      // Real team data as provided - names only, no positions
       const teamMembers = [
         {
           id: 'juan-fernandez',
           name: 'Juan Fernandez',
-          role: 'Director Médico',
           email: 'juan.fernandez@evity.mx'
         },
         {
           id: 'daniel-nader',
           name: 'Daniel Nader',
-          role: 'CTO & Co-founder',
           email: 'daniel.nader@evity.mx'
         },
         {
           id: 'sofia-moya',
           name: 'Sofia Moya',
-          role: 'Product Manager & Co-founder',
           email: 'sofia.moya@evity.mx'
         },
         {
           id: 'alfredo-cuellar',
           name: 'Alfredo Cuellar',
-          role: 'Technology Lead',
           email: 'alfredo.cuellar@evity.mx'
         },
         {
           id: 'veronica-moreno',
           name: 'Veronica Moreno',
-          role: 'CEO & Co-founder',
           email: 'veronica.moreno@evity.mx'
         },
         {
           id: 'elena-villarreal',
           name: 'Elena Villarreal',
-          role: 'Health Specialist',
           email: 'elena.villarreal@evity.mx'
         }
       ];

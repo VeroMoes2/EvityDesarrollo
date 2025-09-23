@@ -5,6 +5,11 @@ export interface ConfluenceData {
   vision: string;
   valueProposition: string;
   companyName: string;
+  team?: Array<{
+    id: string;
+    name: string;
+    email: string;
+  }>;
   // Debug-only fields (only available when SHOW_CONFLUENCE_DEBUG=true)
   availableSpaces?: any[];
   searchResults?: any[];

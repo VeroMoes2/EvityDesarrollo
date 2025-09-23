@@ -325,4 +325,41 @@
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
   }
+
+  /* WCAG AA Accessibility Improvements */
+  /* Global focus indicators for all interactive elements */
+  :focus-visible {
+    outline: 2px solid hsl(var(--primary)) !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--primary)) !important;
+  }
+
+  /* Ensure buttons and links have visible focus */
+  button:focus-visible,
+  a:focus-visible,
+  [role="button"]:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid hsl(var(--primary)) !important;
+    outline-offset: 2px !important;
+  }
+
+  /* High contrast text for better readability */
+  .text-contrast-high {
+    color: hsl(220 15% 10%) !important;
+  }
+  
+  .dark .text-contrast-high {
+    color: hsl(220 15% 95%) !important;
+  }
+
+  /* Fix contrast issues in navigation and headers */
+  .header-link {
+    color: hsl(220 15% 10%) !important;
+  }
+
+  .dark .header-link {
+    color: hsl(220 15% 95%) !important;
+  }
 }
