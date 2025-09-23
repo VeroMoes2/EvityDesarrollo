@@ -31,8 +31,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Eye, EyeOff, UserPlus, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, UserPlus, ArrowLeft, Phone } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { phoneNumberSchema } from "@shared/schema";
 
 // LS-98: Registration validation schema with complete user information
 const registerSchema = z.object({
@@ -57,6 +58,7 @@ const registerSchema = z.object({
   gender: z.enum(["masculino", "femenino", "otro", ""], {
     errorMap: () => ({ message: "Selecciona una opción válida" })
   }).optional(),
+  phoneNumber: phoneNumberSchema, // LS-110: Phone number validation
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Las contraseñas no coinciden",
   path: ["confirmPassword"],
@@ -80,6 +82,7 @@ export default function Register() {
       password: "",
       confirmPassword: "",
       gender: "",
+      phoneNumber: "", // LS-110: Phone number default value
     },
   });
 
@@ -244,6 +247,30 @@ export default function Register() {
                         <SelectItem value="otro">Otro</SelectItem>
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* LS-110: Phone number field */}
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Número Celular</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          {...field}
+                          type="tel"
+                          placeholder="Ej: 5551234567 o +525551234567"
+                          data-testid="input-phone-number"
+                          autoComplete="tel"
+                        />
+                        <Phone className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+                      </div>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

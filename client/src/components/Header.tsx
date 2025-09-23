@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
+import { logout } from "@/lib/queryClient";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
@@ -144,7 +145,7 @@ export default function Header() {
                   )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
-                    onClick={() => window.location.href = '/api/logout'}
+                    onClick={logout}
                     className="cursor-pointer text-red-600 hover:text-red-700"
                     data-testid="menu-item-logout"
                   >
@@ -263,7 +264,7 @@ export default function Header() {
                     <Button 
                       variant="outline" 
                       className="w-full justify-start text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
-                      onClick={() => window.location.href = '/api/logout'}
+                      onClick={logout}
                       data-testid="button-mobile-logout"
                     >
                       <LogOut className="mr-2 h-4 w-4" />

@@ -104,6 +104,22 @@ export async function uploadWithCsrf(
   }
 }
 
+/**
+ * Logout function with proper CSRF protection
+ * LS-108: Uses POST method with CSRF token for secure logout
+ */
+export async function logout(): Promise<void> {
+  try {
+    await apiRequest('POST', '/api/logout');
+    // Redirect to home page after successful logout
+    window.location.href = '/';
+  } catch (error) {
+    console.error('Logout failed:', error);
+    // Still redirect even if logout fails (session might be expired)
+    window.location.href = '/';
+  }
+}
+
 type UnauthorizedBehavior = "returnNull" | "throw";
 export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;

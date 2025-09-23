@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { notifications } from "@/lib/notifications";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { queryClient, apiRequest } from "@/lib/queryClient";
+import { queryClient, apiRequest, logout } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -210,7 +210,7 @@ export default function Profile() {
             </div>
             <Button 
               variant="outline" 
-              onClick={() => window.location.href = '/api/logout'}
+              onClick={logout}
               data-testid="button-logout"
             >
               Cerrar Sesión
