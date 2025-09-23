@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Upload, FileText, Trash2, User, Mail, Calendar, ArrowLeft, Shield, Activity, Download, Eye, Search, Edit } from "lucide-react";
+import { Upload, FileText, Trash2, User, Mail, Calendar, ArrowLeft, Shield, Activity, Download, Eye, Search, Edit, Phone } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updateUserProfileSchema, type UpdateUserProfile, normalizeGender } from "@shared/schema";
@@ -39,6 +39,7 @@ export default function Profile() {
       lastName: (user as any)?.lastName || "",
       email: (user as any)?.email || "",
       gender: normalizeGender((user as any)?.gender) as "masculino" | "femenino" | "otro" | "prefiero_no_decir" | undefined,
+      phoneNumber: (user as any)?.phoneNumber || "", // LS-110: Phone number default
     },
   });
 
@@ -50,6 +51,7 @@ export default function Profile() {
         lastName: (user as any)?.lastName || "",
         email: (user as any)?.email || "",
         gender: normalizeGender((user as any)?.gender) as "masculino" | "femenino" | "otro" | "prefiero_no_decir" | undefined,
+        phoneNumber: (user as any)?.phoneNumber || "", // LS-110: Phone number reset
       });
     }
   }, [user, form]);
@@ -148,6 +150,10 @@ export default function Profile() {
     }
     if (data.gender !== (user as any)?.gender) {
       changedData.gender = data.gender;
+    }
+    // LS-110: Check for phone number changes
+    if (data.phoneNumber !== (user as any)?.phoneNumber) {
+      changedData.phoneNumber = data.phoneNumber;
     }
 
     // Only submit if there are changes
@@ -328,6 +334,30 @@ export default function Profile() {
                                     <SelectItem value="otro">Otro</SelectItem>
                                   </SelectContent>
                                 </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          {/* LS-110: Phone number field */}
+                          <FormField
+                            control={form.control}
+                            name="phoneNumber"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Número Celular</FormLabel>
+                                <FormControl>
+                                  <div className="relative">
+                                    <Input 
+                                      {...field} 
+                                      type="tel"
+                                      placeholder="Ej: 5551234567 o +525551234567"
+                                      data-testid="input-phone-number-profile"
+                                      autoComplete="tel"
+                                    />
+                                    <Phone className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+                                  </div>
+                                </FormControl>
                                 <FormMessage />
                               </FormItem>
                             )}
