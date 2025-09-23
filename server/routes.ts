@@ -393,37 +393,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const businessContent = await confluenceService.getBusinessPlanContent();
       
-      // Extract team data from Confluence spaces - filter out system/template spaces
-      const teamMembers = businessContent.allSpaces
-        ?.filter((space: any) => 
-          // Filter for personal spaces (spaces that start with ~) and valid names
-          space.key.startsWith('~') && 
-          space.name && 
-          space.name.length > 2 &&
-          !space.name.includes('Template') &&
-          !space.name.includes('template') &&
-          space.name !== 'AI & Tech' &&
-          space.name !== 'Health & Science' &&
-          space.name !== 'Strategy'
-        )
-        .map((space: any) => ({
-          id: space.key.replace(/^~/, ''), // Remove ~ prefix for clean ID
-          name: space.name,
-          role: space.name === 'Ana Sofia Moya' ? 'Product Manager & Co-founder' :
-                space.name === 'veromoes' ? 'CEO & Co-founder' :
-                space.name === 'alfredo' ? 'Technology Lead' :
-                space.name === 'daniel' ? 'Data Scientist' :
-                space.name === 'elena' ? 'Health Specialist' :
-                space.name === 'sofia' ? 'UX/UI Designer' :
-                'Team Member', // Default role for other members
-          email: `${space.name.toLowerCase().replace(/\s+/g, '')}@evity.mx`
-        })) || [];
+      // Real team data as provided
+      const teamMembers = [
+        {
+          id: 'juan-fernandez',
+          name: 'Juan Fernandez',
+          role: 'Director Médico',
+          email: 'juan.fernandez@evity.mx'
+        },
+        {
+          id: 'daniel-nader',
+          name: 'Daniel Nader',
+          role: 'CTO & Co-founder',
+          email: 'daniel.nader@evity.mx'
+        },
+        {
+          id: 'sofia-moya',
+          name: 'Sofia Moya',
+          role: 'Product Manager & Co-founder',
+          email: 'sofia.moya@evity.mx'
+        },
+        {
+          id: 'alfredo-cuellar',
+          name: 'Alfredo Cuellar',
+          role: 'Technology Lead',
+          email: 'alfredo.cuellar@evity.mx'
+        },
+        {
+          id: 'veronica-moreno',
+          name: 'Veronica Moreno',
+          role: 'CEO & Co-founder',
+          email: 'veronica.moreno@evity.mx'
+        },
+        {
+          id: 'elena-villarreal',
+          name: 'Elena Villarreal',
+          role: 'Health Specialist',
+          email: 'elena.villarreal@evity.mx'
+        }
+      ];
 
       // Extract key information from the content - ONLY return safe, whitelisted fields
       let safeData = {
         companyName: 'Evity',
         mission: 'Transformar la forma en que las personas envejecen, proporcionando herramientas científicas y personalizadas para vivir vidas más largas, saludables y plenas.',
-        vision: 'Ser la plataforma líder mundial en longevidad, democratizando el acceso a los últimos avances científicos para que cada persona pueda alcanzar su máximo potencial de salud y bienestar.',
+        vision: 'Ofrecer una clinica y plataforma innovadora que combine diseño moderno, atención humanista y tecnología digital, con un enfoque en longevidad y salud integral. El paciente recibe un diagnóstico profundo, intervenciones seguras y personalizadas, así como un acompañamiento continuo tanto físico como digital.',
         valueProposition: 'Descubre los secretos científicos de la longevidad. Herramientas personalizadas, recursos basados en evidencia y una comunidad dedicada a vivir más y mejor.',
         team: teamMembers
       };
