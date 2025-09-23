@@ -14,10 +14,8 @@ export default function NewsletterSection() {
 
   const subscribeNewsletterMutation = useMutation({
     mutationFn: async (email: string) => {
-      return await apiRequest("/api/newsletter/subscribe", {
-        method: "POST",
-        body: { email }
-      });
+      const response = await apiRequest("POST", "/api/newsletter/subscribe", { email });
+      return await response.json();
     },
     onSuccess: (data) => {
       setIsSubscribed(true);
