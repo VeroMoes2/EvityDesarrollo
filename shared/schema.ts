@@ -24,12 +24,14 @@ export const sessions = pgTable(
 
 // User storage table.
 // LS-98: Enhanced user authentication with complete profile information
+// LS-110: Added phoneNumber field for user contact information
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   email: varchar("email").unique().notNull(),
   firstName: varchar("first_name").notNull(),
   lastName: varchar("last_name").notNull(),
   gender: varchar("gender"), // 'M', 'F', 'Other', 'Prefer not to say'
+  phoneNumber: varchar("phone_number"), // LS-110: User's phone number
   password: varchar("password").notNull(), // Hashed password
   profileImageUrl: varchar("profile_image_url"),
   isEmailVerified: varchar("is_email_verified").default("false"), // 'true' or 'false'
@@ -100,6 +102,11 @@ export function normalizeGender(gender: string | undefined | null): string | und
   return genderLegacyMap[gender as keyof typeof genderLegacyMap] || gender;
 }
 
+// LS-110: Phone number validation for Mexican format
+export const phoneNumberSchema = z.string()
+  .regex(/^(\+52)?\s?[1-9]\d{9}$/, "Ingresa un número celular válido (10 dígitos)")
+  .optional();
+
 // Create schemas for the tables
 export const insertUserSchema = createInsertSchema(users, {
   email: z.string().email("Email inválido"),
@@ -107,6 +114,7 @@ export const insertUserSchema = createInsertSchema(users, {
   lastName: z.string().min(1, "Apellido es requerido"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
   gender: genderEnum.optional(),
+  phoneNumber: phoneNumberSchema, // LS-110: Phone number validation
 }).omit({
   id: true,
   createdAt: true,
@@ -136,6 +144,7 @@ export const updateUserProfileSchema = z.object({
     .max(100, "El email no puede exceder 100 caracteres")
     .optional(),
   gender: genderEnum.optional(),
+  phoneNumber: phoneNumberSchema, // LS-110: Phone number update validation
 });
 
 export const loginUserSchema = z.object({
