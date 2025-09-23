@@ -95,7 +95,7 @@ export default function Header() {
             </Button>
 
             <Button 
-              onClick={() => scrollToSection("contacto")}
+              onClick={() => navigate('/contacto')}
               className="hidden md:inline-flex"
               data-testid="button-contacto"
             >
@@ -194,7 +194,7 @@ export default function Header() {
                 Blog
               </button>
               <Button 
-                onClick={() => scrollToSection("contacto")}
+                onClick={() => navigate('/contacto')}
                 className="w-full"
                 data-testid="button-mobile-contacto"
               >
