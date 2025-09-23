@@ -103,13 +103,6 @@ export default function Footer() {
               >
                 Blog
               </button>
-              <button 
-                onClick={() => handleLinkClick("Newsletter")}
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                data-testid="footer-link-newsletter"
-              >
-                Newsletter
-              </button>
             </nav>
           </div>
 

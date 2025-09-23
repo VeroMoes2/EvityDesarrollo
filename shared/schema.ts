@@ -57,22 +57,6 @@ export const medicalDocuments = pgTable("medical_documents", {
   deletedAt: timestamp("deleted_at"), // LS-103: Soft delete timestamp for tracking eliminated files
 });
 
-// LS-105: Newsletter subscriptions for longevity content
-export const newsletterSubscriptions = pgTable("newsletter_subscriptions", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  email: varchar("email").unique().notNull(),
-  status: varchar("status").notNull().default("pending"), // 'pending', 'confirmed', 'unsubscribed'
-  confirmationToken: varchar("confirmation_token"),
-  confirmationExpires: timestamp("confirmation_expires"),
-  confirmedAt: timestamp("confirmed_at"),
-  subscribedAt: timestamp("subscribed_at").defaultNow(),
-  unsubscribedAt: timestamp("unsubscribed_at"),
-}, 
-(table) => [
-  index("IDX_newsletter_email").on(table.email),
-  index("IDX_newsletter_status").on(table.status),
-  index("IDX_newsletter_expires").on(table.confirmationExpires),
-]);
 
 // LS-101: Unified gender enum for consistency across the system
 export const genderEnum = z.enum(["masculino", "femenino", "otro", "prefiero_no_decir"], {
@@ -148,20 +132,6 @@ export const insertMedicalDocumentSchema = createInsertSchema(medicalDocuments).
   uploadedAt: true,
 });
 
-// LS-105: Newsletter subscription schemas
-export const insertNewsletterSubscriptionSchema = createInsertSchema(newsletterSubscriptions, {
-  email: z.string().email("Email inválido"),
-}).omit({
-  id: true,
-  subscribedAt: true,
-  confirmationToken: true,
-  confirmedAt: true,
-  unsubscribedAt: true,
-});
-
-export const newsletterSubscriptionStatusEnum = z.enum(["pending", "confirmed", "unsubscribed"], {
-  errorMap: () => ({ message: "Estado de suscripción inválido" })
-});
 
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -170,5 +140,3 @@ export type LoginUser = z.infer<typeof loginUserSchema>;
 export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
 export type InsertMedicalDocument = z.infer<typeof insertMedicalDocumentSchema>;
 export type MedicalDocument = typeof medicalDocuments.$inferSelect;
-export type InsertNewsletterSubscription = z.infer<typeof insertNewsletterSubscriptionSchema>;
-export type NewsletterSubscription = typeof newsletterSubscriptions.$inferSelect;

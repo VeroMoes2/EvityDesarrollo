@@ -5,7 +5,6 @@ import { Heart, Brain, Dna, Shield, Microscope, Activity } from "lucide-react";
 import { Link } from "wouter";
 import heroImage from "@assets/image_1758350191302.png";
 import CalculatorSection from "@/components/CalculatorSection";
-import NewsletterSection from "@/components/NewsletterSection";
 
 export default function Landing() {
   const { data, isLoading } = useConfluenceData();
@@ -183,8 +182,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Newsletter Section */}
-      <NewsletterSection />
     </div>
   );
 }

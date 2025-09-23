@@ -1,13 +1,10 @@
 import {
   users,
   medicalDocuments,
-  newsletterSubscriptions,
   type User,
   type UpsertUser,
   type MedicalDocument,
   type InsertMedicalDocument,
-  type NewsletterSubscription,
-  type InsertNewsletterSubscription,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
@@ -54,18 +51,6 @@ export interface IStorage {
   deleteMedicalDocument(id: string): Promise<void>;
   deleteMedicalDocumentByOwner(userId: string, documentId: string): Promise<number>;
 
-  // LS-105: Newsletter subscription operations
-  createNewsletterSubscription(subscription: InsertNewsletterSubscription): Promise<NewsletterSubscription>;
-  getNewsletterSubscriptionByEmail(email: string): Promise<NewsletterSubscription | undefined>;
-  confirmNewsletterSubscription(token: string): Promise<NewsletterSubscription | undefined>;
-  unsubscribeNewsletter(email: string): Promise<boolean>;
-  getAllNewsletterSubscriptions(): Promise<NewsletterSubscription[]>;
-  getNewsletterSubscriptionStats(): Promise<{
-    total: number;
-    confirmed: number;
-    pending: number;
-    unsubscribed: number;
-  }>;
 
   // Admin operations
   getAllUsers(): Promise<Array<User & { documentsCount: number; deletedDocumentsCount: number }>>;
@@ -523,119 +508,6 @@ export class DatabaseStorage implements IStorage {
     };
   }
 
-  // LS-105: Newsletter subscription operations implementation
-  async createNewsletterSubscription(subscription: InsertNewsletterSubscription): Promise<NewsletterSubscription> {
-    // Generate confirmation token
-    const crypto = await import("crypto");
-    const confirmationToken = crypto.randomBytes(32).toString('hex');
-    const confirmationExpires = new Date(Date.now() + 48 * 60 * 60 * 1000); // 48 hours
-    
-    const [newSubscription] = await db
-      .insert(newsletterSubscriptions)
-      .values({
-        ...subscription,
-        email: subscription.email.toLowerCase().trim(),
-        confirmationToken,
-        confirmationExpires,
-        status: "pending"
-      })
-      .returning();
-    
-    return newSubscription;
-  }
-
-  async getNewsletterSubscriptionByEmail(email: string): Promise<NewsletterSubscription | undefined> {
-    const [subscription] = await db
-      .select()
-      .from(newsletterSubscriptions)
-      .where(eq(newsletterSubscriptions.email, email.toLowerCase().trim()));
-    
-    return subscription;
-  }
-
-  async confirmNewsletterSubscription(token: string): Promise<NewsletterSubscription | undefined> {
-    // First check if token exists and hasn't expired
-    const [existingSubscription] = await db
-      .select()
-      .from(newsletterSubscriptions)
-      .where(eq(newsletterSubscriptions.confirmationToken, token));
-    
-    if (!existingSubscription) {
-      return undefined; // Token not found
-    }
-    
-    // Check if token has expired
-    if (existingSubscription.confirmationExpires && existingSubscription.confirmationExpires < new Date()) {
-      return undefined; // Token expired
-    }
-    
-    // Check if subscription is in pending status
-    if (existingSubscription.status !== "pending") {
-      return undefined; // Already confirmed or unsubscribed
-    }
-    
-    // Update subscription as confirmed
-    const [subscription] = await db
-      .update(newsletterSubscriptions)
-      .set({
-        status: "confirmed",
-        confirmedAt: new Date(),
-        confirmationToken: null,
-        confirmationExpires: null
-      })
-      .where(eq(newsletterSubscriptions.confirmationToken, token))
-      .returning();
-    
-    return subscription;
-  }
-
-  async unsubscribeNewsletter(email: string): Promise<boolean> {
-    const result = await db
-      .update(newsletterSubscriptions)
-      .set({
-        status: "unsubscribed",
-        unsubscribedAt: new Date(),
-        confirmationToken: null,
-        confirmationExpires: null
-      })
-      .where(eq(newsletterSubscriptions.email, email.toLowerCase().trim()));
-    
-    return (result.rowCount ?? 0) > 0;
-  }
-
-  async getAllNewsletterSubscriptions(): Promise<NewsletterSubscription[]> {
-    const subscriptions = await db
-      .select()
-      .from(newsletterSubscriptions)
-      .orderBy(newsletterSubscriptions.subscribedAt);
-    
-    return subscriptions;
-  }
-
-  async getNewsletterSubscriptionStats(): Promise<{
-    total: number;
-    confirmed: number;
-    pending: number;
-    unsubscribed: number;
-  }> {
-    const { count, sql } = await import("drizzle-orm");
-    
-    const [stats] = await db
-      .select({
-        total: count(newsletterSubscriptions.id),
-        confirmed: sql<number>`COUNT(CASE WHEN ${newsletterSubscriptions.status} = 'confirmed' THEN 1 END)`,
-        pending: sql<number>`COUNT(CASE WHEN ${newsletterSubscriptions.status} = 'pending' THEN 1 END)`,
-        unsubscribed: sql<number>`COUNT(CASE WHEN ${newsletterSubscriptions.status} = 'unsubscribed' THEN 1 END)`
-      })
-      .from(newsletterSubscriptions);
-    
-    return {
-      total: stats.total,
-      confirmed: Number(stats.confirmed),
-      pending: Number(stats.pending),
-      unsubscribed: Number(stats.unsubscribed)
-    };
-  }
 }
 
 export const storage = new DatabaseStorage();

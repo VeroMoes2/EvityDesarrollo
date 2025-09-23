@@ -4,7 +4,6 @@ import FeaturesSection from "@/components/FeaturesSection";
 import ResourcesSection from "@/components/ResourcesSection";
 import CalculatorSection from "@/components/CalculatorSection";
 import BlogSection from "@/components/BlogSection";
-import NewsletterSection from "@/components/NewsletterSection";
 import Footer from "@/components/Footer";
 
 export default function Home() {
@@ -17,7 +16,6 @@ export default function Home() {
         <ResourcesSection />
         <CalculatorSection />
         <BlogSection />
-        <NewsletterSection />
       </main>
       <Footer />
     </div>

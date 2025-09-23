@@ -65,6 +65,6 @@
 2. **Value Proposition:** Three-column layout explaining longevity benefits
 3. **Resources Preview:** Card grid showcasing educational content
 4. **Calculator Teaser:** Interactive preview of life expectancy tool
-5. **Newsletter Signup:** Simple, compelling lead capture form
+5. **Contact Form:** Simple, compelling contact form for inquiries
 
 The overall aesthetic should feel premium yet accessible, scientific yet warm, inspiring confidence in the startup's expertise while making longevity feel attainable for everyone.
