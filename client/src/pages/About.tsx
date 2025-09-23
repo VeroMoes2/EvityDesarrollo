@@ -110,6 +110,55 @@ export default function About() {
           </Card>
         </div>
 
+        {/* Team Section */}
+        {companyInfo.team && companyInfo.team.length > 0 && (
+          <div className="mb-16">
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-center mb-4">
+                <Users className="h-8 w-8 text-primary mr-3" />
+                <h2 className="text-3xl font-bold text-card-foreground" data-testid="team-title">
+                  Nuestro Equipo
+                </h2>
+              </div>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto" data-testid="team-subtitle">
+                Conoce a los expertos que están revolucionando el futuro de la longevidad y el bienestar
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {companyInfo.team.map((member: any) => (
+                <Card key={member.id} className="hover-elevate" data-testid={`card-team-member-${member.id}`}>
+                  <CardHeader className="text-center">
+                    <div className="mx-auto mb-4 w-20 h-20 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center">
+                      <span className="text-2xl font-bold text-primary">
+                        {member.name.split(' ').map((n: string) => n[0]).join('')}
+                      </span>
+                    </div>
+                    <CardTitle className="text-xl font-semibold text-card-foreground" data-testid={`text-team-name-${member.id}`}>
+                      {member.name}
+                    </CardTitle>
+                    <CardDescription className="font-medium text-primary" data-testid={`text-team-role-${member.id}`}>
+                      {member.role}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="text-center">
+                    <div className="flex justify-center space-x-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => window.open(`mailto:${member.email}`, '_blank')}
+                        data-testid={`button-team-email-${member.id}`}
+                      >
+                        <Mail className="h-4 w-4 mr-1" />
+                        Contactar
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Call to Action */}
         <div className="text-center">

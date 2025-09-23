@@ -393,12 +393,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const businessContent = await confluenceService.getBusinessPlanContent();
       
+      // Extract team data from Confluence spaces - filter out system/template spaces
+      const teamMembers = businessContent.allSpaces
+        ?.filter((space: any) => 
+          // Filter for personal spaces (spaces that start with ~) and valid names
+          space.key.startsWith('~') && 
+          space.name && 
+          space.name.length > 2 &&
+          !space.name.includes('Template') &&
+          !space.name.includes('template') &&
+          space.name !== 'AI & Tech' &&
+          space.name !== 'Health & Science' &&
+          space.name !== 'Strategy'
+        )
+        .map((space: any) => ({
+          id: space.key.replace(/^~/, ''), // Remove ~ prefix for clean ID
+          name: space.name,
+          role: space.name === 'Ana Sofia Moya' ? 'Product Manager & Co-founder' :
+                space.name === 'veromoes' ? 'CEO & Co-founder' :
+                space.name === 'alfredo' ? 'Technology Lead' :
+                space.name === 'daniel' ? 'Data Scientist' :
+                space.name === 'elena' ? 'Health Specialist' :
+                space.name === 'sofia' ? 'UX/UI Designer' :
+                'Team Member', // Default role for other members
+          email: `${space.name.toLowerCase().replace(/\s+/g, '')}@evity.mx`
+        })) || [];
+
       // Extract key information from the content - ONLY return safe, whitelisted fields
       let safeData = {
         companyName: 'Evity',
         mission: 'Transformar la forma en que las personas envejecen, proporcionando herramientas científicas y personalizadas para vivir vidas más largas, saludables y plenas.',
         vision: 'Ser la plataforma líder mundial en longevidad, democratizando el acceso a los últimos avances científicos para que cada persona pueda alcanzar su máximo potencial de salud y bienestar.',
-        valueProposition: 'Descubre los secretos científicos de la longevidad. Herramientas personalizadas, recursos basados en evidencia y una comunidad dedicada a vivir más y mejor.'
+        valueProposition: 'Descubre los secretos científicos de la longevidad. Herramientas personalizadas, recursos basados en evidencia y una comunidad dedicada a vivir más y mejor.',
+        team: teamMembers
       };
 
       // Add debug data only if explicitly enabled
