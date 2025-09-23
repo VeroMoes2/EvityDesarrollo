@@ -6,6 +6,7 @@ import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { notifications } from "@/lib/notifications";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -72,10 +73,7 @@ export default function Login() {
       return result;
     },
     onSuccess: (data) => {
-      toast({
-        title: "¡Bienvenido de nuevo!",
-        description: "Has iniciado sesión correctamente en Evity.",
-      });
+      notifications.success.login();
       
       // Invalidate auth queries to refresh user state
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
@@ -97,11 +95,7 @@ export default function Login() {
       } else {
         // Clear form errors and show toast for general errors
         form.clearErrors();
-        toast({
-          variant: "destructive",
-          title: "Error de inicio de sesión",
-          description: errorMessage,
-        });
+        notifications.error.loginFailed(errorMessage);
       }
     },
   });

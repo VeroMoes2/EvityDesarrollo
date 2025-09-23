@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Upload, FileText, X, CheckCircle, AlertCircle } from "lucide-react";
+import { notifications } from "@/lib/notifications";
 
 interface FileUploadProps {
   fileType: "study" | "lab";
@@ -41,10 +42,14 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
 
   const validateFile = (file: File): string | null => {
     if (file.size > MAX_FILE_SIZE) {
+      // LS-107: Show validation error notification
+      notifications.error.validationError(`tamaño de archivo (máximo 10MB, recibido ${Math.round(file.size / 1024 / 1024)}MB)`);
       return "El archivo es demasiado grande. Máximo 10MB.";
     }
     
     if (!ACCEPTED_TYPES.includes(file.type)) {
+      // LS-107: Show validation error notification
+      notifications.error.validationError(`tipo de archivo (solo PDF, imágenes y documentos de Word)`);
       return "Tipo de archivo no permitido. Solo PDF, imágenes y documentos de Word.";
     }
     
@@ -108,6 +113,9 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
         ));
         onUploadSuccess();
         
+        // LS-107: Show success notification with filename
+        notifications.success.documentUploaded(uploadFile.file.name);
+        
         // Remove successful uploads after 2 seconds using stable file properties
         setTimeout(() => {
           setFiles(prev => prev.filter(f => 
@@ -129,6 +137,9 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
           error: error instanceof Error ? error.message : 'Error desconocido'
         } : f
       ));
+      
+      // LS-107: Show error notification with filename
+      notifications.error.uploadFailed(uploadFile.file.name);
     } finally {
       if (progressInterval) {
         clearInterval(progressInterval);

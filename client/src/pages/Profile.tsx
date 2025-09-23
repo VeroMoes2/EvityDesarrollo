@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { notifications } from "@/lib/notifications";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -56,17 +57,13 @@ export default function Profile() {
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "No autorizado",
-        description: "Debes iniciar sesión para acceder a tu perfil",
-        variant: "destructive",
-      });
+      notifications.error.unauthorized();
       setTimeout(() => {
         window.location.href = "/api/login";
       }, 500);
       return;
     }
-  }, [isAuthenticated, isLoading, toast]);
+  }, [isAuthenticated, isLoading]);
 
   // Fetch medical documents
   const { data: documentsData, isLoading: documentsLoading } = useQuery({
@@ -74,11 +71,7 @@ export default function Profile() {
     enabled: isAuthenticated,
     onError: (error) => {
       if (isUnauthorizedError(error)) {
-        toast({
-          title: "No autorizado",
-          description: "Tu sesión ha expirado. Iniciando sesión nuevamente...",
-          variant: "destructive",
-        });
+        notifications.error.unauthorized();
         setTimeout(() => {
           window.location.href = "/api/login";
         }, 500);
@@ -93,28 +86,17 @@ export default function Profile() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/profile/medical-documents"] });
-      toast({
-        title: "Documento eliminado",
-        description: "El documento se ha eliminado correctamente",
-      });
+      notifications.success.documentDeleted();
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
-        toast({
-          title: "No autorizado",
-          description: "Tu sesión ha expirado. Iniciando sesión nuevamente...",
-          variant: "destructive",
-        });
+        notifications.error.unauthorized();
         setTimeout(() => {
           window.location.href = "/api/login";
         }, 500);
         return;
       }
-      toast({
-        title: "Error",
-        description: "No se pudo eliminar el documento",
-        variant: "destructive",
-      });
+      notifications.error.networkError();
     },
   });
 
@@ -128,20 +110,11 @@ export default function Profile() {
       // Update auth context with new user data
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       setIsEditDialogOpen(false);
-      toast({
-        title: "Perfil actualizado",
-        description: response.emailChanged 
-          ? "Tu información personal se ha actualizado. Si cambiaste tu email, revisa tu bandeja de entrada para verificarlo."
-          : "Tu información personal se ha actualizado correctamente",
-      });
+      notifications.success.profileUpdated();
     },
     onError: (error: any) => {
       if (isUnauthorizedError(error)) {
-        toast({
-          title: "No autorizado",
-          description: "Tu sesión ha expirado. Iniciando sesión nuevamente...",
-          variant: "destructive",
-        });
+        notifications.error.unauthorized();
         setTimeout(() => {
           window.location.href = "/api/login";
         }, 500);
@@ -154,11 +127,7 @@ export default function Profile() {
           message: error.response.data.message
         });
       } else {
-        toast({
-          title: "Error",
-          description: error?.response?.data?.message || "No se pudo actualizar el perfil",
-          variant: "destructive",
-        });
+        notifications.error.profileUpdateFailed();
       }
     },
   });
@@ -183,10 +152,7 @@ export default function Profile() {
 
     // Only submit if there are changes
     if (Object.keys(changedData).length === 0) {
-      toast({
-        title: "Sin cambios",
-        description: "No has realizado ningún cambio en tu perfil",
-      });
+      notifications.info.autoSaved();
       setIsEditDialogOpen(false);
       return;
     }
