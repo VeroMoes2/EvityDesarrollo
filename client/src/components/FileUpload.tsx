@@ -41,20 +41,20 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getFileTypeLabel = () => {
-    return fileType === "study" ? "estudios médicos" : "resultados de laboratorio";
+    return fileType === "study" ? t('fileUpload.medicalStudies') : t('fileUpload.labResults');
   };
 
   const validateFile = (file: File): string | null => {
     if (file.size > MAX_FILE_SIZE) {
       // LS-107: Show validation error notification
-      notifications.error.validationError(`tamaño de archivo (máximo 10MB, recibido ${Math.round(file.size / 1024 / 1024)}MB)`);
-      return "El archivo es demasiado grande. Máximo 10MB.";
+      notifications.error.validationError(t('fileUpload.fileSizeValidation').replace('{size}', Math.round(file.size / 1024 / 1024).toString()));
+      return t('fileUpload.fileTooLarge');
     }
     
     if (!ACCEPTED_TYPES.includes(file.type)) {
       // LS-107: Show validation error notification
-      notifications.error.validationError(`tipo de archivo (solo PDF, imágenes y documentos de Word)`);
-      return "Tipo de archivo no permitido. Solo PDF, imágenes y documentos de Word.";
+      notifications.error.validationError(t('fileUpload.fileTypeValidation'));
+      return t('fileUpload.invalidFileType');
     }
     
     return null;
@@ -129,14 +129,14 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
         }, 2000);
       } else {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al subir archivo');
+        throw new Error(errorData.message || t('fileUpload.uploadError'));
       }
     } catch (error) {
       setFiles(prev => prev.map((f, i) => 
         i === fileIndex ? { 
           ...f, 
           uploading: false, 
-          error: error instanceof Error ? error.message : 'Error desconocido'
+          error: error instanceof Error ? error.message : t('fileUpload.unknownError')
         } : f
       ));
       
@@ -196,13 +196,13 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
         <CardContent className="flex flex-col items-center justify-center py-8 text-center">
           <Upload className="h-12 w-12 text-gray-400 mb-4" />
           <p className="text-lg font-medium text-gray-700 mb-2">
-            Subir {getFileTypeLabel()}
+            {t('fileUpload.upload')} {getFileTypeLabel()}
           </p>
           <p className="text-sm text-gray-500 mb-4">
-            Arrastra archivos aquí o haz clic para seleccionar
+            {t('fileUpload.dragHere')}
           </p>
           <p className="text-xs text-gray-400">
-            PDF, imágenes, Word • Máximo 10MB
+            {t('fileUpload.formats')}
           </p>
         </CardContent>
       </Card>
@@ -250,7 +250,7 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
                       disabled={disabled || !!uploadFile.error}
                       data-testid={`button-upload-file-${index}`}
                     >
-                      Subir
+                      {t('fileUpload.upload')}
                     </Button>
                   )}
 
@@ -276,7 +276,7 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
               {uploadFile.uploading && (
                 <div className="mt-3">
                   <div className="flex justify-between text-sm text-gray-600">
-                    <span>Subiendo...</span>
+                    <span>{t('fileUpload.uploading')}</span>
                     <span>{uploadFile.progress}%</span>
                   </div>
                   <Progress value={uploadFile.progress} className="mt-1" />

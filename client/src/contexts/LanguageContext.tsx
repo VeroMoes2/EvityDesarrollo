@@ -272,6 +272,20 @@ const translations = {
     'common.and': 'y',
     'common.required': 'requerido',
     'common.optional': 'opcional',
+    
+    // File Upload
+    'fileUpload.medicalStudies': 'estudios médicos',
+    'fileUpload.labResults': 'resultados de laboratorio',
+    'fileUpload.dragHere': 'Arrastra archivos aquí o haz clic para seleccionar',
+    'fileUpload.formats': 'PDF, imágenes, Word • Máximo 10MB',
+    'fileUpload.upload': 'Subir',
+    'fileUpload.uploading': 'Subiendo...',
+    'fileUpload.fileTooLarge': 'El archivo es demasiado grande. Máximo 10MB.',
+    'fileUpload.invalidFileType': 'Tipo de archivo no permitido. Solo PDF, imágenes y documentos de Word.',
+    'fileUpload.uploadError': 'Error al subir archivo',
+    'fileUpload.unknownError': 'Error desconocido',
+    'fileUpload.fileSizeValidation': 'tamaño de archivo (máximo 10MB, recibido {size}MB)',
+    'fileUpload.fileTypeValidation': 'tipo de archivo (solo PDF, imágenes y documentos de Word)',
   },
   
   en: {
@@ -534,6 +548,20 @@ const translations = {
     'common.and': 'and',
     'common.required': 'required',
     'common.optional': 'optional',
+    
+    // File Upload
+    'fileUpload.medicalStudies': 'medical studies',
+    'fileUpload.labResults': 'lab results',
+    'fileUpload.dragHere': 'Drag files here or click to select',
+    'fileUpload.formats': 'PDF, images, Word • Maximum 10MB',
+    'fileUpload.upload': 'Upload',
+    'fileUpload.uploading': 'Uploading...',
+    'fileUpload.fileTooLarge': 'File is too large. Maximum 10MB.',
+    'fileUpload.invalidFileType': 'File type not allowed. Only PDF, images and Word documents.',
+    'fileUpload.uploadError': 'Upload error',
+    'fileUpload.unknownError': 'Unknown error',
+    'fileUpload.fileSizeValidation': 'file size (maximum 10MB, received {size}MB)',
+    'fileUpload.fileTypeValidation': 'file type (only PDF, images and Word documents)',
   }
 };
 
