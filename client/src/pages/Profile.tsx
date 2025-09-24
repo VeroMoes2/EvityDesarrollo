@@ -351,7 +351,7 @@ export default function Profile() {
                                     <Input 
                                       {...field} 
                                       type="tel"
-                                      placeholder="Ej: 5551234567 o +525551234567"
+                                      placeholder="Ej: +52 5551234567 (MX) o +1 5551234567 (US)"
                                       data-testid="input-phone-number-profile"
                                       autoComplete="tel"
                                     />
