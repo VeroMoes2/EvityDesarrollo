@@ -285,13 +285,46 @@ export class JiraService {
    */
   async markIssueAsCompleted(issueKey: string, comment?: string): Promise<{ success: boolean; message: string }> {
     try {
+      // Get current issue info
+      const issue = await this.getIssueByKey(issueKey);
+      if (!issue) {
+        return {
+          success: false,
+          message: `Issue ${issueKey} not found`
+        };
+      }
+
+      console.log(`Current issue status: ${issue.status}`);
+
       // Get available transitions
-      const transitions = await this.getIssueTransitions(issueKey);
+      let transitions = await this.getIssueTransitions(issueKey);
+      console.log(`Available transitions from ${issue.status}:`, transitions);
       
-      // Look for completion transitions (Done, Completed, Cerrado, etc.)
-      const completionTransition = transitions.find(t => 
-        ['Done', 'Completed', 'Cerrado', 'Terminado', 'Finalizado'].includes(t.to.name)
+      // Look for completion transitions (Done, Completed, Cerrado, Finalizada, etc.)
+      let completionTransition = transitions.find(t => 
+        ['Done', 'Completed', 'Cerrado', 'Terminado', 'Finalizado', 'Finalizada'].includes(t.to.name)
       );
+
+      // If not directly available, try to move through intermediate states
+      if (!completionTransition) {
+        // Try to move to "En curso" first if available
+        const inProgressTransition = transitions.find(t => 
+          ['En curso', 'In Progress', 'En progreso'].includes(t.to.name)
+        );
+        
+        if (inProgressTransition) {
+          console.log(`Moving to in-progress state first: ${inProgressTransition.to.name}`);
+          await this.transitionIssue(issueKey, inProgressTransition.id, 'Moviendo a en curso para completar');
+          
+          // Get new transitions after moving to in progress
+          transitions = await this.getIssueTransitions(issueKey);
+          console.log(`New transitions after moving to in-progress:`, transitions);
+          
+          completionTransition = transitions.find(t => 
+            ['Done', 'Completed', 'Cerrado', 'Terminado', 'Finalizado', 'Finalizada'].includes(t.to.name)
+          );
+        }
+      }
 
       if (!completionTransition) {
         return {
@@ -300,7 +333,8 @@ export class JiraService {
         };
       }
 
-      // Execute the transition
+      // Execute the final completion transition
+      console.log(`Executing final transition to: ${completionTransition.to.name}`);
       await this.transitionIssue(issueKey, completionTransition.id, comment);
 
       return {
