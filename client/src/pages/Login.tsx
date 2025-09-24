@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { notifications } from "@/lib/notifications";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -42,6 +43,7 @@ export default function Login() {
   const [, setLocation] = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
+  const { t } = useLanguage();
   const queryClient = useQueryClient();
 
   const form = useForm<LoginForm>({
@@ -100,16 +102,16 @@ export default function Login() {
             <Link href="/" data-testid="link-back-home">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Volver
+                {t('login.back')}
               </Button>
             </Link>
           </div>
           <CardTitle className="text-2xl font-bold text-center">
             <LogIn className="h-6 w-6 mx-auto mb-2" />
-            Iniciar Sesión
+            {t('login.title')}
           </CardTitle>
           <CardDescription className="text-center">
-            Ingresa a tu cuenta de Evity
+            {t('login.subtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -121,12 +123,12 @@ export default function Login() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{t('login.email')}</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="email"
-                        placeholder="tu@email.com"
+                        placeholder={t('login.email')}
                         data-testid="input-email"
                         autoComplete="email"
                         autoFocus
@@ -143,13 +145,13 @@ export default function Login() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Contraseña</FormLabel>
+                    <FormLabel>{t('login.password')}</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           {...field}
                           type={showPassword ? "text" : "password"}
-                          placeholder="Tu contraseña"
+                          placeholder={t('login.password')}
                           data-testid="input-password"
                           autoComplete="current-password"
                         />
@@ -178,7 +180,7 @@ export default function Login() {
               <div className="flex justify-end">
                 <Link href="/forgot-password" data-testid="link-forgot-password">
                   <Button variant="ghost" className="px-0 text-sm">
-                    ¿Olvidaste tu contraseña?
+                    {t('login.forgotPassword')}
                   </Button>
                 </Link>
               </div>
@@ -189,17 +191,17 @@ export default function Login() {
                 disabled={loginMutation.isPending}
                 data-testid="button-login"
               >
-                {loginMutation.isPending ? "Iniciando sesión..." : "Iniciar Sesión"}
+                {loginMutation.isPending ? t('login.loggingIn') : t('login.loginButton')}
               </Button>
             </form>
           </Form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
-              ¿No tienes cuenta?{" "}
+              {t('login.noAccount')}{" "}
               <Link href="/register" data-testid="link-register">
                 <Button variant="ghost" className="p-0 h-auto">
-                  Regístrate aquí
+                  {t('login.signUpHere')}
                 </Button>
               </Link>
             </p>
