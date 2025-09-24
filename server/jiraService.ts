@@ -14,6 +14,7 @@ export interface JiraIssue {
   status: string;
   assignee?: {
     displayName?: string;
+    accountId?: string;
   };
   priority: string;
   created: string;
@@ -22,6 +23,27 @@ export interface JiraIssue {
   project: {
     key: string;
     name: string;
+  };
+}
+
+export interface JiraTransition {
+  id: string;
+  name: string;
+  to: { name: string };
+  fields?: Record<string, {
+    required: boolean;
+    hasDefaultValue: boolean;
+    name: string;
+    allowedValues?: Array<{ id: string; name: string; value?: string }>;
+  }>;
+}
+
+export interface JiraPermissions {
+  [permissionKey: string]: {
+    id: string;
+    key: string;
+    name: string;
+    havePermission: boolean;
   };
 }
 
@@ -231,18 +253,28 @@ export class JiraService {
   }
 
   /**
-   * Get available transitions for an issue
+   * Get available transitions for an issue with field metadata
    */
-  async getIssueTransitions(issueKey: string): Promise<Array<{ id: string; name: string; to: { name: string } }>> {
+  async getIssueTransitions(issueKey: string): Promise<JiraTransition[]> {
     try {
       const transitions = await this.client.issues.getTransitions({
-        issueIdOrKey: issueKey
+        issueIdOrKey: issueKey,
+        expand: 'transitions.fields'
       });
 
       return transitions.transitions?.map(transition => ({
         id: transition.id!,
         name: transition.name!,
-        to: { name: transition.to?.name || '' }
+        to: { name: transition.to?.name || '' },
+        fields: transition.fields ? Object.entries(transition.fields).reduce((acc, [key, field]) => {
+          acc[key] = {
+            required: field.required || false,
+            hasDefaultValue: field.hasDefaultValue || false,
+            name: field.name || key,
+            allowedValues: field.allowedValues || undefined
+          };
+          return acc;
+        }, {} as Record<string, any>) : undefined
       })) || [];
     } catch (error) {
       throw new Error(`Failed to get transitions for issue ${issueKey}: ${error}`);
@@ -250,27 +282,108 @@ export class JiraService {
   }
 
   /**
-   * Transition an issue to a new status
+   * Check user permissions for issue operations
+   */
+  async checkPermissions(issueKey?: string): Promise<JiraPermissions> {
+    try {
+      const permissions = await this.client.permissions.getMyPermissions({
+        issueKey,
+        permissions: 'TRANSITION_ISSUES,RESOLVE_ISSUES,ASSIGN_ISSUES'
+      });
+
+      return permissions.permissions || ({} as JiraPermissions);
+    } catch (error) {
+      console.warn(`Could not check permissions: ${error}`);
+      return {} as JiraPermissions;
+    }
+  }
+
+  /**
+   * Get available resolutions for the project
+   */
+  async getResolutions(): Promise<Array<{ id: string; name: string; description?: string }>> {
+    try {
+      const resolutions = await this.client.issueResolutions.getResolutions();
+      return resolutions.map(res => ({
+        id: res.id!,
+        name: res.name!,
+        description: res.description
+      }));
+    } catch (error) {
+      console.warn(`Could not fetch resolutions: ${error}`);
+      return [{ id: '1', name: 'Done' }]; // Default fallback
+    }
+  }
+
+  /**
+   * Transition an issue to a new status with automatic field population
    */
   async transitionIssue(issueKey: string, transitionId: string, comment?: string): Promise<void> {
     try {
+      // Get transition metadata to understand required fields
+      const transitions = await this.getIssueTransitions(issueKey);
+      const targetTransition = transitions.find(t => t.id === transitionId);
+      
+      if (!targetTransition) {
+        throw new Error(`Transition ${transitionId} not found for issue ${issueKey}`);
+      }
+
       const transitionData: any = {
         transition: {
           id: transitionId
-        }
+        },
+        fields: {},
+        update: {}
       };
+
+      // Handle required fields automatically
+      if (targetTransition.fields) {
+        for (const [fieldKey, fieldMeta] of Object.entries(targetTransition.fields)) {
+          if (fieldMeta.required && !fieldMeta.hasDefaultValue) {
+            console.log(`Processing required field: ${fieldKey} (${fieldMeta.name})`);
+            
+            // Handle resolution field specifically
+            if (fieldKey === 'resolution') {
+              const resolutions = await this.getResolutions();
+              const defaultResolution = resolutions.find(r => r.name === 'Done') || resolutions[0];
+              if (defaultResolution) {
+                transitionData.fields.resolution = { id: defaultResolution.id };
+                console.log(`Setting resolution to: ${defaultResolution.name}`);
+              }
+            }
+            // Handle assignee field
+            else if (fieldKey === 'assignee') {
+              const currentUser = await this.client.myself.getCurrentUser();
+              if (currentUser.accountId) {
+                transitionData.fields.assignee = { accountId: currentUser.accountId };
+                console.log(`Setting assignee to current user: ${currentUser.displayName}`);
+              }
+            }
+            // Handle other required fields with default values
+            else if (fieldMeta.allowedValues && fieldMeta.allowedValues.length > 0) {
+              const defaultValue = fieldMeta.allowedValues[0];
+              if (defaultValue.id) {
+                transitionData.fields[fieldKey] = { id: defaultValue.id };
+              } else if (defaultValue.value) {
+                transitionData.fields[fieldKey] = defaultValue.value;
+              }
+              console.log(`Setting ${fieldKey} to default value: ${defaultValue.name || defaultValue.value}`);
+            }
+          }
+        }
+      }
 
       // Add comment if provided
       if (comment) {
-        transitionData.update = {
-          comment: [{
-            add: {
-              body: comment
-            }
-          }]
-        };
+        transitionData.update.comment = [{
+          add: {
+            body: comment
+          }
+        }];
       }
 
+      console.log(`Executing transition with data:`, JSON.stringify(transitionData, null, 2));
+      
       await this.client.issues.doTransition({
         issueIdOrKey: issueKey,
         ...transitionData
@@ -281,7 +394,7 @@ export class JiraService {
   }
 
   /**
-   * Mark an issue as done/completed
+   * Mark an issue as done/completed with enhanced automation
    */
   async markIssueAsCompleted(issueKey: string, comment?: string): Promise<{ success: boolean; message: string }> {
     try {
@@ -296,9 +409,22 @@ export class JiraService {
 
       console.log(`Current issue status: ${issue.status}`);
 
-      // Get available transitions
+      // Check permissions first
+      const permissions = await this.checkPermissions(issueKey);
+      console.log(`User permissions:`, permissions);
+
+      // Verify transition permissions
+      const hasTransitionPermission = permissions.TRANSITION_ISSUES?.havePermission !== false;
+      const hasResolvePermission = permissions.RESOLVE_ISSUES?.havePermission !== false;
+      
+      if (!hasTransitionPermission || !hasResolvePermission) {
+        console.warn(`Limited permissions detected. Transition: ${hasTransitionPermission}, Resolve: ${hasResolvePermission}`);
+        // Continue anyway as permissions check might not be accurate
+      }
+
+      // Get available transitions with field metadata
       let transitions = await this.getIssueTransitions(issueKey);
-      console.log(`Available transitions from ${issue.status}:`, transitions);
+      console.log(`Available transitions from ${issue.status}:`, transitions.map(t => `${t.name} → ${t.to.name} (required fields: ${Object.keys(t.fields || {}).filter(k => t.fields![k].required).join(', ') || 'none'})`));
       
       // Look for completion transitions (Done, Completed, Cerrado, Finalizada, etc.)
       let completionTransition = transitions.find(t => 
@@ -314,11 +440,16 @@ export class JiraService {
         
         if (inProgressTransition) {
           console.log(`Moving to in-progress state first: ${inProgressTransition.to.name}`);
+          console.log(`Required fields for in-progress transition:`, Object.keys(inProgressTransition.fields || {}).filter(k => inProgressTransition.fields![k].required));
+          
           await this.transitionIssue(issueKey, inProgressTransition.id, 'Moviendo a en curso para completar');
+          
+          // Wait a moment for Jira to update
+          await new Promise(resolve => setTimeout(resolve, 1000));
           
           // Get new transitions after moving to in progress
           transitions = await this.getIssueTransitions(issueKey);
-          console.log(`New transitions after moving to in-progress:`, transitions);
+          console.log(`New transitions after moving to in-progress:`, transitions.map(t => `${t.name} → ${t.to.name} (required fields: ${Object.keys(t.fields || {}).filter(k => t.fields![k].required).join(', ') || 'none'})`));
           
           completionTransition = transitions.find(t => 
             ['Done', 'Completed', 'Cerrado', 'Terminado', 'Finalizado', 'Finalizada'].includes(t.to.name)
@@ -335,6 +466,8 @@ export class JiraService {
 
       // Execute the final completion transition
       console.log(`Executing final transition to: ${completionTransition.to.name}`);
+      console.log(`Required fields for completion transition:`, Object.keys(completionTransition.fields || {}).filter(k => completionTransition.fields![k].required));
+      
       await this.transitionIssue(issueKey, completionTransition.id, comment);
 
       return {
