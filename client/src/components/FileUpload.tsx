@@ -4,7 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Upload, FileText, X, CheckCircle, AlertCircle } from "lucide-react";
-import { notifications } from "@/lib/notifications";
+import { createNotifications } from "@/lib/notifications";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { uploadWithCsrf } from "@/lib/queryClient";
 
 interface FileUploadProps {
@@ -33,6 +34,8 @@ const ACCEPTED_TYPES = [
 ];
 
 export default function FileUpload({ fileType, onUploadSuccess, disabled }: FileUploadProps) {
+  const { t } = useLanguage();
+  const notifications = createNotifications(t);
   const [files, setFiles] = useState<UploadFile[]>([]);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);

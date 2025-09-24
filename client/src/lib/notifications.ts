@@ -5,56 +5,58 @@ import { toast } from "@/hooks/use-toast"
  * Provides contextual notifications for user actions in the Evity platform
  */
 
-export const notifications = {
+type TranslationFunction = (key: string) => string;
+
+export const createNotifications = (t: TranslationFunction) => ({
   // Success notifications for completed actions
   success: {
     login: () =>
       toast({
         variant: "success",
-        title: "¡Bienvenido!",
-        description: "Has iniciado sesión exitosamente.",
+        title: t('notifications.success.loginTitle'),
+        description: t('notifications.success.loginDesc'),
       }),
     
     logout: () =>
       toast({
         variant: "success", 
-        title: "Sesión cerrada",
-        description: "Has cerrado sesión de forma segura.",
+        title: t('notifications.success.logoutTitle'),
+        description: t('notifications.success.logoutDesc'),
       }),
     
     profileUpdated: () =>
       toast({
         variant: "success",
-        title: "Perfil actualizado",
-        description: "Tu información personal se ha guardado correctamente.",
+        title: t('notifications.success.profileTitle'),
+        description: t('notifications.success.profileDesc'),
       }),
     
     documentUploaded: (fileName: string) =>
       toast({
         variant: "success",
-        title: "Documento subido",
-        description: `${fileName} se ha subido exitosamente.`,
+        title: t('notifications.success.documentTitle'),
+        description: t('notifications.success.documentDesc').replace('{fileName}', fileName),
       }),
     
     documentDeleted: () =>
       toast({
         variant: "success",
-        title: "Documento eliminado",
-        description: "El documento ha sido eliminado correctamente.",
+        title: t('notifications.success.deleteTitle'),
+        description: t('notifications.success.deleteDesc'),
       }),
     
     emailVerified: () =>
       toast({
         variant: "success",
-        title: "Email verificado",
-        description: "Tu dirección de email ha sido confirmada.",
+        title: t('notifications.success.emailTitle'),
+        description: t('notifications.success.emailDesc'),
       }),
     
     passwordReset: () =>
       toast({
         variant: "success",
-        title: "Contraseña restablecida",
-        description: "Tu contraseña ha sido actualizada exitosamente.",
+        title: t('notifications.success.passwordTitle'),
+        description: t('notifications.success.passwordDesc'),
       }),
   },
 
@@ -63,45 +65,45 @@ export const notifications = {
     loginFailed: (message?: string) =>
       toast({
         variant: "destructive",
-        title: "Error de inicio de sesión",
-        description: message || "Credenciales incorrectas. Intenta nuevamente.",
+        title: t('notifications.error.loginTitle'),
+        description: message || t('notifications.error.loginDesc'),
       }),
     
     uploadFailed: (fileName?: string) =>
       toast({
         variant: "destructive",
-        title: "Error al subir archivo",
+        title: t('notifications.error.uploadTitle'),
         description: fileName 
-          ? `No se pudo subir ${fileName}. Verifica el formato y tamaño.`
-          : "No se pudo subir el archivo. Intenta nuevamente.",
+          ? t('notifications.error.uploadFileDesc').replace('{fileName}', fileName)
+          : t('notifications.error.uploadDesc'),
       }),
     
     profileUpdateFailed: () =>
       toast({
         variant: "destructive",
-        title: "Error al actualizar perfil",
-        description: "No se pudieron guardar los cambios. Intenta nuevamente.",
+        title: t('notifications.error.profileTitle'),
+        description: t('notifications.error.profileDesc'),
       }),
     
     networkError: () =>
       toast({
         variant: "destructive",
-        title: "Error de conexión",
-        description: "Verifica tu conexión a internet e intenta nuevamente.",
+        title: t('notifications.error.networkTitle'),
+        description: t('notifications.error.networkDesc'),
       }),
     
     unauthorized: () =>
       toast({
         variant: "destructive",
-        title: "Sesión expirada",
-        description: "Tu sesión ha expirado. Inicia sesión nuevamente.",
+        title: t('notifications.error.unauthorizedTitle'),
+        description: t('notifications.error.unauthorizedDesc'),
       }),
     
     validationError: (field: string) =>
       toast({
         variant: "destructive",
-        title: "Error de validación",
-        description: `Por favor verifica el campo: ${field}`,
+        title: t('notifications.error.validationTitle'),
+        description: t('notifications.error.validationDesc').replace('{field}', field),
       }),
   },
 
@@ -110,29 +112,29 @@ export const notifications = {
     sessionExpiring: (minutes: number) =>
       toast({
         variant: "info",
-        title: "Sesión por expirar",
-        description: `Tu sesión expirará en ${minutes} minutos.`,
+        title: t('notifications.info.sessionTitle'),
+        description: t('notifications.info.sessionDesc').replace('{minutes}', minutes.toString()),
       }),
     
     documentProcessing: () =>
       toast({
         variant: "info",
-        title: "Procesando documento",
-        description: "Tu documento está siendo analizado. Te notificaremos cuando esté listo.",
+        title: t('notifications.info.processingTitle'),
+        description: t('notifications.info.processingDesc'),
       }),
     
     featureComingSoon: (feature: string) =>
       toast({
         variant: "info",
-        title: "Próximamente",
-        description: `La función ${feature} estará disponible pronto.`,
+        title: t('notifications.info.comingSoonTitle'),
+        description: t('notifications.info.comingSoonDesc').replace('{feature}', feature),
       }),
     
     autoSaved: () =>
       toast({
         variant: "info",
-        title: "Guardado automático",
-        description: "Tus cambios han sido guardados automáticamente.",
+        title: t('notifications.info.autoSaveTitle'),
+        description: t('notifications.info.autoSaveDesc'),
       }),
   },
 
@@ -141,29 +143,29 @@ export const notifications = {
     sessionTimeout: () =>
       toast({
         variant: "warning",
-        title: "Advertencia de sesión",
-        description: "Tu sesión está por expirar. Guarda tu trabajo.",
+        title: t('notifications.warning.timeoutTitle'),
+        description: t('notifications.warning.timeoutDesc'),
       }),
     
     unsavedChanges: () =>
       toast({
         variant: "warning",
-        title: "Cambios sin guardar",
-        description: "Tienes cambios sin guardar. ¿Deseas continuar?",
+        title: t('notifications.warning.unsavedTitle'),
+        description: t('notifications.warning.unsavedDesc'),
       }),
     
     storageLimit: () =>
       toast({
         variant: "warning",
-        title: "Límite de almacenamiento",
-        description: "Estás cerca del límite de almacenamiento. Considera eliminar archivos antiguos.",
+        title: t('notifications.warning.storageTitle'),
+        description: t('notifications.warning.storageDesc'),
       }),
     
     documentLimit: () =>
       toast({
         variant: "warning",
-        title: "Límite de documentos",
-        description: "Has alcanzado el límite de documentos. Elimina algunos para subir más.",
+        title: t('notifications.warning.docLimitTitle'),
+        description: t('notifications.warning.docLimitDesc'),
       }),
   },
 
@@ -174,6 +176,9 @@ export const notifications = {
       title,
       description,
     }),
-}
+});
 
-export default notifications
+// All components must use createNotifications(t) for proper internationalization
+// No fallback export to ensure all text is properly translated
+
+export default createNotifications;

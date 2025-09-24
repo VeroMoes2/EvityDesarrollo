@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { notifications } from "@/lib/notifications";
+import { createNotifications } from "@/lib/notifications";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest, logout } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -27,6 +28,8 @@ import FileUpload from "@/components/FileUpload";
 export default function Profile() {
   const { toast } = useToast();
   const { user, isAuthenticated, isLoading } = useAuth();
+  const { t } = useLanguage();
+  const notifications = createNotifications(t);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFileType, setSelectedFileType] = useState("all");
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);

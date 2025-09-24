@@ -34,37 +34,21 @@ import {
 import { Eye, EyeOff, UserPlus, ArrowLeft, Phone } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { phoneNumberSchema } from "@shared/schema";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { createNotifications } from "@/lib/notifications";
 
-// LS-98: Registration validation schema with complete user information
-const registerSchema = z.object({
-  firstName: z.string()
-    .min(2, "El nombre debe tener al menos 2 caracteres")
-    .max(50, "El nombre no puede exceder 50 caracteres")
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "El nombre solo puede contener letras y espacios"),
-  lastName: z.string()
-    .min(2, "El apellido debe tener al menos 2 caracteres")
-    .max(50, "El apellido no puede exceder 50 caracteres")
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "El apellido solo puede contener letras y espacios"),
-  email: z.string()
-    .email("Ingresa un email válido")
-    .min(1, "El email es requerido")
-    .max(100, "El email no puede exceder 100 caracteres"),
-  password: z.string()
-    .min(8, "La contraseña debe tener al menos 8 caracteres")
-    .max(100, "La contraseña no puede exceder 100 caracteres")
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "La contraseña debe contener al menos una minúscula, una mayúscula y un número"),
-  confirmPassword: z.string()
-    .min(1, "Confirma tu contraseña"),
-  gender: z.enum(["masculino", "femenino", "otro", ""], {
-    errorMap: () => ({ message: "Selecciona una opción válida" })
-  }).optional(),
-  phoneNumber: phoneNumberSchema, // LS-110: Phone number validation
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Las contraseñas no coinciden",
-  path: ["confirmPassword"],
-});
+// LS-98: Registration validation schema - will be created inside component to access t()
+// Type will be created inside component
 
-type RegisterForm = z.infer<typeof registerSchema>;
+type RegisterForm = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  gender?: string;
+  phoneNumber: string;
+};
 
 export default function Register() {
   const [, setLocation] = useLocation();
@@ -72,6 +56,37 @@ export default function Register() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { t } = useLanguage();
+  const notifications = createNotifications(t);
+
+  // Create schema inside component to access t() for translations
+  const registerSchema = z.object({
+    firstName: z.string()
+      .min(2, t('register.firstNameMin'))
+      .max(50, t('register.firstNameMax'))
+      .regex(/^[a-zA-ZÀ-ÿ\s]+$/, t('register.firstNameInvalid')),
+    lastName: z.string()
+      .min(2, t('register.lastNameMin'))
+      .max(50, t('register.lastNameMax'))
+      .regex(/^[a-zA-ZÀ-ÿ\s]+$/, t('register.lastNameInvalid')),
+    email: z.string()
+      .email(t('register.invalidEmail'))
+      .min(1, t('register.emailRequired'))
+      .max(100, t('register.emailMax')),
+    password: z.string()
+      .min(8, t('register.passwordMin'))
+      .max(100, t('register.passwordMax'))
+      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, t('register.passwordInvalid')),
+    confirmPassword: z.string()
+      .min(1, t('register.confirmRequired')),
+    gender: z.enum(["masculino", "femenino", "otro", ""], {
+      errorMap: () => ({ message: t('register.genderInvalid') })
+    }).optional(),
+    phoneNumber: phoneNumberSchema,
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: t('register.passwordMismatch'),
+    path: ["confirmPassword"],
+  });
 
   const form = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
@@ -94,8 +109,8 @@ export default function Register() {
     },
     onSuccess: async (data) => {
       toast({
-        title: "¡Registro exitoso!",
-        description: "Tu cuenta ha sido creada correctamente. Bienvenido a Evity.",
+        title: t('register.successToast'),
+        description: t('register.successToastDesc'),
       });
       
       // Refetch auth state and wait for it to complete before redirecting
@@ -108,7 +123,7 @@ export default function Register() {
     onError: (error: any) => {
       console.error("Registration error:", error);
       
-      const errorMessage = error.message || "Error durante el registro";
+      const errorMessage = error.message || t('register.errorDuringToast');
       
       // Handle specific field errors
       if (error.field) {
@@ -119,7 +134,7 @@ export default function Register() {
       } else {
         toast({
           variant: "destructive",
-          title: "Error de registro",
+          title: t('register.errorToast'),
           description: errorMessage,
         });
       }
@@ -139,16 +154,16 @@ export default function Register() {
             <Link href="/" data-testid="link-back-home">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Volver
+                {t('register.backButton')}
               </Button>
             </Link>
           </div>
           <CardTitle className="text-2xl font-bold text-center">
             <UserPlus className="h-6 w-6 mx-auto mb-2" />
-            Crear Cuenta
+            {t('register.title')}
           </CardTitle>
           <CardDescription className="text-center">
-            Completa tus datos para crear tu cuenta en Evity
+            {t('register.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -161,11 +176,11 @@ export default function Register() {
                   name="firstName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nombre *</FormLabel>
+                      <FormLabel>{t('register.firstNameLabel')}</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
-                          placeholder="Tu nombre"
+                          placeholder={t('register.firstNamePlaceholder')}
                           data-testid="input-firstName"
                           autoComplete="given-name"
                         />
@@ -179,11 +194,11 @@ export default function Register() {
                   name="lastName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Apellido *</FormLabel>
+                      <FormLabel>{t('register.lastNameLabel')}</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
-                          placeholder="Tu apellido"
+                          placeholder={t('register.lastNamePlaceholder')}
                           data-testid="input-lastName"
                           autoComplete="family-name"
                         />
@@ -200,12 +215,12 @@ export default function Register() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email *</FormLabel>
+                    <FormLabel>{t('register.emailLabel')}</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="email"
-                        placeholder="tu@email.com"
+                        placeholder={t('register.emailPlaceholder')}
                         data-testid="input-email"
                         autoComplete="email"
                       />
@@ -221,17 +236,17 @@ export default function Register() {
                 name="gender"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Sexo</FormLabel>
+                    <FormLabel>{t('register.genderLabel')}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger data-testid="select-gender">
-                          <SelectValue placeholder="Selecciona una opción" />
+                          <SelectValue placeholder={t('register.genderPlaceholder')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="masculino">Masculino</SelectItem>
-                        <SelectItem value="femenino">Femenino</SelectItem>
-                        <SelectItem value="otro">Otro</SelectItem>
+                        <SelectItem value="masculino">{t('register.genderMale')}</SelectItem>
+                        <SelectItem value="femenino">{t('register.genderFemale')}</SelectItem>
+                        <SelectItem value="otro">{t('register.genderOther')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -245,13 +260,13 @@ export default function Register() {
                 name="phoneNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Número Celular</FormLabel>
+                    <FormLabel>{t('register.phoneLabel')}</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           {...field}
                           type="tel"
-                          placeholder="Ej: +52 5551234567 (MX) o +1 5551234567 (US)"
+                          placeholder={t('register.phonePlaceholder')}
                           data-testid="input-phone-number"
                           autoComplete="tel"
                         />
@@ -269,13 +284,13 @@ export default function Register() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Contraseña *</FormLabel>
+                    <FormLabel>{t('register.passwordLabel')}</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           {...field}
                           type={showPassword ? "text" : "password"}
-                          placeholder="Crea una contraseña segura"
+                          placeholder={t('register.passwordPlaceholder')}
                           data-testid="input-password"
                           autoComplete="new-password"
                         />
@@ -305,13 +320,13 @@ export default function Register() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirmar Contraseña *</FormLabel>
+                    <FormLabel>{t('register.confirmPasswordLabel')}</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           {...field}
                           type={showConfirmPassword ? "text" : "password"}
-                          placeholder="Confirma tu contraseña"
+                          placeholder={t('register.confirmPasswordPlaceholder')}
                           data-testid="input-confirmPassword"
                           autoComplete="new-password"
                         />

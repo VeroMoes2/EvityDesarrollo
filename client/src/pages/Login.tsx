@@ -6,7 +6,7 @@ import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { notifications } from "@/lib/notifications";
+import { createNotifications } from "@/lib/notifications";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +41,7 @@ export default function Login() {
   const { toast } = useToast();
   const { t } = useLanguage();
   const queryClient = useQueryClient();
+  const notifications = createNotifications(t);
 
   // Create schema inside component to access t() for translations
   const loginSchema = z.object({
@@ -79,7 +80,7 @@ export default function Login() {
     onError: (error: any) => {
       console.error("Login error:", error);
       
-      const errorMessage = error.message || "Credenciales inválidas";
+      const errorMessage = error.message || t('notifications.error.loginDesc');
       
       // LS-98: Specific error messages for better UX
       if (error.field) {
