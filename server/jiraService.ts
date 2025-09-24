@@ -291,7 +291,7 @@ export class JiraService {
         permissions: 'TRANSITION_ISSUES,RESOLVE_ISSUES,ASSIGN_ISSUES'
       });
 
-      return permissions.permissions || ({} as JiraPermissions);
+      return (permissions.permissions as JiraPermissions) || ({} as JiraPermissions);
     } catch (error) {
       console.warn(`Could not check permissions: ${error}`);
       return {} as JiraPermissions;
@@ -390,6 +390,58 @@ export class JiraService {
       });
     } catch (error) {
       throw new Error(`Failed to transition issue ${issueKey}: ${error}`);
+    }
+  }
+
+  /**
+   * Add a comment to an issue with robust error handling
+   */
+  async addComment(issueKey: string, commentText: string): Promise<{ success: boolean; message: string }> {
+    try {
+      // Try with correct API format
+      await this.client.issueComments.addComment({
+        issueIdOrKey: issueKey,
+        comment: {
+          body: {
+            type: 'doc',
+            version: 1,
+            content: [
+              {
+                type: 'paragraph',
+                content: [
+                  {
+                    text: commentText,
+                    type: 'text'
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      });
+      
+      return {
+        success: true,
+        message: `Comentario agregado exitosamente a ${issueKey}`
+      };
+    } catch (error) {
+      // Try with simple string format as fallback
+      try {
+        await this.client.issueComments.addComment({
+          issueIdOrKey: issueKey,
+          comment: commentText
+        } as any);
+        
+        return {
+          success: true,
+          message: `Comentario (formato alternativo) agregado a ${issueKey}`
+        };
+      } catch (simpleError) {
+        return {
+          success: false,
+          message: `No se pudo agregar comentario a ${issueKey}: ${simpleError}`
+        };
+      }
     }
   }
 
