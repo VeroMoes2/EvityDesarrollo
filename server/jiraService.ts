@@ -229,4 +229,89 @@ export class JiraService {
       throw new Error(`Failed to fetch project stats for ${projectKey}: ${error}`);
     }
   }
+
+  /**
+   * Get available transitions for an issue
+   */
+  async getIssueTransitions(issueKey: string): Promise<Array<{ id: string; name: string; to: { name: string } }>> {
+    try {
+      const transitions = await this.client.issues.getTransitions({
+        issueIdOrKey: issueKey
+      });
+
+      return transitions.transitions?.map(transition => ({
+        id: transition.id!,
+        name: transition.name!,
+        to: { name: transition.to?.name || '' }
+      })) || [];
+    } catch (error) {
+      throw new Error(`Failed to get transitions for issue ${issueKey}: ${error}`);
+    }
+  }
+
+  /**
+   * Transition an issue to a new status
+   */
+  async transitionIssue(issueKey: string, transitionId: string, comment?: string): Promise<void> {
+    try {
+      const transitionData: any = {
+        transition: {
+          id: transitionId
+        }
+      };
+
+      // Add comment if provided
+      if (comment) {
+        transitionData.update = {
+          comment: [{
+            add: {
+              body: comment
+            }
+          }]
+        };
+      }
+
+      await this.client.issues.doTransition({
+        issueIdOrKey: issueKey,
+        ...transitionData
+      });
+    } catch (error) {
+      throw new Error(`Failed to transition issue ${issueKey}: ${error}`);
+    }
+  }
+
+  /**
+   * Mark an issue as done/completed
+   */
+  async markIssueAsCompleted(issueKey: string, comment?: string): Promise<{ success: boolean; message: string }> {
+    try {
+      // Get available transitions
+      const transitions = await this.getIssueTransitions(issueKey);
+      
+      // Look for completion transitions (Done, Completed, Cerrado, etc.)
+      const completionTransition = transitions.find(t => 
+        ['Done', 'Completed', 'Cerrado', 'Terminado', 'Finalizado'].includes(t.to.name)
+      );
+
+      if (!completionTransition) {
+        return {
+          success: false,
+          message: `No se encontró transición de completado disponible para ${issueKey}. Transiciones disponibles: ${transitions.map(t => t.to.name).join(', ')}`
+        };
+      }
+
+      // Execute the transition
+      await this.transitionIssue(issueKey, completionTransition.id, comment);
+
+      return {
+        success: true,
+        message: `${issueKey} marcado como ${completionTransition.to.name} exitosamente`
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: `Error al marcar ${issueKey} como completado: ${error}`
+      };
+    }
+  }
 }

@@ -742,6 +742,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // LS-110: Endpoint to mark Jira issues as completed
+  app.post('/api/jira/issue/:issueKey/complete', isAuthenticated, async (req, res) => {
+    try {
+      if (process.env.SHOW_JIRA_DEBUG !== 'true') {
+        return res.status(404).json({ error: 'Jira integration is disabled' });
+      }
+
+      const { issueKey } = req.params;
+      const { comment } = req.body;
+
+      if (!issueKey) {
+        return res.status(400).json({ error: 'Issue key is required' });
+      }
+
+      const config = validateJiraConfig();
+      const jiraService = new (await import('./jiraService')).JiraService(config);
+
+      // Mark issue as completed
+      const result = await jiraService.markIssueAsCompleted(
+        issueKey, 
+        comment || `Marcado como completado por ${(req as any).user?.claims?.email || 'usuario'} desde la aplicación Evity`
+      );
+
+      if (result.success) {
+        // Audit log the completion
+        await AuditLogger.log({
+          userId: (req as any).user?.claims?.id || 'unknown',
+          userEmail: (req as any).user?.claims?.email || 'unknown',
+          action: 'ADMIN_ACTION',
+          resource: `jira_issue:${issueKey}`,
+          details: { action: 'issue_completion', issueKey, message: result.message },
+          outcome: 'SUCCESS',
+          riskLevel: 'LOW'
+        });
+
+        res.json(result);
+      } else {
+        res.status(400).json(result);
+      }
+    } catch (error: any) {
+      console.error(`Error marking issue ${req.params.issueKey} as completed:`, error);
+      res.status(500).json({ 
+        error: 'Failed to mark issue as completed', 
+        details: error?.message || error 
+      });
+    }
+  });
+
   // Admin document download/preview endpoints  
   app.get('/api/admin/documents/:id/download', isAdmin, downloadRateLimit, async (req: any, res) => {
     try {
