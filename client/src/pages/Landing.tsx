@@ -6,40 +6,43 @@ import { Link } from "wouter";
 import heroImage from "@assets/image_1758350191302.png";
 import CalculatorSection from "@/components/CalculatorSection";
 import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Landing() {
   const { data, isLoading } = useConfluenceData();
+  const { t } = useLanguage();
 
   const features = [
     {
       icon: Heart,
-      title: "Salud Cardiovascular",
-      description: "Análisis completo de tu sistema cardiovascular con las últimas tecnologías"
+      title: t('landing.cardiovascularHealth'),
+      description: t('landing.cardiovascularDesc')
     },
     {
       icon: Brain,
-      title: "Función Cognitiva",
-      description: "Evaluación de memoria, concentración y rendimiento cerebral"
+      title: t('landing.cognitiveFunction'),
+      description: t('landing.cognitiveDesc')
     },
     {
       icon: Dna,
-      title: "Genética Personalizada",
-      description: "Análisis genético para una medicina verdaderamente personalizada"
+      title: t('landing.personalizedGenetics'),
+      description: t('landing.geneticsDesc')
     },
     {
       icon: Shield,
-      title: "Prevención Avanzada",
-      description: "Detecta riesgos antes de que se conviertan en problemas"
+      title: t('landing.advancedPrevention'),
+      description: t('landing.preventionDesc')
     },
     {
       icon: Microscope,
-      title: "Laboratorios Especializados",
-      description: "Estudios de laboratorio de vanguardia para longevidad"
+      title: t('landing.specializedLabs'),
+      description: t('landing.labsDesc')
     },
     {
       icon: Activity,
-      title: "Monitoreo Continuo",
-      description: "Seguimiento personalizado de tu progreso hacia una vida más larga"
+      title: t('landing.continuousMonitoring'),
+      description: t('landing.monitoringDesc')
     }
   ];
 
@@ -51,7 +54,7 @@ export default function Landing() {
            }}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white mx-auto"></div>
-          <p className="mt-4 text-white">Cargando...</p>
+          <p className="mt-4 text-white">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -59,6 +62,7 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Header />
       {/* Hero Section with Background Image */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background Image with Overlay */}
@@ -75,7 +79,7 @@ export default function Landing() {
             {data?.companyName || 'Evity'}
           </h1>
           <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto" data-testid="text-hero-mission">
-            {data?.mission || 'Transformar la forma en que las personas envejecen, proporcionando herramientas científicas y personalizadas para vivir vidas más largas, saludables y plenas.'}
+            {data?.mission || t('landing.heroMission')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/login">
@@ -84,7 +88,7 @@ export default function Landing() {
                 className="bg-primary text-primary-foreground px-8 py-3 text-lg"
                 data-testid="button-login"
               >
-                Acceder a mi Perfil
+                {t('landing.accessProfile')}
               </Button>
             </Link>
             <Link href="/register">
@@ -94,12 +98,12 @@ export default function Landing() {
                 className="px-8 py-3 text-lg bg-white/10 border-white/30 text-white backdrop-blur-sm"
                 data-testid="button-register"
               >
-                Crear Cuenta
+                {t('landing.createAccount')}
               </Button>
             </Link>
           </div>
           <p className="mt-4 text-sm text-white/70">
-            Inicia sesión o crea una cuenta para cargar tus estudios y laboratorios
+            {t('landing.heroCaption')}
           </p>
         </div>
         
@@ -117,7 +121,7 @@ export default function Landing() {
       <section className="bg-background py-16">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold text-center text-foreground mb-12">
-            ¿Por qué elegir Evity?
+            {t('landing.whyChoose')}
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             {features.map((feature, index) => (
@@ -145,9 +149,9 @@ export default function Landing() {
       {/* Vision Section */}
       <section className="bg-muted/30 py-16">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold text-foreground mb-6">Nuestra Visión</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-6">{t('landing.ourVision')}</h2>
           <p className="text-lg text-muted-foreground max-w-4xl mx-auto" data-testid="text-vision">
-            {data?.vision || 'Ayudarte a vivir más y a vivir mejor'}
+            {data?.vision || t('landing.visionFallback')}
           </p>
         </div>
       </section>
@@ -156,10 +160,10 @@ export default function Landing() {
       <section className="bg-background py-20">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-foreground mb-6">
-            Comienza tu Viaje hacia la Longevidad
+            {t('landing.startJourney')}
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
-            Accede a tu perfil personal y carga tus estudios médicos para recibir análisis personalizados
+            {t('landing.ctaDescription')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/login">
@@ -168,7 +172,7 @@ export default function Landing() {
                 className="bg-primary text-primary-foreground px-8 py-3 text-lg"
                 data-testid="button-login-cta"
               >
-                Iniciar Sesión
+                {t('landing.signIn')}
               </Button>
             </Link>
             <Link href="/register">
@@ -178,7 +182,7 @@ export default function Landing() {
                 className="px-8 py-3 text-lg"
                 data-testid="button-register-cta"
               >
-                Crear Cuenta
+                {t('landing.createAccount')}
               </Button>
             </Link>
           </div>

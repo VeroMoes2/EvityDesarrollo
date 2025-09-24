@@ -89,7 +89,7 @@ export default function CalculatorSection() {
                   <Input
                     id="age"
                     type="number"
-                    placeholder="Ej: 35"
+                    placeholder={t('calculator.agePlaceholder')}
                     value={formData.age}
                     onChange={(e) => handleInputChange("age", e.target.value)}
                     data-testid="input-age"
@@ -105,7 +105,7 @@ export default function CalculatorSection() {
                     <SelectContent>
                       <SelectItem value="male">{t('calculator.male')}</SelectItem>
                       <SelectItem value="female">{t('calculator.female')}</SelectItem>
-                      <SelectItem value="other">Otro</SelectItem>
+                      <SelectItem value="other">{t('calculator.genderOther')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

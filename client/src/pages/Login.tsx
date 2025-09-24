@@ -28,16 +28,12 @@ import {
 import { Eye, EyeOff, LogIn, ArrowLeft } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
-// LS-98: Login validation schema with email/password requirements
-const loginSchema = z.object({
-  email: z.string()
-    .email("Ingresa un email válido")
-    .min(1, "El email es requerido"),
-  password: z.string()
-    .min(1, "La contraseña es requerida"),
-});
+// LS-98: Login validation schema - will be created inside component to access t() function
 
-type LoginForm = z.infer<typeof loginSchema>;
+type LoginForm = {
+  email: string;
+  password: string;
+};
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -45,6 +41,15 @@ export default function Login() {
   const { toast } = useToast();
   const { t } = useLanguage();
   const queryClient = useQueryClient();
+
+  // Create schema inside component to access t() for translations
+  const loginSchema = z.object({
+    email: z.string()
+      .email(t('login.invalidEmail'))
+      .min(1, t('login.emailRequired')),
+    password: z.string()
+      .min(1, t('login.passwordRequired')),
+  });
 
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),

@@ -69,6 +69,8 @@ const translations = {
     'calculator.result': 'Tu expectativa de vida estimada es de',
     'calculator.years': 'años',
     'calculator.joinUs': 'Únete para Mejorar',
+    'calculator.agePlaceholder': 'Ej: 35',
+    'calculator.genderOther': 'Otro',
     
     // Login Page
     'login.title': 'Iniciar Sesión',
@@ -81,6 +83,9 @@ const translations = {
     'login.noAccount': '¿No tienes cuenta?',
     'login.signUpHere': 'Regístrate aquí',
     'login.back': 'Volver',
+    'login.invalidEmail': 'Ingresa un email válido',
+    'login.emailRequired': 'El email es requerido',
+    'login.passwordRequired': 'La contraseña es requerida',
     
     // Register Page
     'register.title': 'Crear Cuenta',
@@ -148,6 +153,30 @@ const translations = {
     'files.lab': 'Laboratorio',
     'files.noFiles': 'No se encontraron archivos',
     'files.upload': 'Subir Archivo',
+    
+    // Landing Page
+    'landing.cardiovascularHealth': 'Salud Cardiovascular',
+    'landing.cardiovascularDesc': 'Análisis completo de tu sistema cardiovascular con las últimas tecnologías',
+    'landing.cognitiveFunction': 'Función Cognitiva',
+    'landing.cognitiveDesc': 'Evaluación de memoria, concentración y rendimiento cerebral',
+    'landing.personalizedGenetics': 'Genética Personalizada', 
+    'landing.geneticsDesc': 'Análisis genético para una medicina verdaderamente personalizada',
+    'landing.advancedPrevention': 'Prevención Avanzada',
+    'landing.preventionDesc': 'Detecta riesgos antes de que se conviertan en problemas',
+    'landing.specializedLabs': 'Laboratorios Especializados',
+    'landing.labsDesc': 'Estudios de laboratorio de vanguardia para longevidad',
+    'landing.continuousMonitoring': 'Monitoreo Continuo',
+    'landing.monitoringDesc': 'Seguimiento personalizado de tu progreso hacia una vida más larga',
+    'landing.heroMission': 'Transformar la forma en que las personas envejecen, proporcionando herramientas científicas y personalizadas para vivir vidas más largas, saludables y plenas.',
+    'landing.accessProfile': 'Acceder a mi Perfil',
+    'landing.createAccount': 'Crear Cuenta',
+    'landing.heroCaption': 'Inicia sesión o crea una cuenta para cargar tus estudios y laboratorios',
+    'landing.whyChoose': '¿Por qué elegir Evity?',
+    'landing.ourVision': 'Nuestra Visión',
+    'landing.visionFallback': 'Ayudarte a vivir más y a vivir mejor',
+    'landing.startJourney': 'Comienza tu Viaje hacia la Longevidad',
+    'landing.ctaDescription': 'Accede a tu perfil personal y carga tus estudios médicos para recibir análisis personalizados',
+    'landing.signIn': 'Iniciar Sesión',
     
     // Common
     'common.loading': 'Cargando...',
@@ -222,6 +251,8 @@ const translations = {
     'calculator.result': 'Your estimated life expectancy is',
     'calculator.years': 'years',
     'calculator.joinUs': 'Join Us to Improve',
+    'calculator.agePlaceholder': 'Ex: 35',
+    'calculator.genderOther': 'Other',
     
     // Login Page
     'login.title': 'Login',
@@ -234,6 +265,9 @@ const translations = {
     'login.noAccount': "Don't have an account?",
     'login.signUpHere': 'Sign up here',
     'login.back': 'Back',
+    'login.invalidEmail': 'Please enter a valid email',
+    'login.emailRequired': 'Email is required',
+    'login.passwordRequired': 'Password is required',
     
     // Register Page
     'register.title': 'Create Account',
@@ -301,6 +335,30 @@ const translations = {
     'files.lab': 'Lab',
     'files.noFiles': 'No files found',
     'files.upload': 'Upload File',
+    
+    // Landing Page
+    'landing.cardiovascularHealth': 'Cardiovascular Health',
+    'landing.cardiovascularDesc': 'Complete analysis of your cardiovascular system with the latest technologies',
+    'landing.cognitiveFunction': 'Cognitive Function',
+    'landing.cognitiveDesc': 'Evaluation of memory, concentration and brain performance',
+    'landing.personalizedGenetics': 'Personalized Genetics', 
+    'landing.geneticsDesc': 'Genetic analysis for truly personalized medicine',
+    'landing.advancedPrevention': 'Advanced Prevention',
+    'landing.preventionDesc': 'Detect risks before they become problems',
+    'landing.specializedLabs': 'Specialized Laboratories',
+    'landing.labsDesc': 'Cutting-edge laboratory studies for longevity',
+    'landing.continuousMonitoring': 'Continuous Monitoring',
+    'landing.monitoringDesc': 'Personalized tracking of your progress towards a longer life',
+    'landing.heroMission': 'Transform the way people age, providing scientific and personalized tools to live longer, healthier and more fulfilling lives.',
+    'landing.accessProfile': 'Access My Profile',
+    'landing.createAccount': 'Create Account',
+    'landing.heroCaption': 'Sign in or create an account to upload your studies and laboratory results',
+    'landing.whyChoose': 'Why choose Evity?',
+    'landing.ourVision': 'Our Vision',
+    'landing.visionFallback': 'Help you live longer and live better',
+    'landing.startJourney': 'Start Your Journey to Longevity',
+    'landing.ctaDescription': 'Access your personal profile and upload your medical studies to receive personalized analysis',
+    'landing.signIn': 'Sign In',
     
     // Common
     'common.loading': 'Loading...',

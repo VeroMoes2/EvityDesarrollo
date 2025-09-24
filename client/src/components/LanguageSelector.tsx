@@ -17,6 +17,9 @@ export default function LanguageSelector() {
   ];
 
   const currentLanguage = languages.find(lang => lang.code === language);
+  
+  // Debug logging to help with testing
+  console.log('LanguageSelector rendered with language:', language, 'currentLanguage:', currentLanguage);
 
   return (
     <DropdownMenu>
