@@ -7,6 +7,8 @@ import { useLocation } from "wouter";
 import { logout } from "@/lib/queryClient";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useLanguage } from "@/contexts/LanguageContext";
+import LanguageSelector from "@/components/LanguageSelector";
 
 // Helper function to check if user is admin (case-insensitive)
 const isUserAdmin = (user: any): boolean => {
@@ -19,6 +21,7 @@ export default function Header() {
   const { data: confluenceData } = useConfluenceData();
   const { user, isAuthenticated, isLoading } = useAuth();
   const [, navigate] = useLocation();
+  const { t } = useLanguage();
   const userIsAdmin = isUserAdmin(user);
 
   useEffect(() => {
@@ -60,39 +63,41 @@ export default function Header() {
               className="text-foreground hover:text-primary transition-colors"
               data-testid="nav-inicio"
             >
-              Inicio
+              {t('nav.home')}
             </button>
             <button 
               onClick={() => scrollToSection("recursos")} 
               className="text-foreground hover:text-primary transition-colors"
               data-testid="nav-recursos"
             >
-              Recursos
+              {t('footer.resources')}
             </button>
             <button 
               onClick={() => scrollToSection("calculadora")} 
               className="text-foreground hover:text-primary transition-colors"
               data-testid="nav-calculadora"
             >
-              Calculadora
+              {t('nav.calculator')}
             </button>
             <button 
               onClick={() => scrollToSection("blog")} 
               className="text-foreground hover:text-primary transition-colors"
               data-testid="nav-blog"
             >
-              Blog
+              {t('footer.blog')}
             </button>
             <button 
               onClick={() => navigate('/nosotros')} 
               className="text-foreground hover:text-primary transition-colors"
               data-testid="nav-nosotros"
             >
-              Nosotros
+              {t('nav.about')}
             </button>
           </nav>
 
           <div className="flex items-center space-x-4">
+            <LanguageSelector />
+            
             <Button 
               variant="ghost" 
               size="icon" 
@@ -131,7 +136,7 @@ export default function Header() {
                     data-testid="menu-item-profile"
                   >
                     <User className="mr-2 h-4 w-4" />
-                    <span>Mi Perfil</span>
+                    <span>{t('nav.profile')}</span>
                   </DropdownMenuItem>
                   {userIsAdmin && (
                     <DropdownMenuItem 
@@ -150,7 +155,7 @@ export default function Header() {
                     data-testid="menu-item-logout"
                   >
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span>Cerrar Sesión</span>
+                    <span>{t('nav.logout')}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -173,33 +178,37 @@ export default function Header() {
         {isMenuOpen && (
           <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-md">
             <nav className="px-4 py-4 space-y-4">
+              <div className="flex justify-center mb-4">
+                <LanguageSelector />
+              </div>
+              
               <button 
                 onClick={() => scrollToSection("inicio")} 
                 className="block w-full text-left text-foreground hover:text-primary transition-colors"
                 data-testid="nav-mobile-inicio"
               >
-                Inicio
+                {t('nav.home')}
               </button>
               <button 
                 onClick={() => scrollToSection("recursos")} 
                 className="block w-full text-left text-foreground hover:text-primary transition-colors"
                 data-testid="nav-mobile-recursos"
               >
-                Recursos
+                {t('footer.resources')}
               </button>
               <button 
                 onClick={() => scrollToSection("calculadora")} 
                 className="block w-full text-left text-foreground hover:text-primary transition-colors"
                 data-testid="nav-mobile-calculadora"
               >
-                Calculadora
+                {t('nav.calculator')}
               </button>
               <button 
                 onClick={() => scrollToSection("blog")} 
                 className="block w-full text-left text-foreground hover:text-primary transition-colors"
                 data-testid="nav-mobile-blog"
               >
-                Blog
+                {t('footer.blog')}
               </button>
               <button 
                 onClick={() => {
@@ -209,7 +218,7 @@ export default function Header() {
                 className="block w-full text-left text-foreground hover:text-primary transition-colors"
                 data-testid="nav-mobile-nosotros"
               >
-                Nosotros
+                {t('nav.about')}
               </button>
               <Button 
                 onClick={() => navigate('/contacto')}
@@ -245,7 +254,7 @@ export default function Header() {
                       }}
                     >
                       <User className="mr-2 h-4 w-4" />
-                      Mi Perfil
+                      {t('nav.profile')}
                     </Button>
                     {userIsAdmin && (
                       <Button 
@@ -268,7 +277,7 @@ export default function Header() {
                       data-testid="button-mobile-logout"
                     >
                       <LogOut className="mr-2 h-4 w-4" />
-                      Cerrar Sesión
+                      {t('nav.logout')}
                     </Button>
                   </div>
                 </>
