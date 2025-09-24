@@ -102,9 +102,24 @@ export function normalizeGender(gender: string | undefined | null): string | und
   return genderLegacyMap[gender as keyof typeof genderLegacyMap] || gender;
 }
 
-// LS-110: Phone number validation for Mexican format
+// LS-110: Phone number validation for Mexican and US formats
 export const phoneNumberSchema = z.string()
-  .regex(/^(\+52)?\s?[1-9]\d{9}$/, "Ingresa un número celular válido (10 dígitos)")
+  .refine((value) => {
+    if (!value || value.trim() === '') return true; // Optional field
+    
+    // Remove all spaces, dashes, parentheses, and dots for validation
+    const cleanNumber = value.replace(/[\s\-\(\)\.\+]/g, '');
+    
+    // Mexican format: +52 followed by 10 digits or just 10 digits starting with non-zero
+    const mexicanPattern = /^(52)?[1-9]\d{9}$/;
+    
+    // US format: +1 followed by 10 digits or just 10 digits
+    const usPattern = /^(1)?[2-9]\d{9}$/;
+    
+    return mexicanPattern.test(cleanNumber) || usPattern.test(cleanNumber);
+  }, {
+    message: "Ingresa un número válido. Formatos: +52 5551234567 (México) o +1 5551234567 (EE.UU.)"
+  })
   .optional();
 
 // Create schemas for the tables
