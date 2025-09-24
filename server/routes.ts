@@ -770,7 +770,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await AuditLogger.log({
           userId: (req as any).user?.claims?.id || 'unknown',
           userEmail: (req as any).user?.claims?.email || 'unknown',
-          action: 'ADMIN_ACTION',
+          action: 'DATA_UPDATE',
           resource: `jira_issue:${issueKey}`,
           details: { action: 'issue_completion', issueKey, message: result.message },
           outcome: 'SUCCESS',
