@@ -66,8 +66,8 @@ export default function Login() {
       // This prevents the brief 404 flash that occurs during query invalidation
       await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
       
-      // LS-98: Redirect to profile after successful authentication and auth state refresh
-      setLocation("/profile");
+      // Redirect to home page after successful authentication and auth state refresh
+      setLocation("/");
     },
     onError: (error: any) => {
       console.error("Login error:", error);
