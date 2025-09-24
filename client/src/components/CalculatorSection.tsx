@@ -8,10 +8,12 @@ import { useState } from "react";
 import { Calculator, TrendingUp, Heart, Activity, MessageCircle } from "lucide-react";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
 import { useLocation } from "wouter";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function CalculatorSection() {
   const { data: confluenceData, isLoading, error } = useConfluenceData();
   const [, navigate] = useLocation();
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     age: "",
     gender: "",
@@ -64,10 +66,10 @@ export default function CalculatorSection() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-            Calculadora {companyName}
+            {t('calculator.title')} {companyName}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            {confluenceData?.mission || "Descubre tu expectativa de vida basada en tu estilo de vida actual y obtén recomendaciones personalizadas para mejorarla."}
+            {confluenceData?.mission || t('calculator.subtitle')}
           </p>
         </div>
 
@@ -78,12 +80,12 @@ export default function CalculatorSection() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calculator className="h-5 w-5 text-primary" />
-                  Ingresa tus Datos
+                  {t('calculator.age')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="age">Edad</Label>
+                  <Label htmlFor="age">{t('calculator.age')}</Label>
                   <Input
                     id="age"
                     type="number"
@@ -95,50 +97,50 @@ export default function CalculatorSection() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="gender">Género</Label>
+                  <Label htmlFor="gender">{t('calculator.gender')}</Label>
                   <Select value={formData.gender} onValueChange={(value) => handleInputChange("gender", value)}>
                     <SelectTrigger data-testid="select-gender">
-                      <SelectValue placeholder="Selecciona tu género" />
+                      <SelectValue placeholder={t('calculator.gender')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="male">Masculino</SelectItem>
-                      <SelectItem value="female">Femenino</SelectItem>
+                      <SelectItem value="male">{t('calculator.male')}</SelectItem>
+                      <SelectItem value="female">{t('calculator.female')}</SelectItem>
                       <SelectItem value="other">Otro</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="exercise">Frecuencia de Ejercicio</Label>
+                  <Label htmlFor="exercise">{t('calculator.exercise')}</Label>
                   <Select value={formData.exercise} onValueChange={(value) => handleInputChange("exercise", value)}>
                     <SelectTrigger data-testid="select-exercise">
-                      <SelectValue placeholder="¿Con qué frecuencia haces ejercicio?" />
+                      <SelectValue placeholder={t('calculator.exercise')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="daily">Diariamente</SelectItem>
-                      <SelectItem value="weekly">3-5 veces por semana</SelectItem>
-                      <SelectItem value="occasionally">Ocasionalmente</SelectItem>
-                      <SelectItem value="never">Nunca</SelectItem>
+                      <SelectItem value="daily">{t('calculator.exerciseDaily')}</SelectItem>
+                      <SelectItem value="weekly">{t('calculator.exerciseWeekly')}</SelectItem>
+                      <SelectItem value="occasionally">{t('calculator.exerciseOccasional')}</SelectItem>
+                      <SelectItem value="never">{t('calculator.exerciseNever')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="smoking">Hábito de Fumar</Label>
+                  <Label htmlFor="smoking">{t('calculator.smoking')}</Label>
                   <Select value={formData.smoking} onValueChange={(value) => handleInputChange("smoking", value)}>
                     <SelectTrigger data-testid="select-smoking">
-                      <SelectValue placeholder="¿Fumas o has fumado?" />
+                      <SelectValue placeholder={t('calculator.smoking')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="never">Nunca he fumado</SelectItem>
-                      <SelectItem value="former">Ex-fumador</SelectItem>
-                      <SelectItem value="current">Fumador actual</SelectItem>
+                      <SelectItem value="never">{t('calculator.smokingNever')}</SelectItem>
+                      <SelectItem value="former">{t('calculator.smokingFormer')}</SelectItem>
+                      <SelectItem value="current">{t('calculator.smokingCurrent')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="diet">Tipo de Dieta</Label>
+                  <Label htmlFor="diet">{t('calculator.diet')}</Label>
                   <Select value={formData.diet} onValueChange={(value) => handleInputChange("diet", value)}>
                     <SelectTrigger data-testid="select-diet">
                       <SelectValue placeholder="¿Cómo describes tu dieta?" />

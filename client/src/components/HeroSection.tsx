@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import heroImage from "@assets/image_1758350191302.png";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function HeroSection() {
   const { data: confluenceData } = useConfluenceData();
+  const { t } = useLanguage();
   
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -13,9 +15,8 @@ export default function HeroSection() {
     }
   };
 
-
   const companyName = confluenceData?.companyName || "Evity";
-  const valueProposition = "Descubre los secretos científicos de la longevidad. Herramientas personalizadas, recursos basados en evidencia y una comunidad dedicada a vivir más y mejor.";
+  const valueProposition = t('hero.valueProposition');
 
   return (
     <section 
@@ -35,7 +36,7 @@ export default function HeroSection() {
         <div className="max-w-4xl mx-auto">
           
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-            Bienvenido a
+            {t('hero.welcome')}
             <span className="block text-transparent bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text">
               {companyName}
             </span>
@@ -52,7 +53,7 @@ export default function HeroSection() {
               onClick={() => scrollToSection("calculadora")}
               data-testid="button-hero-calcular"
             >
-              Descubre Más
+              {t('hero.discoverMore')}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
