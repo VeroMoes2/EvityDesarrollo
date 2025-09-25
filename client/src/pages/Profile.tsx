@@ -174,7 +174,7 @@ export default function Profile() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando perfil...</p>
+          <p className="mt-4 text-gray-600">{t('profile.loadingProfile')}</p>
         </div>
       </div>
     );
@@ -212,17 +212,17 @@ export default function Profile() {
                   className="flex items-center space-x-2"
                 >
                   <ArrowLeft className="h-4 w-4" />
-                  <span>Inicio</span>
+                  <span>{t('profile.backHome')}</span>
                 </Button>
               </Link>
-              <h1 className="text-2xl font-bold text-gray-900">Mi Perfil</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{t('profile.myProfile')}</h1>
             </div>
             <Button 
               variant="outline" 
               onClick={logout}
               data-testid="button-logout"
             >
-              Cerrar Sesión
+              {t('profile.logout')}
             </Button>
           </div>
         </div>
@@ -237,7 +237,7 @@ export default function Profile() {
                 <CardTitle className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <User className="h-5 w-5" />
-                    <span>Información Personal</span>
+                    <span>{t('profile.personalInfo')}</span>
                   </div>
                   <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                     <DialogTrigger asChild>
@@ -248,14 +248,14 @@ export default function Profile() {
                         className="flex items-center space-x-1"
                       >
                         <Edit className="h-4 w-4" />
-                        <span>Editar</span>
+                        <span>{t('profile.edit')}</span>
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px]" data-testid="dialog-edit-profile">
                       <DialogHeader>
-                        <DialogTitle>Editar Información Personal</DialogTitle>
+                        <DialogTitle>{t('profile.editTitle')}</DialogTitle>
                         <DialogDescription>
-                          Actualiza tu información personal. Los cambios se guardarán inmediatamente.
+                          {t('profile.editDescription')}
                         </DialogDescription>
                       </DialogHeader>
                       
@@ -267,11 +267,11 @@ export default function Profile() {
                               name="firstName"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Nombre</FormLabel>
+                                  <FormLabel>{t('profile.firstName')}</FormLabel>
                                   <FormControl>
                                     <Input 
                                       {...field} 
-                                      placeholder="Tu nombre"
+                                      placeholder={t('profile.firstNamePlaceholder')}
                                       data-testid="input-first-name"
                                     />
                                   </FormControl>
@@ -285,11 +285,11 @@ export default function Profile() {
                               name="lastName"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Apellido</FormLabel>
+                                  <FormLabel>{t('profile.lastName')}</FormLabel>
                                   <FormControl>
                                     <Input 
                                       {...field} 
-                                      placeholder="Tu apellido"
+                                      placeholder={t('profile.lastNamePlaceholder')}
                                       data-testid="input-last-name"
                                     />
                                   </FormControl>
@@ -304,12 +304,12 @@ export default function Profile() {
                             name="email"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Email</FormLabel>
+                                <FormLabel>{t('profile.email')}</FormLabel>
                                 <FormControl>
                                   <Input 
                                     {...field} 
                                     type="email"
-                                    placeholder="tu@email.com"
+                                    placeholder={t('profile.emailPlaceholder')}
                                     data-testid="input-email"
                                   />
                                 </FormControl>
@@ -323,18 +323,18 @@ export default function Profile() {
                             name="gender"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Género</FormLabel>
+                                <FormLabel>{t('profile.gender')}</FormLabel>
                                 <Select onValueChange={field.onChange} value={field.value}>
                                   <FormControl>
                                     <SelectTrigger data-testid="select-gender">
-                                      <SelectValue placeholder="Selecciona tu género" />
+                                      <SelectValue placeholder={t('profile.genderPlaceholder')} />
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
-                                    <SelectItem value="prefiero_no_decir">Prefiero no decirlo</SelectItem>
-                                    <SelectItem value="masculino">Masculino</SelectItem>
-                                    <SelectItem value="femenino">Femenino</SelectItem>
-                                    <SelectItem value="otro">Otro</SelectItem>
+                                    <SelectItem value="prefiero_no_decir">{t('profile.genderPreferNotToSay')}</SelectItem>
+                                    <SelectItem value="masculino">{t('profile.genderMale')}</SelectItem>
+                                    <SelectItem value="femenino">{t('profile.genderFemale')}</SelectItem>
+                                    <SelectItem value="otro">{t('profile.genderOther')}</SelectItem>
                                   </SelectContent>
                                 </Select>
                                 <FormMessage />
@@ -348,13 +348,13 @@ export default function Profile() {
                             name="phoneNumber"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Número Celular</FormLabel>
+                                <FormLabel>{t('profile.phone')}</FormLabel>
                                 <FormControl>
                                   <div className="relative">
                                     <Input 
                                       {...field} 
                                       type="tel"
-                                      placeholder="Ej: +52 5551234567 (MX) o +1 5551234567 (US)"
+                                      placeholder={t('register.phonePlaceholder')}
                                       data-testid="input-phone-number-profile"
                                       autoComplete="tel"
                                     />
@@ -373,14 +373,14 @@ export default function Profile() {
                               onClick={() => setIsEditDialogOpen(false)}
                               data-testid="button-cancel-edit"
                             >
-                              Cancelar
+                              {t('profile.cancel')}
                             </Button>
                             <Button 
                               type="submit" 
                               disabled={updateProfileMutation.isPending}
                               data-testid="button-save-profile"
                             >
-                              {updateProfileMutation.isPending ? "Guardando..." : "Guardar"}
+                              {updateProfileMutation.isPending ? t('common.saving') : t('profile.saveChanges')}
                             </Button>
                           </DialogFooter>
                         </form>
@@ -649,7 +649,7 @@ export default function Profile() {
                     <Badge variant="secondary">{labDocuments.length}</Badge>
                   </CardTitle>
                   <CardDescription>
-                    Carga tus análisis de sangre, orina y otros resultados de laboratorio
+                    {t('profile.noDocumentsDescription')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -669,7 +669,7 @@ export default function Profile() {
                   ) : labDocuments.length === 0 ? (
                     <div className="text-center py-8 text-gray-500">
                       <FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                      <p>No tienes resultados de laboratorio cargados</p>
+                      <p>{t('profile.noDocuments')}</p>
                       <p className="text-sm">Sube tus análisis de laboratorio para obtener insights personalizados</p>
                     </div>
                   ) : (

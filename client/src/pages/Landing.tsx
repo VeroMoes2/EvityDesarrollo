@@ -79,7 +79,7 @@ export default function Landing() {
             {data?.companyName || 'Evity'}
           </h1>
           <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto" data-testid="text-hero-mission">
-            {data?.mission || t('landing.heroMission')}
+            {t('landing.heroMission')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/login">
@@ -151,7 +151,7 @@ export default function Landing() {
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-foreground mb-6">{t('landing.ourVision')}</h2>
           <p className="text-lg text-muted-foreground max-w-4xl mx-auto" data-testid="text-vision">
-            {data?.vision || t('landing.visionFallback')}
+            {t('landing.visionFallback')}
           </p>
         </div>
       </section>
