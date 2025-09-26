@@ -1,14 +1,16 @@
 import { Heart, Mail, MapPin, Phone } from "lucide-react";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
 import { useLocation } from "wouter";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const { data: confluenceData } = useConfluenceData();
   const [, navigate] = useLocation();
+  const { t } = useLanguage();
 
   const handleLinkClick = (linkName: string) => {
-    if (linkName === "Sobre Nosotros") {
+    if (linkName === "about") {
       navigate('/nosotros');
     } else {
       console.log(`Footer link clicked: ${linkName}`); // todo: remove mock functionality for other links
@@ -18,7 +20,7 @@ export default function Footer() {
   const companyName = confluenceData?.companyName || "Evity";
   
   // Build comprehensive company description using all available content
-  let companyDescription = "Tu plataforma de longevidad personalizada. Basado en ciencia, diseñado para ti.";
+  let companyDescription = t('footer.companyDescription');
   
   if (confluenceData?.mission) {
     companyDescription = confluenceData.mission;
@@ -45,76 +47,76 @@ export default function Footer() {
             </p>
             <div className="flex items-center text-sm text-muted-foreground">
               <Heart className="h-4 w-4 mr-2 text-red-500" />
-              Hecho con amor para tu bienestar
+              {t('footer.madeWithLove')}
             </div>
           </div>
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="font-semibold text-card-foreground">Enlaces Rápidos</h4>
+            <h4 className="font-semibold text-card-foreground">{t('footer.quickLinks')}</h4>
             <nav className="space-y-2">
               <button 
-                onClick={() => handleLinkClick("Sobre Nosotros")}
+                onClick={() => handleLinkClick("about")}
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
                 data-testid="footer-link-about"
               >
-                Sobre Nosotros
+                {t('footer.aboutUs')}
               </button>
               <button 
-                onClick={() => handleLinkClick("Investigación")}
+                onClick={() => handleLinkClick("research")}
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
                 data-testid="footer-link-research"
               >
-                Investigación
+                {t('footer.research')}
               </button>
               <button 
-                onClick={() => handleLinkClick("Comunidad")}
+                onClick={() => handleLinkClick("community")}
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
                 data-testid="footer-link-community"
               >
-                Comunidad
+                {t('footer.community')}
               </button>
               <button 
-                onClick={() => handleLinkClick("Preguntas Frecuentes")}
+                onClick={() => handleLinkClick("faq")}
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
                 data-testid="footer-link-faq"
               >
-                Preguntas Frecuentes
+                {t('footer.faq')}
               </button>
             </nav>
           </div>
 
           {/* Resources */}
           <div className="space-y-4">
-            <h4 className="font-semibold text-card-foreground">Recursos</h4>
+            <h4 className="font-semibold text-card-foreground">{t('footer.resources')}</h4>
             <nav className="space-y-2">
               <button 
-                onClick={() => handleLinkClick("Guías Gratuitas")}
+                onClick={() => handleLinkClick("guides")}
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
                 data-testid="footer-link-guides"
               >
-                Guías Gratuitas
+                {t('footer.guides')}
               </button>
               <button 
-                onClick={() => handleLinkClick("Calculadoras")}
+                onClick={() => handleLinkClick("calculators")}
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
                 data-testid="footer-link-calculators"
               >
-                Calculadoras
+                {t('footer.calculators')}
               </button>
               <button 
-                onClick={() => handleLinkClick("Blog")}
+                onClick={() => handleLinkClick("blog")}
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
                 data-testid="footer-link-blog"
               >
-                Blog
+                {t('footer.blog')}
               </button>
             </nav>
           </div>
 
           {/* Contact */}
           <div className="space-y-4">
-            <h4 className="font-semibold text-card-foreground">Contacto</h4>
+            <h4 className="font-semibold text-card-foreground">{t('footer.contact')}</h4>
             <div className="space-y-3">
               <div className="flex items-center text-sm text-muted-foreground">
                 <Mail className="h-4 w-4 mr-3" />
@@ -138,7 +140,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4 mr-3" />
-                <span>Madrid, España</span>
+                <span>{t('footer.location')}</span>
               </div>
             </div>
           </div>
@@ -147,29 +149,29 @@ export default function Footer() {
         <div className="border-t border-card-border mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm text-muted-foreground">
-              © {currentYear} {companyName}. Todos los derechos reservados.
+              © {currentYear} {companyName}. {t('footer.allRightsReserved')}
             </div>
             <div className="flex items-center gap-6 text-sm">
               <button 
-                onClick={() => handleLinkClick("Privacidad")}
+                onClick={() => handleLinkClick("privacy")}
                 className="text-muted-foreground hover:text-primary transition-colors"
                 data-testid="footer-link-privacy"
               >
-                Política de Privacidad
+                {t('footer.privacyPolicy')}
               </button>
               <button 
-                onClick={() => handleLinkClick("Términos")}
+                onClick={() => handleLinkClick("terms")}
                 className="text-muted-foreground hover:text-primary transition-colors"
                 data-testid="footer-link-terms"
               >
-                Términos de Uso
+                {t('footer.termsOfUse')}
               </button>
               <button 
-                onClick={() => handleLinkClick("Cookies")}
+                onClick={() => handleLinkClick("cookies")}
                 className="text-muted-foreground hover:text-primary transition-colors"
                 data-testid="footer-link-cookies"
               >
-                Cookies
+                {t('footer.cookies')}
               </button>
             </div>
           </div>

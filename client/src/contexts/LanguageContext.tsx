@@ -202,10 +202,18 @@ const translations = {
     'footer.calculator': 'Calculadora',
     'footer.legal': 'Legal',
     'footer.privacy': 'Privacidad',
-    'footer.terms': 'Términos',
-    'footer.cookies': 'Cookies',
+    'footer.companyDescription': 'Tu plataforma de longevidad personalizada. Basado en ciencia, diseñado para ti.',
     'footer.madeWithLove': 'Hecho con amor para tu bienestar',
-    'footer.allRightsReserved': 'Todos los derechos reservados.',
+    'footer.quickLinks': 'Enlaces Rápidos',
+    'footer.contact': 'Contacto',
+    'footer.faq': 'Preguntas Frecuentes',
+    'footer.calculators': 'Calculadoras',
+    'footer.location': 'Madrid, España',
+    'footer.allRightsReserved': 'Todos los derechos reservados',
+    'footer.privacyPolicy': 'Política de Privacidad',
+    'footer.termsOfUse': 'Términos de Uso',
+    'footer.cookies': 'Cookies',
+    'footer.terms': 'Términos',
     
     // About Page
     'about.pageTitle': 'Acerca de Nosotros',
@@ -385,6 +393,8 @@ const translations = {
     'nav.logout': 'Logout',
     'nav.profile': 'My Profile',
     'nav.myFiles': 'My Files',
+    'nav.contact': 'Contact',
+    'nav.adminPanel': 'Admin Panel',
     
     // Hero Section
     'hero.welcome': 'Welcome to',
@@ -566,6 +576,14 @@ const translations = {
     'footer.cookies': 'Cookies',
     'footer.madeWithLove': 'Made with love for your wellbeing',
     'footer.allRightsReserved': 'All rights reserved.',
+    'footer.companyDescription': 'Your personalized longevity platform. Science-based, designed for you.',
+    'footer.quickLinks': 'Quick Links',
+    'footer.contact': 'Contact',
+    'footer.faq': 'FAQ',
+    'footer.calculators': 'Calculators',
+    'footer.location': 'Madrid, Spain',
+    'footer.privacyPolicy': 'Privacy Policy',
+    'footer.termsOfUse': 'Terms of Use',
     
     // About Page
     'about.pageTitle': 'About Us',
