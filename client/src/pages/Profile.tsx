@@ -427,7 +427,9 @@ export default function Profile() {
                   
                   <div className="flex items-center text-gray-600">
                     <Shield className="h-4 w-4 mr-2" />
-                    <span className="text-sm">Perfil verificado</span>
+                    <span className="text-sm" data-testid="verification-status">
+                      {(user as any)?.isEmailVerified === "true" ? "Perfil verificado" : "Email pendiente de verificación"}
+                    </span>
                   </div>
                   
                   <div className="flex items-center text-gray-600">

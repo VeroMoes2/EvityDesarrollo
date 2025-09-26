@@ -196,15 +196,24 @@ export async function sendEmailVerification(email: string, verificationToken: st
   const template = getEmailTemplate(language, verificationUrl, userName || '');
   
   try {
+    console.log(`[LS-122] Sending email with template language: ${language}`);
+    console.log(`[LS-122] Email template subject: ${template.subject}`);
     await transporter.sendMail({
       from: process.env.SMTP_FROM || process.env.SMTP_USER,
       to: email,
       subject: template.subject,
       html: template.html,
     });
+    console.log(`[LS-122] Email sent successfully via SMTP to: ${email}`);
     return true;
   } catch (error) {
-    console.error("Error sending email verification:", error);
+    console.error("[LS-122] Error sending email verification:", error);
+    console.error("[LS-122] SMTP configuration:", {
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      user: process.env.SMTP_USER ? 'configured' : 'missing',
+      pass: process.env.SMTP_PASS ? 'configured' : 'missing'
+    });
     return false;
   }
 }
@@ -214,6 +223,7 @@ export async function sendEmailVerification(email: string, verificationToken: st
 export async function setupAuth(app: Express) {
   app.set("trust proxy", 1);
   app.use(getSession());
+
 
   // Login endpoint with rate limiting and CSRF protection
   // Apply CSRF protection directly to this critical endpoint
@@ -358,10 +368,13 @@ export async function setupAuth(app: Express) {
       // LS-122: Send internationalized welcome email with user's preferred language
       const acceptLanguage = req.headers['accept-language'];
       const userName = `${newUser.firstName} ${newUser.lastName}`;
+      console.log(`[LS-122] Attempting to send verification email to ${newUser.email} with language: ${acceptLanguage}`);
       const emailSent = await sendEmailVerification(newUser.email, verificationToken, baseUrl, acceptLanguage, userName);
       
       if (!emailSent) {
-        console.error("Failed to send verification email, but user was created");
+        console.error("[LS-122] Failed to send verification email, but user was created");
+      } else {
+        console.log(`[LS-122] Verification email sent successfully to ${newUser.email}`);
       }
 
       // Create session
@@ -382,6 +395,53 @@ export async function setupAuth(app: Express) {
       });
     } catch (error) {
       console.error("Registration error:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // LS-122: Resend email verification endpoint
+  app.post("/api/auth/resend-verification", csrfProtection, async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      if (!userId) {
+        return res.status(401).json({ message: "No autenticado" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+
+      if (user.isEmailVerified === "true") {
+        return res.status(400).json({ message: "El email ya está verificado" });
+      }
+
+      // Generate new verification token
+      const verificationToken = generateResetToken();
+      const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+      
+      await storage.setEmailVerificationToken(user.id, verificationToken, verificationExpires);
+      
+      // Get the base URL from the request
+      const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+      const host = req.headers['x-forwarded-host'] || req.headers.host;
+      const baseUrl = `${protocol}://${host}`;
+      
+      // Send email with user's preferred language
+      const acceptLanguage = req.headers['accept-language'];
+      const userName = `${user.firstName} ${user.lastName}`;
+      console.log(`[LS-122] Resending verification email to ${user.email} with language: ${acceptLanguage}`);
+      const emailSent = await sendEmailVerification(user.email, verificationToken, baseUrl, acceptLanguage, userName);
+      
+      if (!emailSent) {
+        console.error("[LS-122] Failed to resend verification email");
+        return res.status(500).json({ message: "Error al enviar el correo de verificación" });
+      }
+
+      console.log(`[LS-122] Verification email resent successfully to ${user.email}`);
+      res.status(200).json({ message: "Correo de verificación enviado" });
+    } catch (error) {
+      console.error("Resend verification error:", error);
       res.status(500).json({ message: "Error interno del servidor" });
     }
   });
