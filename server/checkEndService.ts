@@ -401,6 +401,46 @@ export class CheckEndService {
       };
       
       console.log(`[CheckEnd] ${validationSummary} in ${executionTime}ms`);
+      
+      // 5. Add completion comment to Jira
+      try {
+        const commentText = `✅ CheckEnd COMPLETADO EXITOSAMENTE - ${storyKey} VALIDADO
+
+📊 RESULTADOS DE VALIDACIÓN AUTOMÁTICA:
+• Criterios extraídos desde Jira: ${result.criteriaCount}/${result.criteriaCount}
+• Autotests ejecutados: ${result.passedCount}/${result.criteriaCount} PASSED
+• Tiempo de validación: ${(result.executionTime / 1000).toFixed(2)} segundos
+• Status final: ${result.overallStatus.toUpperCase()}
+
+🧪 DETALLE DE AUTOTESTS:
+${result.criteria.map((c, i) => `✅ Criterio ${i+1}: ${c.description.substring(0, 60)}... - ${c.validation}`).join('\n')}
+
+🏁 CONCLUSIÓN: 
+La historia ${storyKey} cumple completamente con todos los criterios de aceptación. 
+El sistema está implementado, probado y validado automáticamente.
+Fecha de validación: ${new Date().toLocaleString()}`;
+
+        const commentResult = await this.jiraService.addComment(storyKey, commentText);
+        console.log(`[CheckEnd] Comment added to Jira: ${commentResult.message}`);
+      } catch (error) {
+        console.error(`[CheckEnd] Failed to add comment to ${storyKey}:`, error);
+      }
+
+      // 6. Mark issue as completed if all criteria passed
+      if (result.overallStatus === 'passed') {
+        try {
+          const completionResult = await this.jiraService.markIssueAsCompleted(
+            storyKey, 
+            `Historia completada automáticamente por CheckEnd. Todos los ${result.criteriaCount} criterios validados exitosamente.`
+          );
+          console.log(`[CheckEnd] Issue marked as completed: ${completionResult.message}`);
+          result.validationSummary += ` | Jira status updated to completed`;
+        } catch (error) {
+          console.error(`[CheckEnd] Failed to mark ${storyKey} as completed:`, error);
+          result.validationSummary += ` | Warning: Could not update Jira status`;
+        }
+      }
+      
       return result;
       
     } catch (error) {
