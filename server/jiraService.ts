@@ -151,6 +151,25 @@ export class JiraService {
   }
 
   /**
+   * Get raw issue content with ADF format for CheckEnd processing
+   */
+  async getRawIssueContent(issueKey: string): Promise<any | null> {
+    try {
+      const issue = await this.client.issues.getIssue({
+        issueIdOrKey: issueKey,
+        fields: ['description']
+      });
+
+      return {
+        description: issue.fields?.description // This will be ADF format
+      };
+    } catch (error) {
+      console.error(`Failed to fetch raw content for issue ${issueKey}:`, error);
+      return null;
+    }
+  }
+
+  /**
    * Search for a specific issue by key
    */
   async getIssueByKey(issueKey: string): Promise<JiraIssue | null> {

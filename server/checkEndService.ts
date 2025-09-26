@@ -67,6 +67,71 @@ export class CheckEndService {
   }
 
   /**
+   * Extract text from a single ADF node
+   */
+  private extractTextFromADFNode(node: any): string {
+    if (!node || typeof node !== 'object') {
+      return '';
+    }
+    
+    let text = '';
+    
+    // Handle text nodes
+    if (node.type === 'text' && node.text) {
+      text += node.text;
+    }
+    
+    // Handle other node types
+    if (node.content && Array.isArray(node.content)) {
+      for (const childNode of node.content) {
+        text += this.extractTextFromADFNode(childNode);
+      }
+    }
+    
+    // Add line breaks for paragraphs and list items
+    if (node.type === 'paragraph' || node.type === 'listItem') {
+      text += '\n';
+    }
+    
+    return text;
+  }
+
+  /**
+   * Extract individual criteria from ADF bullet list format
+   */
+  private extractCriteriaFromADF(adfContent: any): AcceptanceCriterion[] {
+    const criteria: AcceptanceCriterion[] = [];
+    
+    if (!adfContent || !adfContent.content) {
+      return criteria;
+    }
+    
+    // Look for bullet lists in ADF content
+    for (const node of adfContent.content) {
+      if (node.type === 'bulletList' && node.content) {
+        let criteriaIndex = 1;
+        
+        for (const listItem of node.content) {
+          if (listItem.type === 'listItem' && listItem.content) {
+            const criteriaText = this.extractTextFromADFNode(listItem).trim();
+            
+            if (criteriaText.length > 10) { // Only meaningful criteria
+              criteria.push({
+                id: `criterio-${criteriaIndex}`,
+                description: criteriaText,
+                status: 'pending'
+              });
+              criteriaIndex++;
+            }
+          }
+        }
+      }
+    }
+    
+    return criteria;
+  }
+
+  /**
    * Run automated validation tests for LS-122 email verification criteria
    */
   private async runLS122AutoTests(): Promise<{ [criterioId: string]: boolean }> {
@@ -278,8 +343,21 @@ export class CheckEndService {
         throw new Error(`Story ${storyKey} not found in Jira`);
       }
       
-      // 2. Extract acceptance criteria
-      const criteria = this.extractAcceptanceCriteria(story.description);
+      // 2. Extract acceptance criteria from Jira ADF format
+      // Get the raw ADF content from Jira Service  
+      const rawJiraIssue = await this.jiraService.getRawIssueContent(storyKey);
+      let criteria: AcceptanceCriterion[] = [];
+      
+      if (rawJiraIssue && rawJiraIssue.description) {
+        // Try ADF format first (modern Jira format)
+        criteria = this.extractCriteriaFromADF(rawJiraIssue.description);
+      }
+      
+      // Fallback to text-based extraction if ADF didn't work
+      if (criteria.length === 0) {
+        criteria = this.extractAcceptanceCriteria(story.description || '');
+      }
+      
       console.log(`[CheckEnd] Extracted ${criteria.length} criteria from ${storyKey}`);
       
       // 3. Run automated tests (currently specific to LS-122)
