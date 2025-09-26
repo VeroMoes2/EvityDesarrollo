@@ -6,36 +6,38 @@ import yogaImage from "@assets/generated_images/Seniors_yoga_outdoors_983aaba4.p
 import dietImage from "@assets/generated_images/Healthy_diet_spread_92eea712.png";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
 import { useLocation } from "wouter";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-const blogPosts = [
+// Blog posts with multilingual content - moved inside component to access language context
+const getBlogPosts = (t: any, language: string) => [
   {
-    title: "Los Nuevos Descubrimientos en Investigación de Telómeros",
-    excerpt: "Cómo los últimos estudios revelan formas naturales de mantener la longitud de los telómeros y sus implicaciones para la longevidad.",
+    title: t('blog.post1.title'),
+    excerpt: t('blog.post1.excerpt'),
     image: yogaImage,
-    category: "Investigación",
-    readTime: "5 min",
-    author: "Dr. María González",
-    date: "15 Dic 2024",
+    category: t('blog.post1.category'),
+    readTime: t('blog.post1.readTime'),
+    author: t('blog.post1.author'),
+    date: t('blog.post1.date'),
     featured: true
   },
   {
-    title: "Ayuno Intermitente: Guía Científica Completa",
-    excerpt: "Todo lo que necesitas saber sobre el ayuno intermitente basado en evidencia científica reciente.",
+    title: t('blog.post2.title'),
+    excerpt: t('blog.post2.excerpt'),
     image: dietImage,
-    category: "Nutrición",
-    readTime: "8 min",
-    author: "Dr. Carlos Ruiz",
-    date: "12 Dic 2024",
+    category: t('blog.post2.category'),
+    readTime: t('blog.post2.readTime'),
+    author: t('blog.post2.author'),
+    date: t('blog.post2.date'),
     featured: false
   },
   {
-    title: "Ejercicios de Resistencia para Adultos Mayores",
-    excerpt: "Protocolo específico de entrenamiento para mantener la masa muscular y la fuerza después de los 50 años.",
+    title: t('blog.post3.title'),
+    excerpt: t('blog.post3.excerpt'),
     image: yogaImage,
-    category: "Ejercicio",
-    readTime: "6 min",
-    author: "Lic. Ana Martín",
-    date: "10 Dic 2024",
+    category: t('blog.post3.category'),
+    readTime: t('blog.post3.readTime'),
+    author: t('blog.post3.author'),
+    date: t('blog.post3.date'),
     featured: false
   }
 ];
@@ -43,6 +45,7 @@ const blogPosts = [
 export default function BlogSection() {
   const { data: confluenceData, isLoading, error } = useConfluenceData();
   const [, setLocation] = useLocation();
+  const { t, language } = useLanguage();
   
   const handlePostClick = (postTitle: string) => {
     const slug = postTitle.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
@@ -50,16 +53,17 @@ export default function BlogSection() {
   };
 
   const companyName = confluenceData?.companyName || "Evity";
+  const blogPosts = getBlogPosts(t, language);
 
   return (
     <section id="blog" className="py-20 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-            Blog {companyName}
+            {t('blog.title')} {companyName}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            {confluenceData?.valueProposition || "Las últimas noticias, investigaciones y consejos prácticos del mundo de la longevidad y la salud."}
+            {confluenceData?.valueProposition || t('blog.subtitle')}
           </p>
         </div>
 
@@ -78,7 +82,7 @@ export default function BlogSection() {
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute top-4 left-4">
-                  <Badge className="bg-primary text-primary-foreground">Destacado</Badge>
+                  <Badge className="bg-primary text-primary-foreground">{t('blog.featured')}</Badge>
                 </div>
               </div>
               
@@ -113,7 +117,7 @@ export default function BlogSection() {
                     size="sm"
                     data-testid="button-read-featured"
                   >
-                    Leer más
+                    {t('blog.readMore')}
                     <ArrowRight className="ml-1 h-4 w-4" />
                   </Button>
                 </div>

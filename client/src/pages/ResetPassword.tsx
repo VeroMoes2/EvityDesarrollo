@@ -25,21 +25,12 @@ import {
 } from "@/components/ui/form";
 import { Eye, EyeOff, Lock, ArrowLeft, CheckCircle } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-// LS-98: Password reset validation schema with strong requirements
-const resetPasswordSchema = z.object({
-  newPassword: z.string()
-    .min(8, "La contraseña debe tener al menos 8 caracteres")
-    .max(100, "La contraseña no puede exceder 100 caracteres")
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "La contraseña debe contener al menos una minúscula, una mayúscula y un número"),
-  confirmPassword: z.string()
-    .min(1, "Confirma tu nueva contraseña"),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Las contraseñas no coinciden",
-  path: ["confirmPassword"],
-});
-
-type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
+type ResetPasswordForm = {
+  newPassword: string;
+  confirmPassword: string;
+};
 
 export default function ResetPassword() {
   const [, setLocation] = useLocation();
@@ -48,6 +39,20 @@ export default function ResetPassword() {
   const [token, setToken] = useState<string | null>(null);
   const [passwordReset, setPasswordReset] = useState(false);
   const { toast } = useToast();
+  const { t } = useLanguage();
+
+  // LS-98: Password reset validation schema with strong requirements - moved inside component to access t()
+  const resetPasswordSchema = z.object({
+    newPassword: z.string()
+      .min(8, t('resetPassword.passwordMin'))
+      .max(100, t('resetPassword.passwordMax'))
+      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, t('resetPassword.passwordInvalid')),
+    confirmPassword: z.string()
+      .min(1, t('resetPassword.confirmRequired')),
+  }).refine((data) => data.newPassword === data.confirmPassword, {
+    message: t('resetPassword.passwordMismatch'),
+    path: ["confirmPassword"],
+  });
 
   const form = useForm<ResetPasswordForm>({
     resolver: zodResolver(resetPasswordSchema),
@@ -65,8 +70,8 @@ export default function ResetPassword() {
     if (!tokenParam) {
       toast({
         variant: "destructive",
-        title: "Token inválido",
-        description: "No se encontró un token válido en la URL.",
+        title: t('resetPassword.noTokenTitle'),
+        description: t('resetPassword.noTokenDescription'),
       });
       setLocation("/forgot-password");
       return;
@@ -79,7 +84,7 @@ export default function ResetPassword() {
   const resetPasswordMutation = useMutation({
     mutationFn: async (data: ResetPasswordForm) => {
       if (!token) {
-        throw new Error("Token no válido");
+        throw new Error(t('resetPassword.invalidToken'));
       }
       
       const response = await fetch("/api/reset-password", {
@@ -104,21 +109,22 @@ export default function ResetPassword() {
     onSuccess: (data) => {
       setPasswordReset(true);
       toast({
-        title: "¡Contraseña actualizada!",
-        description: "Tu contraseña ha sido cambiada exitosamente.",
+        title: t('resetPassword.successTitle'),
+        description: t('resetPassword.successDescription'),
       });
     },
     onError: (error: any) => {
       console.error("Reset password error:", error);
       
-      const errorMessage = error.message || "Error al restablecer la contraseña";
+      const errorMessage = error.message || t('resetPassword.defaultError');
       
-      // Handle token expired/invalid errors
-      if (errorMessage.includes("Token inválido") || errorMessage.includes("expirado")) {
+      // Handle token expired/invalid errors  
+      if (errorMessage.includes("Token inválido") || errorMessage.includes("expirado") || 
+          errorMessage.includes("Invalid token") || errorMessage.includes("expired")) {
         toast({
           variant: "destructive",
-          title: "Token expirado",
-          description: "El enlace de recuperación ha expirado. Solicita uno nuevo.",
+          title: t('resetPassword.tokenExpiredTitle'),
+          description: t('resetPassword.tokenExpiredDescription'),
         });
         setLocation("/forgot-password");
         return;
@@ -132,7 +138,7 @@ export default function ResetPassword() {
       } else {
         toast({
           variant: "destructive",
-          title: "Error",
+          title: t('resetPassword.errorTitle'),
           description: errorMessage,
         });
       }
@@ -150,16 +156,16 @@ export default function ResetPassword() {
           <CardHeader className="space-y-1 text-center">
             <CheckCircle className="h-12 w-12 mx-auto text-green-500 mb-4" />
             <CardTitle className="text-2xl font-bold">
-              ¡Contraseña Actualizada!
+              {t('resetPassword.passwordUpdatedTitle')}
             </CardTitle>
             <CardDescription>
-              Tu contraseña ha sido cambiada exitosamente. Ya puedes iniciar sesión con tu nueva contraseña.
+              {t('resetPassword.passwordUpdatedDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/login" data-testid="link-login">
               <Button className="w-full">
-                Iniciar Sesión
+                {t('resetPassword.goToLogin')}
               </Button>
             </Link>
           </CardContent>
@@ -174,7 +180,7 @@ export default function ResetPassword() {
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1 text-center">
             <CardTitle className="text-2xl font-bold">
-              Cargando...
+              {t('common.loading')}
             </CardTitle>
           </CardHeader>
         </Card>
@@ -190,16 +196,16 @@ export default function ResetPassword() {
             <Link href="/login" data-testid="link-back-login">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Volver
+                {t('resetPassword.back')}
               </Button>
             </Link>
           </div>
           <CardTitle className="text-2xl font-bold text-center">
             <Lock className="h-6 w-6 mx-auto mb-2" />
-            Nueva Contraseña
+            {t('resetPassword.title')}
           </CardTitle>
           <CardDescription className="text-center">
-            Crea una nueva contraseña segura para tu cuenta
+            {t('resetPassword.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -210,13 +216,13 @@ export default function ResetPassword() {
                 name="newPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nueva Contraseña</FormLabel>
+                    <FormLabel>{t('resetPassword.newPassword')}</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           {...field}
                           type={showPassword ? "text" : "password"}
-                          placeholder="Crea una contraseña segura"
+                          placeholder={t('resetPassword.newPasswordPlaceholder')}
                           data-testid="input-newPassword"
                           autoComplete="new-password"
                           autoFocus
@@ -247,13 +253,13 @@ export default function ResetPassword() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirmar Nueva Contraseña</FormLabel>
+                    <FormLabel>{t('resetPassword.confirmPassword')}</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           {...field}
                           type={showConfirmPassword ? "text" : "password"}
-                          placeholder="Confirma tu nueva contraseña"
+                          placeholder={t('resetPassword.confirmPasswordPlaceholder')}
                           data-testid="input-confirmPassword"
                           autoComplete="new-password"
                         />
@@ -284,17 +290,17 @@ export default function ResetPassword() {
                 disabled={resetPasswordMutation.isPending}
                 data-testid="button-reset-password"
               >
-                {resetPasswordMutation.isPending ? "Actualizando..." : "Actualizar Contraseña"}
+                {resetPasswordMutation.isPending ? t('resetPassword.updating') : t('resetPassword.updatePassword')}
               </Button>
             </form>
           </Form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
-              ¿Recordaste tu contraseña?{" "}
+              {t('resetPassword.rememberPassword')}{" "}
               <Link href="/login" data-testid="link-login">
                 <Button variant="ghost" className="p-0 h-auto">
-                  Inicia sesión aquí
+                  {t('resetPassword.loginHere')}
                 </Button>
               </Link>
             </p>

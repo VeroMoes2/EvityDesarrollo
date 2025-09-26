@@ -13,12 +13,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CheckCircle, XCircle, Mail, ArrowLeft } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function VerifyEmail() {
   const [, setLocation] = useLocation();
   const [token, setToken] = useState<string>("");
   const [verificationComplete, setVerificationComplete] = useState(false);
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   // Extract token from URL parameters on component mount
   useEffect(() => {
@@ -52,18 +54,18 @@ export default function VerifyEmail() {
     onSuccess: (data) => {
       setVerificationComplete(true);
       toast({
-        title: "¡Email verificado!",
-        description: data.message || "Tu cuenta ha sido activada exitosamente.",
+        title: t('verifyEmail.successTitle'),
+        description: data.message || t('verifyEmail.successDescription'),
       });
     },
     onError: (error: any) => {
       console.error("Email verification error:", error);
       
-      const errorMessage = error.message || "Error verificando el email";
+      const errorMessage = error.message || t('verifyEmail.errorDefault');
       
       toast({
         variant: "destructive",
-        title: "Error de verificación",
+        title: t('verifyEmail.errorTitle'),
         description: errorMessage,
       });
     },
@@ -85,16 +87,16 @@ export default function VerifyEmail() {
             <Link href="/" data-testid="link-back-home">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Volver
+                {t('verifyEmail.back')}
               </Button>
             </Link>
           </div>
           <CardTitle className="text-2xl font-bold text-center">
             <Mail className="h-6 w-6 mx-auto mb-2" />
-            Verificación de Email
+            {t('verifyEmail.title')}
           </CardTitle>
           <CardDescription className="text-center">
-            Activando tu cuenta de Evity
+            {t('verifyEmail.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -102,7 +104,7 @@ export default function VerifyEmail() {
             <div className="text-center space-y-4">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
               <p className="text-muted-foreground">
-                Verificando tu email...
+                {t('verifyEmail.verifying')}
               </p>
             </div>
           )}
@@ -112,10 +114,10 @@ export default function VerifyEmail() {
               <XCircle className="h-16 w-16 text-destructive mx-auto" />
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold text-destructive">
-                  Verificación fallida
+                  {t('verifyEmail.failedTitle')}
                 </h3>
                 <p className="text-muted-foreground">
-                  El enlace de verificación es inválido o ha expirado.
+                  {t('verifyEmail.failedDescription')}
                 </p>
                 <div className="flex flex-col gap-2 pt-4">
                   <Button 
@@ -124,14 +126,14 @@ export default function VerifyEmail() {
                     className="w-full"
                     data-testid="button-go-home"
                   >
-                    Ir al inicio
+                    {t('verifyEmail.goHome')}
                   </Button>
                   <Button 
                     onClick={handleGoToLogin}
                     className="w-full"
                     data-testid="button-go-login"
                   >
-                    Ir a iniciar sesión
+                    {t('verifyEmail.goLogin')}
                   </Button>
                 </div>
               </div>
@@ -143,10 +145,10 @@ export default function VerifyEmail() {
               <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold text-green-600">
-                  ¡Email verificado exitosamente!
+                  {t('verifyEmail.verifiedTitle')}
                 </h3>
                 <p className="text-muted-foreground">
-                  Tu cuenta de Evity está ahora activada. Puedes iniciar sesión para acceder a tu perfil personal.
+                  {t('verifyEmail.verifiedDescription')}
                 </p>
                 <div className="flex flex-col gap-2 pt-4">
                   <Button 
@@ -154,7 +156,7 @@ export default function VerifyEmail() {
                     className="w-full"
                     data-testid="button-login-after-verification"
                   >
-                    Iniciar sesión
+                    {t('verifyEmail.loginButton')}
                   </Button>
                   <Button 
                     onClick={handleGoHome}
@@ -162,7 +164,7 @@ export default function VerifyEmail() {
                     className="w-full"
                     data-testid="button-home-after-verification"
                   >
-                    Ir al inicio
+                    {t('verifyEmail.goHomeAfter')}
                   </Button>
                 </div>
               </div>
@@ -174,10 +176,10 @@ export default function VerifyEmail() {
               <Mail className="h-16 w-16 text-muted-foreground mx-auto" />
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold">
-                  Enlace de verificación requerido
+                  {t('verifyEmail.linkRequiredTitle')}
                 </h3>
                 <p className="text-muted-foreground">
-                  Para verificar tu email, necesitas hacer clic en el enlace que enviamos a tu correo electrónico.
+                  {t('verifyEmail.linkRequiredDescription')}
                 </p>
                 <Button 
                   onClick={handleGoHome}
@@ -185,7 +187,7 @@ export default function VerifyEmail() {
                   className="w-full"
                   data-testid="button-go-home-no-token"
                 >
-                  Volver al inicio
+                  {t('verifyEmail.backToHome')}
                 </Button>
               </div>
             </div>
