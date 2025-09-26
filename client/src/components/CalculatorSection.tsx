@@ -69,7 +69,7 @@ export default function CalculatorSection() {
             {t('calculator.title')} {companyName}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            {confluenceData?.mission || t('calculator.subtitle')}
+            {t('calculator.subtitle')}
           </p>
         </div>
 

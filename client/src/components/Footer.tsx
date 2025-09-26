@@ -19,21 +19,8 @@ export default function Footer() {
 
   const companyName = confluenceData?.companyName || "Evity";
   
-  // Build comprehensive company description using all available content
-  let companyDescription = t('footer.companyDescription');
-  
-  if (confluenceData?.mission) {
-    companyDescription = confluenceData.mission;
-  }
-  
-  if (confluenceData?.vision) {
-    // If we have both mission and vision, combine them
-    if (confluenceData?.mission) {
-      companyDescription = `${confluenceData.mission} ${confluenceData.vision}`;
-    } else {
-      companyDescription = confluenceData.vision;
-    }
-  }
+  // Use translated company description that respects user's language selection
+  const companyDescription = t('footer.companyDescription');
 
   return (
     <footer className="bg-card border-t border-card-border">
