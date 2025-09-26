@@ -12,20 +12,29 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Mail, MapPin, Phone, Clock } from "lucide-react";
 import Header from "@/components/Header";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-// Validation schema for contact form
-const contactSchema = z.object({
-  nombre: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
-  email: z.string().email("Introduce un email válido"),
-  asunto: z.string().min(5, "El asunto debe tener al menos 5 caracteres"),
-  mensaje: z.string().min(10, "El mensaje debe tener al menos 10 caracteres")
-});
+// Validation schema for contact form - will be created inside component to access t()
 
-type ContactFormData = z.infer<typeof contactSchema>;
+type ContactFormData = {
+  nombre: string;
+  email: string;
+  asunto: string;
+  mensaje: string;
+};
 
 export default function Contacto() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { t } = useLanguage();
+  
+  // Create schema inside component to access t() for translations
+  const contactSchema = z.object({
+    nombre: z.string().min(2, t('contact.nameMinLength')),
+    email: z.string().email(t('contact.emailInvalid')),
+    asunto: z.string().min(5, t('contact.subjectMinLength')),
+    mensaje: z.string().min(10, t('contact.messageMinLength'))
+  });
 
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
@@ -44,8 +53,8 @@ export default function Contacto() {
     },
     onSuccess: () => {
       toast({
-        title: "Mensaje enviado",
-        description: "Tu mensaje ha sido enviado correctamente. Te responderemos pronto.",
+        title: t('contact.successToastTitle'),
+        description: t('contact.successToastDescription'),
       });
       form.reset();
       setIsSubmitting(false);
@@ -53,8 +62,8 @@ export default function Contacto() {
     onError: (error: Error) => {
       console.error('Error sending contact form:', error);
       toast({
-        title: "Error al enviar",
-        description: error.message || "No se pudo enviar el mensaje. Intenta nuevamente.",
+        title: t('contact.errorToastTitle'),
+        description: error.message || t('contact.errorToastDescription'),
         variant: "destructive",
       });
       setIsSubmitting(false);
@@ -76,10 +85,10 @@ export default function Contacto() {
             {/* Header Section */}
             <div className="text-center mb-12">
               <h1 className="text-4xl font-bold text-foreground mb-4">
-                Contacta con Evity
+                {t('contact.title')}
               </h1>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                ¿Tienes preguntas sobre longevidad y bienestar? Nuestro equipo está aquí para ayudarte
+                {t('contact.subtitle')}
               </p>
             </div>
 
@@ -88,9 +97,9 @@ export default function Contacto() {
               {/* Contact Form */}
               <Card data-testid="contact-form-card">
                 <CardHeader>
-                  <CardTitle>Envíanos un mensaje</CardTitle>
+                  <CardTitle>{t('contact.formTitle')}</CardTitle>
                   <CardDescription>
-                    Completa el formulario y te responderemos en menos de 24 horas
+                    {t('contact.formDescription')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -102,10 +111,10 @@ export default function Contacto() {
                         name="nombre"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Nombre completo</FormLabel>
+                            <FormLabel>{t('contact.nameLabel')}</FormLabel>
                             <FormControl>
                               <Input 
-                                placeholder="Tu nombre completo" 
+                                placeholder={t('contact.nameLabel')} 
                                 {...field}
                                 data-testid="input-nombre"
                               />
@@ -120,11 +129,11 @@ export default function Contacto() {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Email</FormLabel>
+                            <FormLabel>{t('contact.emailLabel')}</FormLabel>
                             <FormControl>
                               <Input 
                                 type="email" 
-                                placeholder="tu@email.com" 
+                                placeholder={t('login.email')} 
                                 {...field}
                                 data-testid="input-email"
                               />
@@ -139,10 +148,10 @@ export default function Contacto() {
                         name="asunto"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Asunto</FormLabel>
+                            <FormLabel>{t('contact.subjectLabel')}</FormLabel>
                             <FormControl>
                               <Input 
-                                placeholder="¿Sobre qué quieres consultar?" 
+                                placeholder={t('contact.subjectPlaceholder')} 
                                 {...field}
                                 data-testid="input-asunto"
                               />
@@ -157,10 +166,10 @@ export default function Contacto() {
                         name="mensaje"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Mensaje</FormLabel>
+                            <FormLabel>{t('contact.messageLabel')}</FormLabel>
                             <FormControl>
                               <Textarea 
-                                placeholder="Escribe tu mensaje aquí..."
+                                placeholder={t('contact.messagePlaceholder')}
                                 className="min-h-32"
                                 {...field}
                                 data-testid="textarea-mensaje"
@@ -177,7 +186,7 @@ export default function Contacto() {
                         disabled={isSubmitting || contactMutation.isPending}
                         data-testid="button-submit-contact"
                       >
-                        {isSubmitting || contactMutation.isPending ? "Enviando..." : "Enviar mensaje"}
+                        {isSubmitting || contactMutation.isPending ? t('contact.sendingButton') : t('contact.sendButton')}
                       </Button>
                       
                     </form>
@@ -190,9 +199,9 @@ export default function Contacto() {
                 
                 <Card>
                   <CardHeader>
-                    <CardTitle>Información de contacto</CardTitle>
+                    <CardTitle>{t('contact.contactInfoTitle')}</CardTitle>
                     <CardDescription>
-                      Otras formas de comunicarte con nosotros
+                      {t('contact.contactInfoDescription')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
@@ -202,7 +211,7 @@ export default function Contacto() {
                         <Mail className="h-6 w-6 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-medium">Email</h3>
+                        <h3 className="font-medium">{t('contact.emailAddress')}</h3>
                         <p className="text-muted-foreground">contacto@evity.mx</p>
                       </div>
                     </div>
@@ -212,7 +221,7 @@ export default function Contacto() {
                         <Phone className="h-6 w-6 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-medium">Teléfono</h3>
+                        <h3 className="font-medium">{t('contact.phone')}</h3>
                         <p className="text-muted-foreground">+52 55 1234 5678</p>
                       </div>
                     </div>
@@ -222,9 +231,9 @@ export default function Contacto() {
                         <MapPin className="h-6 w-6 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-medium">Oficina</h3>
+                        <h3 className="font-medium">{t('contact.office')}</h3>
                         <p className="text-muted-foreground">
-                          Ciudad de México, México
+                          {t('contact.officeAddress')}
                         </p>
                       </div>
                     </div>
@@ -234,9 +243,9 @@ export default function Contacto() {
                         <Clock className="h-6 w-6 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-medium">Horario de atención</h3>
+                        <h3 className="font-medium">{t('contact.hours')}</h3>
                         <p className="text-muted-foreground">
-                          Lunes a Viernes: 9:00 - 18:00 hrs (GMT-6)
+                          {t('contact.hoursTime')}
                         </p>
                       </div>
                     </div>
@@ -246,14 +255,14 @@ export default function Contacto() {
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>¿Necesitas ayuda inmediata?</CardTitle>
+                    <CardTitle>Immediate Help Needed?</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground mb-4">
-                      Si tienes una consulta urgente sobre tu salud, te recomendamos contactar a tu médico de cabecera.
+                      {t('contact.urgentNote')}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Para consultas sobre la plataforma, respondemos en menos de 24 horas.
+                      For platform inquiries, we respond within 24 hours.
                     </p>
                   </CardContent>
                 </Card>

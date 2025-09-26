@@ -25,19 +25,37 @@ import {
 } from "@/components/ui/form";
 import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
 import { Link } from "wouter";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-// LS-98: Email validation schema for password recovery
-const forgotPasswordSchema = z.object({
-  email: z.string()
-    .email("Ingresa un email válido")
-    .min(1, "El email es requerido"),
-});
+// LS-98: Email validation schema for password recovery - will be created inside component to access t()
 
-type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
+type ForgotPasswordForm = {
+  email: string;
+};
 
 export default function ForgotPassword() {
   const [emailSent, setEmailSent] = useState(false);
   const { toast } = useToast();
+  const { t } = useLanguage();
+  
+  // Helper function to map server error messages to translation keys
+  const translateServerError = (serverMessage: string): string => {
+    const errorMap: Record<string, string> = {
+      'Email es requerido': t('forgotPassword.serverEmailRequired'),
+      'Si el email existe, recibirás instrucciones de recuperación': t('forgotPassword.serverEmailSent'), 
+      'Error interno del servidor': t('forgotPassword.serverInternalError'),
+      'Token inválido o expirado': t('forgotPassword.serverTokenInvalid'),
+      'Contraseña actualizada exitosamente': t('forgotPassword.serverPasswordUpdated')
+    };
+    return errorMap[serverMessage] || serverMessage;
+  };
+  
+  // Create schema inside component to access t() for translations
+  const forgotPasswordSchema = z.object({
+    email: z.string()
+      .email(t('forgotPassword.invalidEmail'))
+      .min(1, t('forgotPassword.emailRequired')),
+  });
 
   const form = useForm<ForgotPasswordForm>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -68,14 +86,14 @@ export default function ForgotPassword() {
     onSuccess: (data) => {
       setEmailSent(true);
       toast({
-        title: "Email enviado",
-        description: "Si el email existe, recibirás instrucciones de recuperación.",
+        title: t('forgotPassword.successTitle'),
+        description: t('forgotPassword.successDescription'),
       });
     },
     onError: (error: any) => {
       console.error("Forgot password error:", error);
       
-      const errorMessage = error.message || "Error al enviar el email de recuperación";
+      const errorMessage = error.message ? translateServerError(error.message) : t('forgotPassword.errorMessage');
       
       if (error.field) {
         form.setError(error.field as keyof ForgotPasswordForm, {
@@ -85,7 +103,7 @@ export default function ForgotPassword() {
       } else {
         toast({
           variant: "destructive",
-          title: "Error",
+          title: t('common.error'),
           description: errorMessage,
         });
       }
@@ -103,16 +121,16 @@ export default function ForgotPassword() {
           <CardHeader className="space-y-1 text-center">
             <CheckCircle className="h-12 w-12 mx-auto text-green-500 mb-4" />
             <CardTitle className="text-2xl font-bold">
-              Email Enviado
+              {t('forgotPassword.successTitle')}
             </CardTitle>
             <CardDescription>
-              Si el email existe en nuestro sistema, recibirás instrucciones para restablecer tu contraseña.
+              {t('forgotPassword.instructions')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="text-center text-sm text-muted-foreground">
-              <p>Revisa tu bandeja de entrada y también tu carpeta de spam.</p>
-              <p className="mt-2">El enlace de recuperación expirará en 24 horas.</p>
+              <p>{t('forgotPassword.checkInbox')}</p>
+              <p className="mt-2">{t('forgotPassword.expiration')}</p>
             </div>
             
             <div className="flex flex-col gap-2">
@@ -121,13 +139,13 @@ export default function ForgotPassword() {
                 variant="outline"
                 data-testid="button-send-again"
               >
-                Enviar otro email
+                {t('forgotPassword.sendButton')}
               </Button>
               
               <Link href="/login" data-testid="link-back-login">
                 <Button variant="ghost" className="w-full">
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Volver al inicio de sesión
+                  {t('forgotPassword.backToLogin')}
                 </Button>
               </Link>
             </div>
@@ -145,16 +163,16 @@ export default function ForgotPassword() {
             <Link href="/login" data-testid="link-back-login">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Volver
+                {t('forgotPassword.backToLogin')}
               </Button>
             </Link>
           </div>
           <CardTitle className="text-2xl font-bold text-center">
             <Mail className="h-6 w-6 mx-auto mb-2" />
-            Recuperar Contraseña
+            {t('forgotPassword.title')}
           </CardTitle>
           <CardDescription className="text-center">
-            Ingresa tu email para recibir instrucciones de recuperación
+            {t('forgotPassword.subtitle')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -165,12 +183,12 @@ export default function ForgotPassword() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{t('login.email')}</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="email"
-                        placeholder="tu@email.com"
+                        placeholder={t('login.email')}
                         data-testid="input-email"
                         autoComplete="email"
                         autoFocus
@@ -187,17 +205,17 @@ export default function ForgotPassword() {
                 disabled={forgotPasswordMutation.isPending}
                 data-testid="button-send-recovery"
               >
-                {forgotPasswordMutation.isPending ? "Enviando..." : "Enviar Email de Recuperación"}
+                {forgotPasswordMutation.isPending ? t('forgotPassword.sendingButton') : t('forgotPassword.sendButton')}
               </Button>
             </form>
           </Form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
-              ¿Recordaste tu contraseña?{" "}
+              {t('forgotPassword.rememberPassword')}{" "}
               <Link href="/login" data-testid="link-login">
                 <Button variant="ghost" className="p-0 h-auto">
-                  Inicia sesión aquí
+                  {t('forgotPassword.loginHere')}
                 </Button>
               </Link>
             </p>
