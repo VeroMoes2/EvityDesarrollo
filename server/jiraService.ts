@@ -458,11 +458,25 @@ export class JiraService {
         }
       }
 
-      // Add comment if provided
+      // Add comment if provided (use ADF format)
       if (comment) {
         transitionData.update.comment = [{
           add: {
-            body: comment
+            body: {
+              type: 'doc',
+              version: 1,
+              content: [
+                {
+                  type: 'paragraph',
+                  content: [
+                    {
+                      type: 'text',
+                      text: comment
+                    }
+                  ]
+                }
+              ]
+            }
           }
         }];
       }
