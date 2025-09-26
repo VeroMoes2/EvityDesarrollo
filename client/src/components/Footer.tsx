@@ -7,7 +7,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
   const { data: confluenceData } = useConfluenceData();
   const [, navigate] = useLocation();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const handleLinkClick = (linkName: string) => {
     if (linkName === "about") {
@@ -19,8 +19,19 @@ export default function Footer() {
 
   const companyName = confluenceData?.companyName || "Evity";
   
-  // Use translated company description that respects user's language selection
-  const companyDescription = t('footer.companyDescription');
+  // Build comprehensive company description using available content while respecting language selection
+  let companyDescription = t('footer.companyDescription');
+  
+  // For Spanish, use Confluence data when available (it's in Spanish)
+  // For English, use the translated fallback
+  if (language === 'es' && confluenceData?.mission) {
+    companyDescription = confluenceData.mission;
+    
+    // If we have both mission and vision in Spanish, combine them
+    if (confluenceData?.vision) {
+      companyDescription = `${confluenceData.mission} ${confluenceData.vision}`;
+    }
+  }
 
   return (
     <footer className="bg-card border-t border-card-border">

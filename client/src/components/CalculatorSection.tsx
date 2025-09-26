@@ -13,7 +13,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 export default function CalculatorSection() {
   const { data: confluenceData, isLoading, error } = useConfluenceData();
   const [, navigate] = useLocation();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [formData, setFormData] = useState({
     age: "",
     gender: "",
@@ -69,7 +69,7 @@ export default function CalculatorSection() {
             {t('calculator.title')} {companyName}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            {t('calculator.subtitle')}
+            {language === 'es' && confluenceData?.mission ? confluenceData.mission : t('calculator.subtitle')}
           </p>
         </div>
 
