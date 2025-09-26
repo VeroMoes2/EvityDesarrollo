@@ -3,11 +3,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Heart, Target, Users, ArrowRight, Mail, AlertCircle } from "lucide-react";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 
 export default function About() {
   // Fetch real company information from Confluence
   const { data: companyInfo, isLoading, error } = useConfluenceData();
+  const { t } = useLanguage();
 
   if (isLoading) {
     return (
@@ -15,7 +17,7 @@ export default function About() {
         <div className="container mx-auto px-4 py-16">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="animate-pulse text-muted-foreground">
-              Cargando información de la empresa...
+              {t('about.loadingInfo')}
             </div>
           </div>
         </div>
@@ -31,9 +33,9 @@ export default function About() {
             <Card className="max-w-md">
               <CardContent className="p-6 text-center">
                 <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Error al cargar información</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('about.errorLoading')}</h3>
                 <p className="text-muted-foreground">
-                  No se pudo cargar la información de la empresa. Por favor, inténtalo más tarde.
+                  {t('about.errorDescription')}
                 </p>
               </CardContent>
             </Card>
@@ -49,7 +51,7 @@ export default function About() {
         <div className="container mx-auto px-4 py-16">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-muted-foreground">
-              No hay información disponible.
+              {t('about.noInfo')}
             </div>
           </div>
         </div>
@@ -63,10 +65,10 @@ export default function About() {
         {/* Header */}
         <div className="text-center mb-16">
           <Badge variant="outline" className="mb-4" data-testid="page-badge">
-            Acerca de Nosotros
+            {t('about.pageTitle')}
           </Badge>
           <h1 className="text-4xl md:text-5xl font-bold text-card-foreground mb-6" data-testid="page-title">
-            Conoce a {companyInfo.companyName}
+            {t('about.meetCompany')} {companyInfo.companyName}
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed" data-testid="page-subtitle">
             {companyInfo.valueProposition}
@@ -82,7 +84,7 @@ export default function About() {
                 <Heart className="h-8 w-8 text-primary" />
               </div>
               <CardTitle className="text-2xl font-bold text-card-foreground">
-                Nuestra Misión
+                {t('about.mission')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -99,7 +101,7 @@ export default function About() {
                 <Target className="h-8 w-8 text-primary" />
               </div>
               <CardTitle className="text-2xl font-bold text-card-foreground">
-                Nuestra Visión
+                {t('about.vision')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -117,11 +119,11 @@ export default function About() {
               <div className="flex items-center justify-center mb-4">
                 <Users className="h-8 w-8 text-primary mr-3" />
                 <h2 className="text-3xl font-bold text-card-foreground" data-testid="team-title">
-                  Nuestro Equipo
+                  {t('about.team')}
                 </h2>
               </div>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto" data-testid="team-subtitle">
-                Conoce a los expertos que están revolucionando el futuro de la longevidad y el bienestar
+                {t('about.teamSubtitle')}
               </p>
             </div>
 
@@ -147,7 +149,7 @@ export default function About() {
                         data-testid={`button-team-email-${member.id}`}
                       >
                         <Mail className="h-4 w-4 mr-1" />
-                        Contactar
+                        {t('about.contact')}
                       </Button>
                     </div>
                   </CardContent>
@@ -162,10 +164,10 @@ export default function About() {
           <Card className="bg-primary text-primary-foreground hover-elevate max-w-2xl mx-auto" data-testid="cta-card">
             <CardContent className="p-8">
               <h3 className="text-2xl font-bold mb-4" data-testid="cta-title">
-                ¿Listo para transformar tu longevidad?
+                {t('about.ctaTitle')}
               </h3>
               <p className="text-primary-foreground/80 mb-6 text-lg" data-testid="cta-description">
-                Únete a nuestra comunidad y comienza tu viaje hacia una vida más larga y saludable
+                {t('about.ctaDescription')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
@@ -174,7 +176,7 @@ export default function About() {
                   onClick={() => window.location.href = '/register'}
                   data-testid="cta-register"
                 >
-                  Registrarse Ahora
+                  {t('about.registerNow')}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 <Button 
@@ -184,7 +186,7 @@ export default function About() {
                   onClick={() => window.location.href = '/contacto'}
                   data-testid="cta-contact"
                 >
-                  Contáctanos
+                  {t('about.contactUs')}
                 </Button>
               </div>
             </CardContent>

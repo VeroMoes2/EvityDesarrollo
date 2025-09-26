@@ -51,7 +51,8 @@ import {
   Trash2,
 } from "lucide-react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { es, enUS } from "date-fns/locale";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 // Types for medical documents
 interface MedicalDocument {
@@ -75,6 +76,7 @@ interface DocumentsResponse {
 
 export default function MisArchivos() {
   const { toast } = useToast();
+  const { t, language } = useLanguage();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
   const [search, setSearch] = useState("");
@@ -102,8 +104,8 @@ export default function MisArchivos() {
       queryClient.invalidateQueries({ queryKey: ['/api/profile/medical-documents'] });
       
       toast({
-        title: "Archivo eliminado",
-        description: "El archivo se eliminó correctamente",
+        title: t('files.deleteSuccess'),
+        description: t('files.deleteSuccessDescription'),
       });
       
       setDocumentToDelete(null);
@@ -115,7 +117,7 @@ export default function MisArchivos() {
       setDeleteError({
         documentId,
         documentName,
-        error: error.message || "No se pudo eliminar el archivo"
+        error: error.message || t('files.deleteErrorDefault')
       });
       
       setDocumentToDelete(null);
@@ -182,8 +184,8 @@ export default function MisArchivos() {
     } catch (error) {
       console.error('Error previewing document:', error);
       toast({
-        title: "Error",
-        description: "No se pudo previsualizar el archivo",
+        title: t('common.error'),
+        description: t('files.previewError'),
         variant: "destructive",
       });
     }
@@ -231,15 +233,15 @@ export default function MisArchivos() {
       URL.revokeObjectURL(url);
       
       toast({
-        title: "Descarga iniciada",
-        description: `Se está descargando ${originalName}`,
+        title: t('files.downloadStarted'),
+        description: `${t('files.downloading')} ${originalName}`,
       });
       
     } catch (error) {
       console.error('Error downloading document:', error);
       toast({
-        title: "Error",
-        description: "No se pudo descargar el archivo",
+        title: t('common.error'),
+        description: t('files.downloadError'),
         variant: "destructive",
       });
     }
@@ -269,7 +271,7 @@ export default function MisArchivos() {
     } else if (mimeType.includes('word')) {
       return { text: 'DOC', variant: 'outline' as const };
     }
-    return { text: 'OTRO', variant: 'secondary' as const };
+    return { text: t('files.other'), variant: 'secondary' as const };
   };
 
   if (error) {
@@ -279,10 +281,10 @@ export default function MisArchivos() {
           <CardContent className="p-6">
             <div className="text-center text-red-600">
               <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <h3 className="text-lg font-semibold mb-2">Error al cargar archivos</h3>
-              <p className="text-sm">No se pudieron cargar tus archivos médicos.</p>
+              <h3 className="text-lg font-semibold mb-2">{t('files.loadError')}</h3>
+              <p className="text-sm">{t('files.loadErrorDescription')}</p>
               <Button onClick={() => refetch()} className="mt-4" data-testid="button-retry">
-                Reintentar
+                {t('common.retry')}
               </Button>
             </div>
           </CardContent>
@@ -296,9 +298,9 @@ export default function MisArchivos() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold" data-testid="text-page-title">Mis Archivos</h1>
+          <h1 className="text-3xl font-bold" data-testid="text-page-title">{t('files.title')}</h1>
           <p className="text-gray-600 mt-1">
-            Gestiona tus estudios y laboratorios médicos
+            {t('files.subtitle')}
           </p>
         </div>
       </div>
@@ -311,7 +313,7 @@ export default function MisArchivos() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Buscar por nombre de archivo..."
+                  placeholder={t('files.searchPlaceholder')}
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -320,11 +322,11 @@ export default function MisArchivos() {
                 />
               </div>
               <Button onClick={handleSearch} data-testid="button-search">
-                Buscar
+                {t('common.search')}
               </Button>
               {search && (
                 <Button variant="outline" onClick={handleClearSearch} data-testid="button-clear-search">
-                  Limpiar
+                  {t('common.clear')}
                 </Button>
               )}
             </div>
@@ -338,9 +340,9 @@ export default function MisArchivos() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="10">10 por página</SelectItem>
-                  <SelectItem value="20">20 por página</SelectItem>
-                  <SelectItem value="50">50 por página</SelectItem>
+                  <SelectItem value="10">10 {t('files.perPageLabel')}</SelectItem>
+                  <SelectItem value="20">20 {t('files.perPageLabel')}</SelectItem>
+                  <SelectItem value="50">50 {t('files.perPageLabel')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -348,7 +350,7 @@ export default function MisArchivos() {
           
           {search && (
             <div className="mt-3 text-sm text-gray-600">
-              Mostrando resultados para: <strong>{search}</strong>
+{t('files.showingResultsFor')}: <strong>{search}</strong>
             </div>
           )}
         </CardContent>
@@ -359,10 +361,10 @@ export default function MisArchivos() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
-            Archivos Médicos
+{t('files.medicalFiles')}
             {documentsData && (
               <Badge variant="secondary" data-testid="text-total-count">
-                {documentsData.total} total{documentsData.total !== 1 ? 'es' : ''}
+                {documentsData.total} {documentsData.total === 1 ? t('files.totalSingular') : t('files.totalPlural')}
               </Badge>
             )}
           </CardTitle>
@@ -383,9 +385,9 @@ export default function MisArchivos() {
           ) : documentsData?.documents.length === 0 ? (
             <div className="text-center py-12">
               <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-              <h3 className="text-lg font-semibold mb-2">No tienes archivos</h3>
+              <h3 className="text-lg font-semibold mb-2">{t('files.noFilesTitle')}</h3>
               <p className="text-gray-600">
-                {search ? 'No se encontraron archivos que coincidan con tu búsqueda.' : 'Aún no has subido ningún archivo médico.'}
+                {search ? t('files.noFilesSearch') : t('files.noFilesEmpty')}
               </p>
             </div>
           ) : (
@@ -394,11 +396,11 @@ export default function MisArchivos() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Nombre</TableHead>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead>Tamaño</TableHead>
-                      <TableHead>Fecha de subida</TableHead>
-                      <TableHead className="text-right">Acciones</TableHead>
+                      <TableHead>{t('files.fileName')}</TableHead>
+                      <TableHead>{t('files.fileType')}</TableHead>
+                      <TableHead>{t('files.fileSize')}</TableHead>
+                      <TableHead>{t('files.uploadDate')}</TableHead>
+                      <TableHead className="text-right">{t('files.actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -425,7 +427,7 @@ export default function MisArchivos() {
                           <TableCell data-testid={`text-date-${document.id}`}>
                             <div className="flex items-center gap-2">
                               <Calendar className="h-4 w-4 text-gray-400" />
-                              {format(new Date(document.uploadedAt), 'dd/MM/yyyy HH:mm', { locale: es })}
+                              {format(new Date(document.uploadedAt), 'dd/MM/yyyy HH:mm', { locale: language === 'es' ? es : enUS })}
                             </div>
                           </TableCell>
                           <TableCell className="text-right">
@@ -437,7 +439,7 @@ export default function MisArchivos() {
                                 data-testid={`button-view-${document.id}`}
                               >
                                 <Eye className="h-4 w-4" />
-                                Ver
+                                {t('common.view')}
                               </Button>
                               <Button
                                 size="sm"
@@ -446,7 +448,7 @@ export default function MisArchivos() {
                                 data-testid={`button-download-${document.id}`}
                               >
                                 <Download className="h-4 w-4" />
-                                Descargar
+                                {t('common.download')}
                               </Button>
                               <Button
                                 size="sm"
@@ -472,8 +474,8 @@ export default function MisArchivos() {
                 <div className="flex items-center justify-between mt-6">
                   <div className="text-sm text-gray-600" data-testid="text-pagination-info">
                     Mostrando {((documentsData.page - 1) * documentsData.limit) + 1} a{' '}
-                    {Math.min(documentsData.page * documentsData.limit, documentsData.total)} de{' '}
-                    {documentsData.total} archivo{documentsData.total !== 1 ? 's' : ''}
+                    {Math.min(documentsData.page * documentsData.limit, documentsData.total)} {t('files.showing')}{' '}
+                    {documentsData.total} {documentsData.total === 1 ? t('files.filesSingular') : t('files.filesPlural')}
                   </div>
                   <div className="flex gap-2">
                     <Button
@@ -487,7 +489,7 @@ export default function MisArchivos() {
                       Anterior
                     </Button>
                     <div className="flex items-center gap-2 px-3 py-1 text-sm">
-                      Página {documentsData.page} de {Math.ceil(documentsData.total / documentsData.limit)}
+                      {t('files.pageOf').replace('{current}', documentsData.page.toString()).replace('{total}', Math.ceil(documentsData.total / documentsData.limit).toString())}
                     </div>
                     <Button
                       variant="outline"

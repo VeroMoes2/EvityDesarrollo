@@ -112,7 +112,7 @@ export default function Header() {
               className="hidden md:inline-flex"
               data-testid="button-contacto"
             >
-              Contacto
+              {t('nav.contact')}
             </Button>
 
             {/* LS-96-8: User Profile Menu - Desktop */}
@@ -145,7 +145,7 @@ export default function Header() {
                       data-testid="menu-item-admin"
                     >
                       <Settings className="mr-2 h-4 w-4" />
-                      <span>Panel Admin</span>
+                      <span>{t('nav.adminPanel')}</span>
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuSeparator />
@@ -225,7 +225,7 @@ export default function Header() {
                 className="w-full"
                 data-testid="button-mobile-contacto"
               >
-                Contacto
+                {t('nav.contact')}
               </Button>
               
               {/* LS-96-8: User Profile Navigation - Mobile */}
@@ -267,7 +267,7 @@ export default function Header() {
                         }}
                       >
                         <Settings className="mr-2 h-4 w-4" />
-                        Panel Admin
+                        {t('nav.adminPanel')}
                       </Button>
                     )}
                     <Button 
