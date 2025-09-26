@@ -160,11 +160,28 @@ export class JiraService {
         fields: ['*all']
       });
 
+      // Log all fields for debugging
+      console.log('=== LS-122 FULL FIELDS DEBUG ===');
+      console.log('Available fields:', Object.keys(issue.fields || {}));
+      
+      // Try to extract description content from different formats
+      let descriptionText = '';
+      if (issue.fields?.description) {
+        if (typeof issue.fields.description === 'string') {
+          descriptionText = issue.fields.description;
+        } else if (typeof issue.fields.description === 'object') {
+          // Handle ADF (Atlassian Document Format)
+          const adfContent = issue.fields.description as any;
+          console.log('ADF Description content:', JSON.stringify(adfContent, null, 2));
+          descriptionText = this.extractTextFromADF(adfContent);
+        }
+      }
+      
       return {
         id: issue.id!,
         key: issue.key!,
         summary: issue.fields?.summary || '',
-        description: typeof issue.fields?.description === 'string' ? issue.fields.description : '',
+        description: descriptionText,
         status: issue.fields?.status?.name || '',
         assignee: issue.fields?.assignee ? {
           displayName: issue.fields.assignee.displayName
@@ -284,6 +301,55 @@ export class JiraService {
   /**
    * Check user permissions for issue operations
    */
+  /**
+   * Extract text content from Atlassian Document Format (ADF)
+   */
+  private extractTextFromADF(adfContent: any): string {
+    if (!adfContent || typeof adfContent !== 'object') {
+      return '';
+    }
+    
+    let text = '';
+    
+    if (adfContent.content && Array.isArray(adfContent.content)) {
+      for (const node of adfContent.content) {
+        text += this.extractTextFromADFNode(node) + '\n';
+      }
+    }
+    
+    return text.trim();
+  }
+  
+  /**
+   * Extract text from a single ADF node
+   */
+  private extractTextFromADFNode(node: any): string {
+    if (!node || typeof node !== 'object') {
+      return '';
+    }
+    
+    let text = '';
+    
+    // Handle text nodes
+    if (node.type === 'text' && node.text) {
+      text += node.text;
+    }
+    
+    // Handle other node types
+    if (node.content && Array.isArray(node.content)) {
+      for (const childNode of node.content) {
+        text += this.extractTextFromADFNode(childNode);
+      }
+    }
+    
+    // Add line breaks for paragraphs and list items
+    if (node.type === 'paragraph' || node.type === 'listItem') {
+      text += '\n';
+    }
+    
+    return text;
+  }
+
   async checkPermissions(issueKey?: string): Promise<JiraPermissions> {
     try {
       const permissions = await this.client.permissions.getMyPermissions({
