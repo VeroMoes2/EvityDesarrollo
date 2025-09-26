@@ -157,7 +157,7 @@ export class JiraService {
     try {
       const issue = await this.client.issues.getIssue({
         issueIdOrKey: issueKey,
-        fields: ['summary', 'description', 'status', 'assignee', 'priority', 'created', 'updated', 'issuetype', 'project']
+        fields: ['*all']
       });
 
       return {

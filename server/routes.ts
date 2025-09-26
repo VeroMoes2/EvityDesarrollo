@@ -589,7 +589,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Jira integration endpoints (debug mode only)
   app.get('/api/jira/test', async (req, res) => {
     try {
-      if (process.env.SHOW_JIRA_DEBUG !== 'true') {
+      if (!process.env.SHOW_JIRA_DEBUG) {
         return res.status(404).json({ error: 'Jira integration is disabled' });
       }
 
@@ -609,7 +609,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/jira/projects', async (req, res) => {
     try {
-      if (process.env.SHOW_JIRA_DEBUG !== 'true') {
+      if (!process.env.SHOW_JIRA_DEBUG) {
         return res.status(404).json({ error: 'Jira integration is disabled' });
       }
 
@@ -629,7 +629,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/jira/issues/recent', async (req, res) => {
     try {
-      if (process.env.SHOW_JIRA_DEBUG !== 'true') {
+      if (!process.env.SHOW_JIRA_DEBUG) {
         return res.status(404).json({ error: 'Jira integration is disabled' });
       }
 
@@ -652,7 +652,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/jira/projects/:projectKey/issues', async (req, res) => {
     try {
-      if (process.env.SHOW_JIRA_DEBUG !== 'true') {
+      if (!process.env.SHOW_JIRA_DEBUG) {
         return res.status(404).json({ error: 'Jira integration is disabled' });
       }
 
@@ -687,7 +687,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Jira specific issue endpoint
   app.get('/api/jira/issue/:issueKey', async (req, res) => {
     try {
-      if (process.env.SHOW_JIRA_DEBUG !== 'true') {
+      if (!process.env.SHOW_JIRA_DEBUG) {
         return res.status(404).json({ error: 'Jira integration is disabled' });
       }
 
@@ -713,7 +713,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/jira/projects/:projectKey/stats', async (req, res) => {
     try {
-      if (process.env.SHOW_JIRA_DEBUG !== 'true') {
+      if (!process.env.SHOW_JIRA_DEBUG) {
         return res.status(404).json({ error: 'Jira integration is disabled' });
       }
 
@@ -745,7 +745,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // LS-110: Endpoint to mark Jira issues as completed
   app.post('/api/jira/issue/:issueKey/complete', isAuthenticated, async (req, res) => {
     try {
-      if (process.env.SHOW_JIRA_DEBUG !== 'true') {
+      if (!process.env.SHOW_JIRA_DEBUG) {
         return res.status(404).json({ error: 'Jira integration is disabled' });
       }
 
