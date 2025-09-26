@@ -15,6 +15,7 @@ import {
   adminRateLimit as securityAdminRateLimit
 } from "./securityMiddleware";
 import AuditLogger from "./auditLogger";
+import { CheckEndService } from "./checkEndService.js";
 
 // Configure multer for file uploads
 const upload = multer({
@@ -785,6 +786,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error(`Error marking issue ${req.params.issueKey} as completed:`, error);
       res.status(500).json({ 
         error: 'Failed to mark issue as completed', 
+        details: error?.message || error 
+      });
+    }
+  });
+
+  // CheckEnd - Automated acceptance criteria validation
+  app.get('/api/check-end/:issueKey', isAuthenticated, async (req, res) => {
+    try {
+      if (!process.env.SHOW_JIRA_DEBUG) {
+        return res.status(404).json({ error: 'CheckEnd feature is disabled' });
+      }
+
+      const { issueKey } = req.params;
+
+      if (!issueKey) {
+        return res.status(400).json({ error: 'Issue key is required' });
+      }
+
+      console.log(`[CheckEnd] Starting validation for ${issueKey} by ${(req as any).user?.claims?.email}`);
+
+      const checkEndService = new CheckEndService();
+      const result = await checkEndService.executeCheckEnd(issueKey);
+
+      // Audit log the CheckEnd execution
+      await AuditLogger.log({
+        userId: (req as any).user?.claims?.id || 'unknown',
+        userEmail: (req as any).user?.claims?.email || 'unknown',
+        action: 'ADMIN_ACCESS',
+        resource: `check_end:${issueKey}`,
+        details: { 
+          action: 'check_end_validation', 
+          issueKey, 
+          criteriaCount: result.criteriaCount,
+          passedCount: result.passedCount,
+          overallStatus: result.overallStatus
+        },
+        outcome: 'SUCCESS',
+        riskLevel: 'LOW'
+      });
+
+      res.json({
+        success: true,
+        checkEndResult: result
+      });
+
+    } catch (error: any) {
+      console.error(`[CheckEnd] Error validating ${req.params.issueKey}:`, error);
+      res.status(500).json({ 
+        success: false,
+        error: 'CheckEnd validation failed', 
         details: error?.message || error 
       });
     }

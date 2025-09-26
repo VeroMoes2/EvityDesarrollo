@@ -109,7 +109,7 @@ export async function sendPasswordResetEmail(email: string, resetToken: string, 
 }
 
 // LS-122: Internationalized email templates for welcome confirmation emails
-const getEmailTemplate = (language: string, verificationUrl: string, userName: string) => {
+export const getEmailTemplate = (language: string, verificationUrl: string, userName: string) => {
   if (language === 'en') {
     return {
       subject: "Email Verification - Welcome to Evity",
