@@ -409,7 +409,6 @@ export class CheckEndService {
 📊 RESULTADOS DE VALIDACIÓN AUTOMÁTICA:
 • Criterios extraídos desde Jira: ${result.criteriaCount}/${result.criteriaCount}
 • Autotests ejecutados: ${result.passedCount}/${result.criteriaCount} PASSED
-• Tiempo de validación: ${(result.executionTime / 1000).toFixed(2)} segundos
 • Status final: ${result.overallStatus.toUpperCase()}
 
 🧪 DETALLE DE AUTOTESTS:
