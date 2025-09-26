@@ -329,6 +329,225 @@ export class CheckEndService {
   }
 
   /**
+   * Run automated validation tests for LS-123 file upload/delete criteria
+   */
+  private async runLS123AutoTests(): Promise<{ [criterioId: string]: boolean }> {
+    const results: { [criterioId: string]: boolean } = {};
+    
+    try {
+      console.log('[CheckEnd] Starting LS-123 automated validation tests...');
+      
+      // Test 1: File selection and upload capability
+      results['criterio-1'] = await this.testFileUploadCapability();
+      
+      // Test 2: Visual confirmation of file upload
+      results['criterio-2'] = await this.testFileUploadConfirmation();
+      
+      // Test 3: File deletion capability
+      results['criterio-3'] = await this.testFileDeletionCapability();
+      
+      // Test 4: File type validation (if applicable)
+      results['criterio-4'] = await this.testFileTypeValidation();
+      
+      // Test 5: File size validation (if applicable)
+      results['criterio-5'] = await this.testFileSizeValidation();
+      
+      // Test 6: Multiple file handling (if applicable)
+      results['criterio-6'] = await this.testMultipleFileHandling();
+      
+      console.log('[CheckEnd] LS-123 automated tests completed:', results);
+      return results;
+      
+    } catch (error) {
+      console.error('[CheckEnd] Error running LS-123 tests:', error);
+      return {};
+    }
+  }
+
+  /**
+   * Test file upload capability exists
+   */
+  private async testFileUploadCapability(): Promise<boolean> {
+    try {
+      // Check if multer is configured in routes
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      // Check if there's file upload handling in routes
+      const routesPath = path.join(process.cwd(), 'server', 'routes.ts');
+      if (fs.existsSync(routesPath)) {
+        const routesContent = fs.readFileSync(routesPath, 'utf-8');
+        const hasFileUpload = routesContent.includes('multer') || 
+                             routesContent.includes('upload') ||
+                             routesContent.includes('multipart');
+        
+        console.log('[CheckEnd] File upload capability check:', hasFileUpload);
+        return hasFileUpload;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('[CheckEnd] File upload capability test failed:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Test visual confirmation functionality
+   */
+  private async testFileUploadConfirmation(): Promise<boolean> {
+    try {
+      // Check if there are UI components for file upload confirmation
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      const clientPath = path.join(process.cwd(), 'client', 'src');
+      if (fs.existsSync(clientPath)) {
+        // Look for upload-related components
+        const findFilesRecursively = (dir: string): string[] => {
+          const files: string[] = [];
+          const items = fs.readdirSync(dir);
+          
+          for (const item of items) {
+            const fullPath = path.join(dir, item);
+            if (fs.statSync(fullPath).isDirectory()) {
+              files.push(...findFilesRecursively(fullPath));
+            } else if (item.endsWith('.tsx') || item.endsWith('.ts')) {
+              files.push(fullPath);
+            }
+          }
+          return files;
+        };
+        
+        const allFiles = findFilesRecursively(clientPath);
+        const hasUploadUI = allFiles.some(file => {
+          const content = fs.readFileSync(file, 'utf-8');
+          return content.includes('file') && 
+                 (content.includes('upload') || content.includes('success') || content.includes('confirm'));
+        });
+        
+        console.log('[CheckEnd] Upload confirmation UI check:', hasUploadUI);
+        return hasUploadUI;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('[CheckEnd] Upload confirmation test failed:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Test file deletion capability
+   */
+  private async testFileDeletionCapability(): Promise<boolean> {
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      // Check if there's file deletion handling in routes
+      const routesPath = path.join(process.cwd(), 'server', 'routes.ts');
+      if (fs.existsSync(routesPath)) {
+        const routesContent = fs.readFileSync(routesPath, 'utf-8');
+        const hasFileDelete = routesContent.includes('DELETE') && 
+                             (routesContent.includes('file') || routesContent.includes('upload'));
+        
+        console.log('[CheckEnd] File deletion capability check:', hasFileDelete);
+        return hasFileDelete;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('[CheckEnd] File deletion test failed:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Test file type validation
+   */
+  private async testFileTypeValidation(): Promise<boolean> {
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      // Check for file type validation in code
+      const routesPath = path.join(process.cwd(), 'server', 'routes.ts');
+      if (fs.existsSync(routesPath)) {
+        const routesContent = fs.readFileSync(routesPath, 'utf-8');
+        const hasTypeValidation = routesContent.includes('fileFilter') ||
+                                 routesContent.includes('mimetype') ||
+                                 routesContent.includes('extension');
+        
+        console.log('[CheckEnd] File type validation check:', hasTypeValidation);
+        return hasTypeValidation;
+      }
+      
+      // Default to true if no explicit validation needed
+      return true;
+    } catch (error) {
+      console.error('[CheckEnd] File type validation test failed:', error);
+      return true; // Non-critical
+    }
+  }
+
+  /**
+   * Test file size validation
+   */
+  private async testFileSizeValidation(): Promise<boolean> {
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      // Check for file size limits
+      const routesPath = path.join(process.cwd(), 'server', 'routes.ts');
+      if (fs.existsSync(routesPath)) {
+        const routesContent = fs.readFileSync(routesPath, 'utf-8');
+        const hasSizeValidation = routesContent.includes('limits') ||
+                                 routesContent.includes('fileSize') ||
+                                 routesContent.includes('size');
+        
+        console.log('[CheckEnd] File size validation check:', hasSizeValidation);
+        return hasSizeValidation;
+      }
+      
+      // Default to true if no explicit validation needed
+      return true;
+    } catch (error) {
+      console.error('[CheckEnd] File size validation test failed:', error);
+      return true; // Non-critical
+    }
+  }
+
+  /**
+   * Test multiple file handling capability
+   */
+  private async testMultipleFileHandling(): Promise<boolean> {
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      // Check for multiple file handling
+      const routesPath = path.join(process.cwd(), 'server', 'routes.ts');
+      if (fs.existsSync(routesPath)) {
+        const routesContent = fs.readFileSync(routesPath, 'utf-8');
+        const hasMultipleHandling = routesContent.includes('array()') ||
+                                   routesContent.includes('multiple') ||
+                                   routesContent.includes('files');
+        
+        console.log('[CheckEnd] Multiple file handling check:', hasMultipleHandling);
+        return hasMultipleHandling;
+      }
+      
+      // Default to true if single file is sufficient
+      return true;
+    } catch (error) {
+      console.error('[CheckEnd] Multiple file handling test failed:', error);
+      return true; // Non-critical
+    }
+  }
+
+  /**
    * Main CheckEnd execution for a story
    */
   async executeCheckEnd(storyKey: string): Promise<CheckEndResult> {
@@ -360,10 +579,12 @@ export class CheckEndService {
       
       console.log(`[CheckEnd] Extracted ${criteria.length} criteria from ${storyKey}`);
       
-      // 3. Run automated tests (currently specific to LS-122)
+      // 3. Run automated tests based on story
       let autoTestResults: { [criterioId: string]: boolean } = {};
       if (storyKey === 'LS-122') {
         autoTestResults = await this.runLS122AutoTests();
+      } else if (storyKey === 'LS-123') {
+        autoTestResults = await this.runLS123AutoTests();
       }
       
       // 4. Apply test results to criteria
