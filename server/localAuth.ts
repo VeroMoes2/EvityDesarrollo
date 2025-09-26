@@ -108,8 +108,78 @@ export async function sendPasswordResetEmail(email: string, resetToken: string, 
   }
 }
 
-// LS-99: Email verification functionality
-export async function sendEmailVerification(email: string, verificationToken: string, baseUrl?: string): Promise<boolean> {
+// LS-122: Internationalized email templates for welcome confirmation emails
+const getEmailTemplate = (language: string, verificationUrl: string, userName: string) => {
+  if (language === 'en') {
+    return {
+      subject: "Email Verification - Welcome to Evity",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h2 style="color: #4CAF50; text-align: center;">Welcome to Evity!</h2>
+          <p>Hello ${userName},</p>
+          <p><strong>Congratulations! Your account has been successfully created.</strong></p>
+          <p>Thank you for joining Evity, the future of longevity science. To complete your registration and activate your account, please verify your email address.</p>
+          <p style="text-align: center; margin: 30px 0;">
+            <a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 14px 20px; text-decoration: none; border-radius: 4px; display: inline-block;">Verify My Email</a>
+          </p>
+          <p><strong>Important:</strong> This verification link will expire in 24 hours.</p>
+          <p>If you didn't create an account with Evity, you can safely ignore this email.</p>
+          <br>
+          <p style="text-align: center; font-style: italic; color: #666;">Welcome to the future of longevity!</p>
+          <p style="text-align: center; color: #666;">The Evity Team</p>
+        </div>
+      `,
+    };
+  } else {
+    // Default to Spanish
+    return {
+      subject: "Verificación de Email - Bienvenido a Evity",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h2 style="color: #4CAF50; text-align: center;">¡Bienvenido a Evity!</h2>
+          <p>Hola ${userName},</p>
+          <p><strong>¡Felicitaciones! Tu cuenta ha sido creada exitosamente.</strong></p>
+          <p>Gracias por unirte a Evity, el futuro de la ciencia de la longevidad. Para completar tu registro y activar tu cuenta, necesitas verificar tu dirección de email.</p>
+          <p style="text-align: center; margin: 30px 0;">
+            <a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 14px 20px; text-decoration: none; border-radius: 4px; display: inline-block;">Verificar Mi Email</a>
+          </p>
+          <p><strong>Importante:</strong> Este enlace de verificación expirará en 24 horas.</p>
+          <p>Si no creaste una cuenta en Evity, puedes ignorar este email.</p>
+          <br>
+          <p style="text-align: center; font-style: italic; color: #666;">¡Bienvenido al futuro de la longevidad!</p>
+          <p style="text-align: center; color: #666;">Equipo de Evity</p>
+        </div>
+      `,
+    };
+  }
+};
+
+// Helper function to detect user's preferred language from Accept-Language header
+function detectLanguageFromAcceptLanguage(acceptLanguage?: string): string {
+  if (!acceptLanguage) return 'es'; // Default to Spanish
+  
+  // Parse Accept-Language header
+  const languages = acceptLanguage
+    .split(',')
+    .map(lang => {
+      const [code, q = '1'] = lang.trim().split(';q=');
+      return { code: code.toLowerCase(), quality: parseFloat(q) };
+    })
+    .sort((a, b) => b.quality - a.quality);
+  
+  // Check for English preference
+  for (const lang of languages) {
+    if (lang.code.startsWith('en')) {
+      return 'en';
+    }
+  }
+  
+  // Default to Spanish if no English preference found
+  return 'es';
+}
+
+// LS-99 & LS-122: Enhanced email verification functionality with internationalization
+export async function sendEmailVerification(email: string, verificationToken: string, baseUrl?: string, acceptLanguage?: string, userName?: string): Promise<boolean> {
   const transporter = getEmailTransporter();
   if (!transporter) {
     return false;
@@ -119,22 +189,18 @@ export async function sendEmailVerification(email: string, verificationToken: st
   const base = baseUrl || process.env.BASE_URL || 'http://localhost:5000';
   const verificationUrl = `${base}/verify-email?token=${verificationToken}`;
   
+  // Detect language preference
+  const language = detectLanguageFromAcceptLanguage(acceptLanguage);
+  
+  // Get email template in the appropriate language
+  const template = getEmailTemplate(language, verificationUrl, userName || '');
+  
   try {
     await transporter.sendMail({
       from: process.env.SMTP_FROM || process.env.SMTP_USER,
       to: email,
-      subject: "Verificación de Email - Evity",
-      html: `
-        <h2>¡Bienvenido a Evity!</h2>
-        <p>Gracias por registrarte en Evity. Para activar tu cuenta, necesitas verificar tu email.</p>
-        <p>Haz clic en el siguiente enlace para verificar tu email:</p>
-        <p><a href="${verificationUrl}" style="background-color: #4CAF50; color: white; padding: 14px 20px; text-decoration: none; border-radius: 4px;">Verificar Email</a></p>
-        <p>Este enlace expirará en 24 horas.</p>
-        <p>Si no te registraste en Evity, puedes ignorar este email.</p>
-        <br>
-        <p>¡Bienvenido al futuro de la longevidad!</p>
-        <p>Equipo de Evity</p>
-      `,
+      subject: template.subject,
+      html: template.html,
     });
     return true;
   } catch (error) {
@@ -289,7 +355,10 @@ export async function setupAuth(app: Express) {
       const host = req.headers['x-forwarded-host'] || req.headers.host;
       const baseUrl = `${protocol}://${host}`;
       
-      const emailSent = await sendEmailVerification(newUser.email, verificationToken, baseUrl);
+      // LS-122: Send internationalized welcome email with user's preferred language
+      const acceptLanguage = req.headers['accept-language'];
+      const userName = `${newUser.firstName} ${newUser.lastName}`;
+      const emailSent = await sendEmailVerification(newUser.email, verificationToken, baseUrl, acceptLanguage, userName);
       
       if (!emailSent) {
         console.error("Failed to send verification email, but user was created");
