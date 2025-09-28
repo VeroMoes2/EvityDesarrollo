@@ -53,7 +53,7 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
     enabled: true,
   });
 
-  const categories = categoriesData?.categories || {};
+  const categories = (categoriesData as any)?.categories || {};
 
   const getFileTypeLabel = () => {
     return fileType === "study" ? t('fileUpload.medicalStudies') : t('fileUpload.labResults');
@@ -95,6 +95,11 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
     }
     
     setFiles(prev => [...prev, ...newFiles]);
+    
+    // Reset input value to allow re-selecting the same file
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const handleUpload = async (fileIndex: number) => {
