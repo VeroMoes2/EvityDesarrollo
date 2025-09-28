@@ -466,7 +466,12 @@ export default function Profile() {
                   </Button>
                 </Link>
                 
-                <Button variant="outline" className="w-full justify-start" disabled>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start" 
+                  onClick={() => (document.querySelector('[data-testid="upload-zone-study"]') as HTMLElement)?.click()}
+                  data-testid="button-quick-upload"
+                >
                   <Upload className="h-4 w-4 mr-2" />
                   Subir Documento Rápido
                 </Button>
@@ -543,16 +548,16 @@ export default function Profile() {
                 </CardContent>
               </Card>
 
-              {/* Studies Section */}
-              <Card data-testid="card-studies">
+              {/* Unified Studies and Labs Section */}
+              <Card data-testid="card-studies-labs">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <FileText className="h-5 w-5" />
-                    <span>Estudios Médicos</span>
-                    <Badge variant="secondary">{allDocuments.filter((doc: any) => doc.fileType === 'study').length}</Badge>
+                    <span>Estudios y Laboratorios</span>
+                    <Badge variant="secondary">{allDocuments.length}</Badge>
                   </CardTitle>
                   <CardDescription>
-                    Carga tus estudios médicos, radiografías, resonancias y otros estudios de imagen
+                    Gestiona todos tus estudios médicos y resultados de laboratorios en un solo lugar
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -567,25 +572,42 @@ export default function Profile() {
                   {documentsLoading ? (
                     <div className="text-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                      <p className="mt-2 text-gray-600">Cargando estudios...</p>
+                      <p className="mt-2 text-gray-600">Cargando documentos...</p>
                     </div>
-                  ) : allDocuments.filter((doc: any) => doc.fileType === 'study').length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
+                  ) : allDocuments.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500" data-testid="empty-state-documents">
                       <FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                      <p>No tienes estudios médicos cargados</p>
-                      <p className="text-sm">Sube tus primeros estudios para comenzar tu análisis personalizado</p>
+                      <p className="font-medium mb-2">No tienes estudios o laboratorios cargados</p>
+                      <p className="text-sm mb-4">Sube tus primeros documentos médicos para comenzar tu análisis personalizado</p>
+                      <Button 
+                        onClick={() => (document.querySelector('[data-testid="upload-zone-study"]') as HTMLElement)?.click()}
+                        data-testid="button-upload-first-document"
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Subir documento
+                      </Button>
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {allDocuments.filter((doc: any) => doc.fileType === 'study').map((doc: any) => (
-                        <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg hover-elevate" data-testid={`document-study-${doc.id}`}>
+                      {allDocuments.map((doc: any) => (
+                        <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg hover-elevate" data-testid={`document-unified-${doc.id}`}>
                           <div className="flex items-center space-x-3">
-                            <FileText className="h-5 w-5 text-blue-600" />
+                            <FileText className={`h-5 w-5 ${doc.fileType === 'study' ? 'text-blue-600' : 'text-green-600'}`} />
                             <div>
                               <p className="font-medium">{doc.originalName}</p>
-                              <p className="text-sm text-gray-500">
-                                Subido el {new Date(doc.uploadedAt).toLocaleDateString('es-ES')}
-                              </p>
+                              <div className="flex items-center space-x-2 text-sm text-gray-500">
+                                <span>Subido el {new Date(doc.uploadedAt).toLocaleDateString('es-ES')}</span>
+                                <span>•</span>
+                                <Badge variant="outline" className="text-xs">
+                                  {doc.fileType === 'study' ? 'Estudio' : 'Laboratorio'}
+                                </Badge>
+                                {doc.category && (
+                                  <>
+                                    <span>•</span>
+                                    <span className="text-xs">{doc.category}</span>
+                                  </>
+                                )}
+                              </div>
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">
@@ -593,19 +615,17 @@ export default function Profile() {
                               variant="ghost" 
                               size="sm"
                               onClick={() => window.open(`/api/profile/medical-documents/${doc.id}/preview`, '_blank')}
-                              data-testid={`button-preview-study-${doc.id}`}
-                              title="Vista previa"
+                              data-testid={`button-preview-${doc.id}`}
                             >
-                              <Eye className="h-4 w-4 text-blue-500" />
+                              <Eye className="h-4 w-4" />
                             </Button>
                             <Button 
                               variant="ghost" 
                               size="sm"
                               onClick={() => window.open(`/api/profile/medical-documents/${doc.id}/download`, '_blank')}
-                              data-testid={`button-download-study-${doc.id}`}
-                              title="Descargar"
+                              data-testid={`button-download-${doc.id}`}
                             >
-                              <Download className="h-4 w-4 text-green-500" />
+                              <Download className="h-4 w-4" />
                             </Button>
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
@@ -613,121 +633,24 @@ export default function Profile() {
                                   variant="ghost" 
                                   size="sm"
                                   disabled={deleteMutation.isPending}
-                                  data-testid={`button-delete-study-${doc.id}`}
-                                  title="Eliminar"
+                                  data-testid={`button-delete-${doc.id}`}
                                 >
-                                  <Trash2 className="h-4 w-4 text-red-500" />
+                                  <Trash2 className="h-4 w-4 text-red-600" />
                                 </Button>
                               </AlertDialogTrigger>
                               <AlertDialogContent>
                                 <AlertDialogHeader>
-                                  <AlertDialogTitle>¿Eliminar estudio médico?</AlertDialogTitle>
+                                  <AlertDialogTitle>Eliminar documento</AlertDialogTitle>
                                   <AlertDialogDescription>
-                                    Esta acción no se puede deshacer. El documento "{doc.originalName}" será eliminado permanentemente.
+                                    ¿Estás seguro de que quieres eliminar "{doc.originalName}"? Esta acción no se puede deshacer.
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                   <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => deleteMutation.mutate(doc.id)}>
-                                    Eliminar
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Labs Section */}
-              <Card data-testid="card-labs">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <FileText className="h-5 w-5" />
-                    <span>Resultados de Laboratorios</span>
-                    <Badge variant="secondary">{allDocuments.filter((doc: any) => doc.fileType === 'lab').length}</Badge>
-                  </CardTitle>
-                  <CardDescription>
-                    {t('profile.noDocumentsDescription')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <FileUpload 
-                    fileType="lab" 
-                    onUploadSuccess={() => {
-                      queryClient.invalidateQueries({ queryKey: ["/api/profile/medical-documents"] });
-                    }}
-                    disabled={isLoading}
-                  />
-                  
-                  {documentsLoading ? (
-                    <div className="text-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                      <p className="mt-2 text-gray-600">Cargando laboratorios...</p>
-                    </div>
-                  ) : allDocuments.filter((doc: any) => doc.fileType === 'lab').length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
-                      <FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                      <p>{t('profile.noDocuments')}</p>
-                      <p className="text-sm">Sube tus análisis de laboratorio para obtener insights personalizados</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {allDocuments.filter((doc: any) => doc.fileType === 'lab').map((doc: any) => (
-                        <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg hover-elevate" data-testid={`document-lab-${doc.id}`}>
-                          <div className="flex items-center space-x-3">
-                            <FileText className="h-5 w-5 text-green-600" />
-                            <div>
-                              <p className="font-medium">{doc.originalName}</p>
-                              <p className="text-sm text-gray-500">
-                                Subido el {new Date(doc.uploadedAt).toLocaleDateString('es-ES')}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              onClick={() => window.open(`/api/profile/medical-documents/${doc.id}/preview`, '_blank')}
-                              data-testid={`button-preview-lab-${doc.id}`}
-                              title="Vista previa"
-                            >
-                              <Eye className="h-4 w-4 text-blue-500" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              onClick={() => window.open(`/api/profile/medical-documents/${doc.id}/download`, '_blank')}
-                              data-testid={`button-download-lab-${doc.id}`}
-                              title="Descargar"
-                            >
-                              <Download className="h-4 w-4 text-green-500" />
-                            </Button>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm"
-                                  disabled={deleteMutation.isPending}
-                                  data-testid={`button-delete-lab-${doc.id}`}
-                                  title="Eliminar"
-                                >
-                                  <Trash2 className="h-4 w-4 text-red-500" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>¿Eliminar resultado de laboratorio?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    Esta acción no se puede deshacer. El documento "{doc.originalName}" será eliminado permanentemente.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => deleteMutation.mutate(doc.id)}>
+                                  <AlertDialogAction
+                                    onClick={() => deleteMutation.mutate(doc.id)}
+                                    data-testid={`button-confirm-delete-${doc.id}`}
+                                  >
                                     Eliminar
                                   </AlertDialogAction>
                                 </AlertDialogFooter>
