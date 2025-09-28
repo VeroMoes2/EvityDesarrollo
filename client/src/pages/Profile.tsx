@@ -549,7 +549,7 @@ export default function Profile() {
                   <CardTitle className="flex items-center space-x-2">
                     <FileText className="h-5 w-5" />
                     <span>Estudios Médicos</span>
-                    <Badge variant="secondary">{studyDocuments.length}</Badge>
+                    <Badge variant="secondary">{allDocuments.filter((doc: any) => doc.fileType === 'study').length}</Badge>
                   </CardTitle>
                   <CardDescription>
                     Carga tus estudios médicos, radiografías, resonancias y otros estudios de imagen
@@ -569,7 +569,7 @@ export default function Profile() {
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
                       <p className="mt-2 text-gray-600">Cargando estudios...</p>
                     </div>
-                  ) : studyDocuments.length === 0 ? (
+                  ) : allDocuments.filter((doc: any) => doc.fileType === 'study').length === 0 ? (
                     <div className="text-center py-8 text-gray-500">
                       <FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                       <p>No tienes estudios médicos cargados</p>
@@ -577,7 +577,7 @@ export default function Profile() {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {studyDocuments.map((doc: any) => (
+                      {allDocuments.filter((doc: any) => doc.fileType === 'study').map((doc: any) => (
                         <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg hover-elevate" data-testid={`document-study-${doc.id}`}>
                           <div className="flex items-center space-x-3">
                             <FileText className="h-5 w-5 text-blue-600" />
@@ -648,7 +648,7 @@ export default function Profile() {
                   <CardTitle className="flex items-center space-x-2">
                     <FileText className="h-5 w-5" />
                     <span>Resultados de Laboratorios</span>
-                    <Badge variant="secondary">{labDocuments.length}</Badge>
+                    <Badge variant="secondary">{allDocuments.filter((doc: any) => doc.fileType === 'lab').length}</Badge>
                   </CardTitle>
                   <CardDescription>
                     {t('profile.noDocumentsDescription')}
@@ -668,7 +668,7 @@ export default function Profile() {
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
                       <p className="mt-2 text-gray-600">Cargando laboratorios...</p>
                     </div>
-                  ) : labDocuments.length === 0 ? (
+                  ) : allDocuments.filter((doc: any) => doc.fileType === 'lab').length === 0 ? (
                     <div className="text-center py-8 text-gray-500">
                       <FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                       <p>{t('profile.noDocuments')}</p>
@@ -676,7 +676,7 @@ export default function Profile() {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {labDocuments.map((doc: any) => (
+                      {allDocuments.filter((doc: any) => doc.fileType === 'lab').map((doc: any) => (
                         <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg hover-elevate" data-testid={`document-lab-${doc.id}`}>
                           <div className="flex items-center space-x-3">
                             <FileText className="h-5 w-5 text-green-600" />
