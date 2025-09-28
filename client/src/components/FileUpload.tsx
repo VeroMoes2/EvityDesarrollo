@@ -1,12 +1,16 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Upload, FileText, X, CheckCircle, AlertCircle } from "lucide-react";
 import { createNotifications } from "@/lib/notifications";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { uploadWithCsrf } from "@/lib/queryClient";
+import { useQuery } from "@tanstack/react-query";
 
 interface FileUploadProps {
   fileType: "study" | "lab";
@@ -38,7 +42,18 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
   const notifications = createNotifications(t);
   const [files, setFiles] = useState<UploadFile[]>([]);
   const [dragActive, setDragActive] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // LS-128: Fetch document categories
+  const { data: categoriesData } = useQuery({
+    queryKey: ["/api/profile/medical-documents/categories"],
+    enabled: true,
+  });
+
+  const categories = categoriesData?.categories || {};
 
   const getFileTypeLabel = () => {
     return fileType === "study" ? t('fileUpload.medicalStudies') : t('fileUpload.labResults');
@@ -98,6 +113,18 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
       formData.append('file', uploadFile.file);
       formData.append('fileType', fileType);
       formData.append('originalName', uploadFile.file.name);
+      
+      // LS-128: Include category information in upload
+      if (selectedCategory) {
+        formData.append('category', categories[selectedCategory]?.label || selectedCategory);
+        formData.append('fileType', selectedCategory); // Update fileType to match category
+      }
+      if (selectedSubcategory) {
+        formData.append('subcategory', selectedSubcategory);
+      }
+      if (description.trim()) {
+        formData.append('description', description.trim());
+      }
 
       // Simulate upload progress (real implementation would track actual progress)
       progressInterval = setInterval(() => {
