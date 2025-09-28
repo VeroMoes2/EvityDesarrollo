@@ -1,23 +1,28 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
-import { useLocation } from "wouter";
+import { BackButton } from "@/components/ui/back-button";
+import { useNavigation } from "@/contexts/NavigationContext";
+import { useEffect } from "react";
 
 export default function AllResources() {
-  const [, setLocation] = useLocation();
+  const { pushState } = useNavigation();
+  
+  // Track current page state for navigation context
+  useEffect(() => {
+    pushState({
+      menuSection: 'recursos'
+    });
+  }, [pushState]);
   
   return (
     <div className="min-h-screen bg-background py-12">
       <div className="container mx-auto px-4">
-        <Button 
+        <BackButton 
           variant="ghost" 
-          onClick={() => setLocation("/")}
           className="mb-6"
-          data-testid="button-back-home"
+          fallbackPath="/"
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
           Volver al inicio
-        </Button>
+        </BackButton>
         
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-foreground mb-4">
