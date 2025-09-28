@@ -152,6 +152,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // LS-128: Get document categories endpoint for unified document management
+  app.get('/api/profile/medical-documents/categories', isAuthenticated, async (req: any, res) => {
+    try {
+      // Import category definitions
+      const { documentCategories } = await import("@shared/schema");
+      
+      res.json({ 
+        categories: documentCategories,
+        message: "Document categories retrieved successfully"
+      });
+    } catch (error) {
+      console.error("Error fetching document categories:", error);
+      res.status(500).json({ message: "Failed to fetch document categories" });
+    }
+  });
+
   app.delete('/api/profile/medical-documents/:id', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
@@ -282,7 +298,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const userId = req.user.claims.sub;
       const file = req.file;
-      const { fileType, originalName } = req.body;
+      const { fileType, originalName, category, subcategory, description } = req.body;
 
       if (!file) {
         return res.status(400).json({ message: "No file uploaded" });
@@ -307,10 +323,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Sanitize file data for secure storage
       const sanitizedFileData = sanitizeFileData(file.buffer);
 
-      // Create document record with validated file data
+      // LS-128: Enhanced document record with category information
       const documentData = {
         userId,
         fileType,
+        category: category || "Documentos Médicos", // Default category
+        subcategory: subcategory || null,
+        description: description || null,
         originalName: originalName || file.originalname,
         filename: `${Date.now()}_${file.originalname}`,
         fileSize: file.size.toString(),
