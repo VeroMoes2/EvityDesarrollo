@@ -682,3 +682,11 @@ Fecha de validación: ${new Date().toLocaleString()}`;
     }
   }
 }
+
+/**
+ * Helper function to execute CheckEnd validation for a story
+ */
+export async function validateTicket(storyKey: string): Promise<CheckEndResult> {
+  const checkEndService = new CheckEndService();
+  return await checkEndService.executeCheckEnd(storyKey);
+}

@@ -30,8 +30,6 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
 
   // Auto-track navigation changes (but not when navigating back)
   useEffect(() => {
-    console.log('[NavigationContext] useEffect - location:', location, 'lastLocation:', lastLocation, 'isNavigatingBack:', isNavigatingBackRef.current);
-    
     if (lastLocation && lastLocation !== location && !isNavigatingBackRef.current) {
       // Push the previous location to history when location changes
       const previousState: NavigationState = {
@@ -46,25 +44,16 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
         // Avoid duplicate consecutive states
         const lastState = prev[prev.length - 1];
         if (lastState && lastState.pathname === previousState.pathname) {
-          console.log('[NavigationContext] Skipping duplicate state for:', previousState.pathname);
           return prev;
         }
-        console.log('[NavigationContext] Auto-pushing state:', previousState);
         return [...prev, previousState];
       });
-    } else if (!lastLocation) {
-      console.log('[NavigationContext] First location set:', location);
-    } else if (lastLocation === location) {
-      console.log('[NavigationContext] Same location, no action needed');
-    } else if (isNavigatingBackRef.current) {
-      console.log('[NavigationContext] Skipping auto-track due to back navigation');
     }
     
     setLastLocation(location);
     
     // Reset back navigation flag after location change
     if (isNavigatingBackRef.current) {
-      console.log('[NavigationContext] Resetting back navigation flag');
       isNavigatingBackRef.current = false;
     }
   }, [location, lastLocation]);
