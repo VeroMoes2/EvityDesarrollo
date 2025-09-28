@@ -449,8 +449,10 @@ export class CheckEndService {
       const routesPath = path.join(process.cwd(), 'server', 'routes.ts');
       if (fs.existsSync(routesPath)) {
         const routesContent = fs.readFileSync(routesPath, 'utf-8');
-        const hasFileDelete = routesContent.includes('DELETE') && 
-                             (routesContent.includes('file') || routesContent.includes('upload'));
+        const hasFileDelete = routesContent.includes('app.delete') && 
+                             (routesContent.includes('medical-documents') || 
+                              routesContent.includes('file') || 
+                              routesContent.includes('upload'));
         
         console.log('[CheckEnd] File deletion capability check:', hasFileDelete);
         return hasFileDelete;
