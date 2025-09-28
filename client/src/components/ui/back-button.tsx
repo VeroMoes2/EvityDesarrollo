@@ -22,7 +22,6 @@ export function BackButton({
   onBack
 }: BackButtonProps) {
   const [, setLocation] = useLocation();
-  const { canGoBack, popState, navigationHistory } = useNavigation();
 
   const handleBackClick = () => {
     if (onBack) {
@@ -30,25 +29,15 @@ export function BackButton({
       return;
     }
 
-    if (canGoBack) {
-      const previousState = popState();
-      if (previousState) {
-        // Navigate to previous path
-        setLocation(previousState.pathname);
-        
-        // Restore scroll position after navigation
-        setTimeout(() => {
-          if (previousState.scrollPosition) {
-            window.scrollTo(0, previousState.scrollPosition);
-          }
-        }, 100);
-        
-        return;
-      }
+    // Check if browser has history to go back to
+    if (window.history.length > 1) {
+      console.log('[BackButton] Using browser history.back(), length:', window.history.length);
+      window.history.back();
+    } else {
+      // Fallback navigation if no history
+      console.log('[BackButton] Using fallback path:', fallbackPath, 'history.length:', window.history.length);
+      setLocation(fallbackPath);
     }
-
-    // Fallback navigation
-    setLocation(fallbackPath);
   };
 
   return (
