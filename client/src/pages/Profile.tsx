@@ -194,8 +194,8 @@ export default function Profile() {
     return matchesSearch && matchesType;
   });
   
-  const studyDocuments = filteredDocuments.filter((doc: any) => doc.fileType === 'study');
-  const labDocuments = filteredDocuments.filter((doc: any) => doc.fileType === 'lab');
+  // LS-128: Single unified document section
+  const allDocuments = filteredDocuments;
 
   return (
     <div className="min-h-screen bg-gray-50">
