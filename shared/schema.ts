@@ -46,12 +46,16 @@ export const users = pgTable("users", {
 });
 
 // LS-96: Medical documents storage for user profile system
+// LS-128: Enhanced with unified document categories for better organization
 export const medicalDocuments = pgTable("medical_documents", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   filename: varchar("filename").notNull(),
   originalName: varchar("original_name").notNull(),
-  fileType: varchar("file_type").notNull(), // 'study' or 'lab'
+  fileType: varchar("file_type").notNull(), // 'study', 'lab', 'prescription', 'imaging', 'report', 'insurance', 'other'
+  category: varchar("category").notNull().default("Documentos Médicos"), // LS-128: User-friendly category display name with default
+  subcategory: varchar("subcategory"), // LS-128: Optional subcategory for better organization
+  description: varchar("description"), // LS-128: Optional user description
   mimeType: varchar("mime_type").notNull(),
   fileSize: varchar("file_size").notNull(),
   fileData: text("file_data"), // Store file content as base64 or use external storage
@@ -167,9 +171,23 @@ export const loginUserSchema = z.object({
   password: z.string().min(1, "Contraseña es requerida"),
 });
 
+// LS-128: Document categories for unified document management
+export const documentCategories = {
+  study: { label: "Estudios Médicos", icon: "FileText", subcategories: ["Rayos X", "Resonancia", "Tomografía", "Ecografía", "Otro"] },
+  lab: { label: "Análisis de Laboratorio", icon: "Activity", subcategories: ["Sangre", "Orina", "Heces", "Cultivos", "Otro"] },
+  prescription: { label: "Recetas Médicas", icon: "Pill", subcategories: ["Medicamentos", "Tratamientos", "Otro"] },
+  imaging: { label: "Imágenes Médicas", icon: "Camera", subcategories: ["Endoscopía", "Fotografías", "Otro"] },
+  report: { label: "Reportes Médicos", icon: "FileText", subcategories: ["Consultas", "Diagnósticos", "Historia Clínica", "Otro"] },
+  insurance: { label: "Seguros Médicos", icon: "Shield", subcategories: ["Pólizas", "Reembolsos", "Autorizaciones", "Otro"] },
+  other: { label: "Otros Documentos", icon: "File", subcategories: ["Certificados", "Constancias", "Otro"] }
+} as const;
+
+export const documentCategoryKeys = Object.keys(documentCategories) as Array<keyof typeof documentCategories>;
+
 export const insertMedicalDocumentSchema = createInsertSchema(medicalDocuments).omit({
   id: true,
   uploadedAt: true,
+  deletedAt: true,
 });
 
 
