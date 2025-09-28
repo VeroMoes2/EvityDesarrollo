@@ -80,7 +80,7 @@ export default function Header() {
               {t('nav.calculator')}
             </button>
             <button 
-              onClick={() => scrollToSection("blog")} 
+              onClick={() => navigate('/blog')} 
               className="text-foreground hover:text-primary transition-colors"
               data-testid="nav-blog"
             >
@@ -204,7 +204,10 @@ export default function Header() {
                 {t('nav.calculator')}
               </button>
               <button 
-                onClick={() => scrollToSection("blog")} 
+                onClick={() => {
+                  navigate('/blog');
+                  setIsMenuOpen(false);
+                }} 
                 className="block w-full text-left text-foreground hover:text-primary transition-colors"
                 data-testid="nav-mobile-blog"
               >
