@@ -195,13 +195,47 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Vision Section */}
+      {/* Vision & Mission Section */}
       <section className="bg-muted/30 py-16">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold text-foreground mb-6">{t('landing.ourVision')}</h2>
-          <p className="text-lg text-muted-foreground max-w-4xl mx-auto" data-testid="text-vision">
-            {t('landing.visionFallback')}
-          </p>
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-foreground mb-4">Our Vision</h2>
+            <p className="text-xl text-muted-foreground" data-testid="text-vision-subtitle">
+              Help you live longer and live better
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Mission Card */}
+            <Card className="bg-card/50 backdrop-blur-sm hover-elevate" data-testid="card-mission">
+              <CardHeader className="text-center">
+                <div className="flex justify-center mb-4">
+                  <Heart className="h-12 w-12 text-primary" />
+                </div>
+                <CardTitle className="text-2xl text-card-foreground">Nuestra Misión</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-muted-foreground text-center">
+                  Transformar la forma en que las personas envejecen, proporcionando herramientas científicas y personalizadas para vivir vidas más largas, saludables y plenas.
+                </CardDescription>
+              </CardContent>
+            </Card>
+
+            {/* Vision Card */}
+            <Card className="bg-card/50 backdrop-blur-sm hover-elevate" data-testid="card-vision">
+              <CardHeader className="text-center">
+                <div className="flex justify-center mb-4">
+                  <Target className="h-12 w-12 text-primary" />
+                </div>
+                <CardTitle className="text-2xl text-card-foreground">Nuestra Visión</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription className="text-muted-foreground text-center">
+                  Ofrecer una clínica y plataforma innovadora que combine diseño moderno, atención humanista y tecnología digital, con un enfoque en longevidad y salud integral. El paciente recibe un diagnóstico profundo, intervenciones seguras y personalizadas, así como un acompañamiento continuo tanto físico como digital.
+                </CardDescription>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </section>
 
