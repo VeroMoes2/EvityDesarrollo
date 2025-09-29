@@ -118,11 +118,11 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Features Section - Evity */}
+      {/* Features Section */}
       <section className="bg-background py-16">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold text-center text-foreground mb-12">
-            Evity
+            {t('landing.whyChoose')}
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             {features.map((feature, index) => (
@@ -141,6 +141,22 @@ export default function Landing() {
               </Card>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Calculator Section - Available for all users */}
+      <CalculatorSection />
+
+      {/* Blog Section - LS-140: Show blog posts before login */}
+      <BlogSection />
+
+      {/* Vision Section */}
+      <section className="bg-muted/30 py-16">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold text-foreground mb-6">{t('landing.ourVision')}</h2>
+          <p className="text-lg text-muted-foreground max-w-4xl mx-auto" data-testid="text-vision">
+            {t('landing.visionFallback')}
+          </p>
         </div>
       </section>
 
@@ -192,90 +208,128 @@ export default function Landing() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Vision Section */}
-      <section className="bg-muted/30 py-16">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold text-foreground mb-6">{t('landing.ourVision')}</h2>
-          <p className="text-lg text-muted-foreground max-w-4xl mx-auto" data-testid="text-vision">
-            {t('landing.visionFallback')}
-          </p>
-        </div>
-      </section>
+          {/* Value Propositions */}
+          <div className="mb-16">
+            <h3 className="text-3xl font-bold text-center text-foreground mb-12" data-testid="text-value-props-title">
+              {t('community.valueProps.title')}
+            </h3>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <Card className="text-center hover-elevate bg-card" data-testid="card-value-science">
+                <CardHeader>
+                  <div className="flex justify-center mb-4">
+                    <Microscope className="h-12 w-12 text-primary" />
+                  </div>
+                  <CardTitle className="text-xl text-card-foreground">{t('community.valueProps.science')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-muted-foreground">
+                    {t('community.valueProps.scienceDesc')}
+                  </CardDescription>
+                </CardContent>
+              </Card>
 
-      {/* Why Join Evity Section */}
-      <section className="bg-background py-16">
-        <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center text-foreground mb-12" data-testid="text-value-props-title">
-            {t('community.valueProps.title')}
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card className="text-center hover-elevate bg-card" data-testid="card-value-science">
-              <CardHeader>
-                <div className="flex justify-center mb-4">
-                  <Microscope className="h-12 w-12 text-primary" />
-                </div>
-                <CardTitle className="text-xl text-card-foreground">{t('community.valueProps.science')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-muted-foreground">
-                  {t('community.valueProps.scienceDesc')}
-                </CardDescription>
-              </CardContent>
-            </Card>
+              <Card className="text-center hover-elevate bg-card" data-testid="card-value-personalized">
+                <CardHeader>
+                  <div className="flex justify-center mb-4">
+                    <Target className="h-12 w-12 text-primary" />
+                  </div>
+                  <CardTitle className="text-xl text-card-foreground">{t('community.valueProps.personalized')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-muted-foreground">
+                    {t('community.valueProps.personalizedDesc')}
+                  </CardDescription>
+                </CardContent>
+              </Card>
 
-            <Card className="text-center hover-elevate bg-card" data-testid="card-value-personalized">
-              <CardHeader>
-                <div className="flex justify-center mb-4">
-                  <Target className="h-12 w-12 text-primary" />
-                </div>
-                <CardTitle className="text-xl text-card-foreground">{t('community.valueProps.personalized')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-muted-foreground">
-                  {t('community.valueProps.personalizedDesc')}
-                </CardDescription>
-              </CardContent>
-            </Card>
+              <Card className="text-center hover-elevate bg-card" data-testid="card-value-support">
+                <CardHeader>
+                  <div className="flex justify-center mb-4">
+                    <Users className="h-12 w-12 text-primary" />
+                  </div>
+                  <CardTitle className="text-xl text-card-foreground">{t('community.valueProps.support')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-muted-foreground">
+                    {t('community.valueProps.supportDesc')}
+                  </CardDescription>
+                </CardContent>
+              </Card>
 
-            <Card className="text-center hover-elevate bg-card" data-testid="card-value-support">
-              <CardHeader>
-                <div className="flex justify-center mb-4">
-                  <Users className="h-12 w-12 text-primary" />
-                </div>
-                <CardTitle className="text-xl text-card-foreground">{t('community.valueProps.support')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-muted-foreground">
-                  {t('community.valueProps.supportDesc')}
-                </CardDescription>
-              </CardContent>
-            </Card>
+              <Card className="text-center hover-elevate bg-card" data-testid="card-value-experts">
+                <CardHeader>
+                  <div className="flex justify-center mb-4">
+                    <Award className="h-12 w-12 text-primary" />
+                  </div>
+                  <CardTitle className="text-xl text-card-foreground">{t('community.valueProps.experts')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-muted-foreground">
+                    {t('community.valueProps.expertsDesc')}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
 
-            <Card className="text-center hover-elevate bg-card" data-testid="card-value-experts">
-              <CardHeader>
-                <div className="flex justify-center mb-4">
-                  <Award className="h-12 w-12 text-primary" />
-                </div>
-                <CardTitle className="text-xl text-card-foreground">{t('community.valueProps.experts')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-muted-foreground">
-                  {t('community.valueProps.expertsDesc')}
-                </CardDescription>
-              </CardContent>
-            </Card>
+          {/* Benefits Section */}
+          <div className="bg-muted/30 rounded-lg p-8 mb-12">
+            <h3 className="text-2xl font-bold text-center text-foreground mb-8" data-testid="text-benefits-title">
+              {t('community.benefits.title')}
+            </h3>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="flex items-center space-x-3" data-testid="benefit-resources">
+                <BookOpen className="h-6 w-6 text-primary flex-shrink-0" />
+                <span className="text-foreground">{t('community.benefits.resources')}</span>
+              </div>
+              <div className="flex items-center space-x-3" data-testid="benefit-tools">
+                <TrendingUp className="h-6 w-6 text-primary flex-shrink-0" />
+                <span className="text-foreground">{t('community.benefits.tools')}</span>
+              </div>
+              <div className="flex items-center space-x-3" data-testid="benefit-events">
+                <Activity className="h-6 w-6 text-primary flex-shrink-0" />
+                <span className="text-foreground">{t('community.benefits.events')}</span>
+              </div>
+              <div className="flex items-center space-x-3" data-testid="benefit-community">
+                <MessageCircle className="h-6 w-6 text-primary flex-shrink-0" />
+                <span className="text-foreground">{t('community.benefits.community')}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Community CTA */}
+          <div className="text-center bg-primary/10 rounded-lg p-8">
+            <h3 className="text-3xl font-bold text-foreground mb-4" data-testid="text-community-cta-title">
+              {t('community.cta.title')}
+            </h3>
+            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto" data-testid="text-community-cta-subtitle">
+              {t('community.cta.subtitle')}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link href="/register">
+                <Button 
+                  size="lg" 
+                  className="bg-primary text-primary-foreground px-8 py-3 text-lg"
+                  data-testid="button-join-community"
+                >
+                  {t('community.cta.joinButton')}
+                </Button>
+              </Link>
+              <Link href="/about">
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  className="px-8 py-3 text-lg"
+                  data-testid="button-learn-more"
+                >
+                  {t('community.cta.learnMore')}
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
-
-      {/* Calculator Section - Available for all users */}
-      <CalculatorSection />
-
-      {/* Blog Section - LS-140: Show blog posts before login */}
-      <BlogSection />
 
       {/* Footer */}
       <Footer />
