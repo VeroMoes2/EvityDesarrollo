@@ -298,36 +298,6 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* Community CTA */}
-          <div className="text-center bg-primary/10 rounded-lg p-8">
-            <h3 className="text-3xl font-bold text-foreground mb-4" data-testid="text-community-cta-title">
-              {t('community.cta.title')}
-            </h3>
-            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto" data-testid="text-community-cta-subtitle">
-              {t('community.cta.subtitle')}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/register">
-                <Button 
-                  size="lg" 
-                  className="bg-primary text-primary-foreground px-8 py-3 text-lg"
-                  data-testid="button-join-community"
-                >
-                  {t('community.cta.joinButton')}
-                </Button>
-              </Link>
-              <Link href="/about">
-                <Button 
-                  size="lg" 
-                  variant="outline"
-                  className="px-8 py-3 text-lg"
-                  data-testid="button-learn-more"
-                >
-                  {t('community.cta.learnMore')}
-                </Button>
-              </Link>
-            </div>
-          </div>
         </div>
       </section>
 
