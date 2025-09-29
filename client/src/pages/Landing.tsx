@@ -331,39 +331,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="bg-background py-20">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold text-foreground mb-6">
-            {t('landing.startJourney')}
-          </h2>
-          <p className="text-lg text-muted-foreground mb-8">
-            {t('landing.ctaDescription')}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/login">
-              <Button 
-                size="lg" 
-                className="bg-primary text-primary-foreground px-8 py-3 text-lg"
-                data-testid="button-login-cta"
-              >
-                {t('landing.signIn')}
-              </Button>
-            </Link>
-            <Link href="/register">
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="px-8 py-3 text-lg"
-                data-testid="button-register-cta"
-              >
-                {t('landing.createAccount')}
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <Footer />
 
