@@ -273,17 +273,68 @@ export default function Cuestionario() {
       return;
     }
 
-    await handleSaveProgress(false);
-
     if (currentQuestionIndex < QUESTIONS.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      const nextIndex = currentQuestionIndex + 1;
+      const previousIndex = currentQuestionIndex;
+      setCurrentQuestionIndex(nextIndex);
+      
+      setIsSaving(true);
+      try {
+        const nextQuestion = QUESTIONS[nextIndex];
+        const data = {
+          answers,
+          currentQuestion: nextQuestion.id,
+          isCompleted: "false",
+        };
+
+        if (questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists) {
+          await updateProgressMutation.mutateAsync(data);
+        } else {
+          await saveProgressMutation.mutateAsync(data);
+        }
+      } catch (error) {
+        setCurrentQuestionIndex(previousIndex);
+        toast({
+          title: "Error",
+          description: "No se pudo guardar el progreso.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
   const handlePrevious = async () => {
-    await handleSaveProgress(false);
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
+      const prevIndex = currentQuestionIndex - 1;
+      const previousIndex = currentQuestionIndex;
+      setCurrentQuestionIndex(prevIndex);
+      
+      setIsSaving(true);
+      try {
+        const prevQuestion = QUESTIONS[prevIndex];
+        const data = {
+          answers,
+          currentQuestion: prevQuestion.id,
+          isCompleted: "false",
+        };
+
+        if (questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists) {
+          await updateProgressMutation.mutateAsync(data);
+        } else {
+          await saveProgressMutation.mutateAsync(data);
+        }
+      } catch (error) {
+        setCurrentQuestionIndex(previousIndex);
+        toast({
+          title: "Error",
+          description: "No se pudo guardar el progreso.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
