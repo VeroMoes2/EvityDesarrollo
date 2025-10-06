@@ -117,8 +117,8 @@ export default function Register() {
       // This prevents any timing issues during auth state refresh
       await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
       
-      // Redirect to home after successful registration
-      setLocation("/");
+      // Redirect to questionnaire after successful registration
+      setLocation("/cuestionario");
     },
     onError: (error: any) => {
       console.error("Registration error:", error);

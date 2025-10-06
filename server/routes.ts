@@ -5,7 +5,7 @@ import { storage } from "./storage";
 import { ConfluenceService } from "./confluenceService";
 import { setupAuth, isAuthenticated, isAdmin } from "./localAuth";
 import { uploadRateLimit, downloadRateLimit, previewRateLimit } from "./rateLimiter";
-import { updateUserProfileSchema } from "@shared/schema";
+import { updateUserProfileSchema, insertQuestionnaireSchema, updateQuestionnaireSchema } from "@shared/schema";
 // LS-108: Enhanced security middleware
 import { 
   securityHeaders, 
@@ -1167,6 +1167,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
         success: false,
         message: errorMessage 
       });
+    }
+  });
+
+  // Medical Questionnaire endpoints
+  app.get('/api/questionnaire', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const questionnaire = await storage.getUserQuestionnaire(userId);
+      
+      if (!questionnaire) {
+        return res.json({ 
+          exists: false,
+          questionnaire: null 
+        });
+      }
+
+      res.json({ 
+        exists: true,
+        questionnaire 
+      });
+    } catch (error) {
+      console.error("Error fetching questionnaire:", error);
+      res.status(500).json({ message: "Error al obtener el cuestionario" });
+    }
+  });
+
+  app.post('/api/questionnaire', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      const existingQuestionnaire = await storage.getUserQuestionnaire(userId);
+
+      if (existingQuestionnaire) {
+        const validatedData = updateQuestionnaireSchema.parse(req.body);
+        let updated = await storage.updateQuestionnaire(userId, validatedData);
+        
+        if (validatedData.isCompleted === "true") {
+          updated = await storage.markQuestionnaireComplete(userId);
+        }
+        
+        return res.json(updated);
+      }
+
+      const validatedData = insertQuestionnaireSchema.parse({
+        userId,
+        ...req.body
+      });
+
+      const questionnaire = await storage.createQuestionnaire(validatedData);
+      res.json(questionnaire);
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ message: "Datos inválidos", errors: error.errors });
+      }
+      console.error("Error creating/updating questionnaire:", error);
+      res.status(500).json({ message: "Error al guardar el cuestionario" });
+    }
+  });
+
+  app.put('/api/questionnaire', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      const validatedData = updateQuestionnaireSchema.parse(req.body);
+      const existingQuestionnaire = await storage.getUserQuestionnaire(userId);
+      
+      if (!existingQuestionnaire) {
+        return res.status(404).json({ message: "Cuestionario no encontrado" });
+      }
+
+      let updated = await storage.updateQuestionnaire(userId, validatedData);
+
+      if (validatedData.isCompleted === "true") {
+        updated = await storage.markQuestionnaireComplete(userId);
+      }
+
+      res.json(updated);
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ message: "Datos inválidos", errors: error.errors });
+      }
+      console.error("Error updating questionnaire:", error);
+      res.status(500).json({ message: "Error al actualizar el cuestionario" });
     }
   });
 

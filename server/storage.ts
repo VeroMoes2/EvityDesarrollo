@@ -1,11 +1,15 @@
 import {
   users,
   medicalDocuments,
+  medicalQuestionnaire,
   securityAuditLog,
   type User,
   type UpsertUser,
   type MedicalDocument,
   type InsertMedicalDocument,
+  type MedicalQuestionnaire,
+  type InsertQuestionnaire,
+  type UpdateQuestionnaire,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, sql } from "drizzle-orm";
@@ -110,6 +114,12 @@ export interface IStorage {
     limit: number;
     hasNext: boolean;
   }>;
+
+  // Medical Questionnaire operations
+  getUserQuestionnaire(userId: string): Promise<MedicalQuestionnaire | undefined>;
+  createQuestionnaire(data: InsertQuestionnaire): Promise<MedicalQuestionnaire>;
+  updateQuestionnaire(userId: string, data: UpdateQuestionnaire): Promise<MedicalQuestionnaire>;
+  markQuestionnaireComplete(userId: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -344,6 +354,9 @@ export class DatabaseStorage implements IStorage {
         filename: medicalDocuments.filename,
         originalName: medicalDocuments.originalName,
         fileType: medicalDocuments.fileType,
+        category: medicalDocuments.category,
+        subcategory: medicalDocuments.subcategory,
+        description: medicalDocuments.description,
         mimeType: medicalDocuments.mimeType,
         fileSize: medicalDocuments.fileSize,
         uploadedAt: medicalDocuments.uploadedAt,
@@ -434,6 +447,7 @@ export class DatabaseStorage implements IStorage {
         firstName: users.firstName,
         lastName: users.lastName,
         gender: users.gender,
+        phoneNumber: users.phoneNumber,
         password: users.password,
         profileImageUrl: users.profileImageUrl,
         isEmailVerified: users.isEmailVerified,
@@ -443,6 +457,7 @@ export class DatabaseStorage implements IStorage {
         emailVerificationToken: users.emailVerificationToken,
         emailVerificationExpires: users.emailVerificationExpires,
         lastLoginAt: users.lastLoginAt,
+        questionnaireCompleted: users.questionnaireCompleted,
         createdAt: users.createdAt,
         updatedAt: users.updatedAt,
         documentsCount: sql<number>`COUNT(CASE WHEN ${medicalDocuments.deletedAt} IS NULL THEN 1 END)`,
@@ -486,6 +501,9 @@ export class DatabaseStorage implements IStorage {
         filename: medicalDocuments.filename,
         originalName: medicalDocuments.originalName,
         fileType: medicalDocuments.fileType,
+        category: medicalDocuments.category,
+        subcategory: medicalDocuments.subcategory,
+        description: medicalDocuments.description,
         mimeType: medicalDocuments.mimeType,
         fileSize: medicalDocuments.fileSize,
         // fileData: REMOVED for security - don't expose file content in lists
@@ -679,6 +697,65 @@ export class DatabaseStorage implements IStorage {
       console.error('Failed to get audit logs:', error);
       throw error;
     }
+  }
+
+  async getUserQuestionnaire(userId: string): Promise<MedicalQuestionnaire | undefined> {
+    const [questionnaire] = await db
+      .select()
+      .from(medicalQuestionnaire)
+      .where(eq(medicalQuestionnaire.userId, userId));
+    return questionnaire;
+  }
+
+  async createQuestionnaire(data: InsertQuestionnaire): Promise<MedicalQuestionnaire> {
+    const [questionnaire] = await db
+      .insert(medicalQuestionnaire)
+      .values({
+        ...data,
+        startedAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning();
+    return questionnaire;
+  }
+
+  async updateQuestionnaire(userId: string, data: UpdateQuestionnaire): Promise<MedicalQuestionnaire> {
+    const updateData: Record<string, any> = {
+      updatedAt: new Date(),
+    };
+    
+    if (data.answers !== undefined) updateData.answers = data.answers;
+    if (data.currentQuestion !== undefined) updateData.currentQuestion = data.currentQuestion;
+    if (data.isCompleted !== undefined) updateData.isCompleted = data.isCompleted;
+    
+    const [questionnaire] = await db
+      .update(medicalQuestionnaire)
+      .set(updateData)
+      .where(eq(medicalQuestionnaire.userId, userId))
+      .returning();
+    return questionnaire;
+  }
+
+  async markQuestionnaireComplete(userId: string): Promise<MedicalQuestionnaire> {
+    const [questionnaire] = await db
+      .update(medicalQuestionnaire)
+      .set({
+        isCompleted: "true",
+        completedAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(medicalQuestionnaire.userId, userId))
+      .returning();
+
+    await db
+      .update(users)
+      .set({
+        questionnaireCompleted: "true",
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+    
+    return questionnaire;
   }
 
 }

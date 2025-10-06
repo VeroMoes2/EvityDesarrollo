@@ -23,6 +23,7 @@ import Register from "@/pages/Register";
 import ForgotPassword from "@/pages/ForgotPassword";
 import ResetPassword from "@/pages/ResetPassword";
 import VerifyEmail from "@/pages/VerifyEmail";
+import Cuestionario from "@/pages/Cuestionario";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -68,6 +69,8 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/profile" component={Profile} />
           <Route path="/perfil" component={Profile} />
+          <Route path="/cuestionario" component={Cuestionario} />
+          <Route path="/historial-clinico" component={Cuestionario} />
           <Route path="/mis-archivos" component={MisArchivos} />
           <Route path="/archivos" component={MisArchivos} />
           <Route path="/admin" component={Admin} />

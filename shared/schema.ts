@@ -41,6 +41,7 @@ export const users = pgTable("users", {
   emailVerificationToken: varchar("email_verification_token"),
   emailVerificationExpires: timestamp("email_verification_expires"),
   lastLoginAt: timestamp("last_login_at"),
+  questionnaireCompleted: varchar("questionnaire_completed").default("false"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -61,6 +62,18 @@ export const medicalDocuments = pgTable("medical_documents", {
   fileData: text("file_data"), // Store file content as base64 or use external storage
   uploadedAt: timestamp("uploaded_at").defaultNow(),
   deletedAt: timestamp("deleted_at"), // LS-103: Soft delete timestamp for tracking eliminated files
+});
+
+// Medical questionnaire table for storing patient medical history
+export const medicalQuestionnaire = pgTable("medical_questionnaire", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  answers: jsonb("answers").notNull().default(sql`'{}'::jsonb`),
+  currentQuestion: varchar("current_question").default("1"),
+  isCompleted: varchar("is_completed").default("false"),
+  startedAt: timestamp("started_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // LS-108: Security audit log table for tracking administrative actions
@@ -191,6 +204,23 @@ export const insertMedicalDocumentSchema = createInsertSchema(medicalDocuments).
 });
 
 
+export const insertQuestionnaireSchema = createInsertSchema(medicalQuestionnaire).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  completedAt: true,
+}).extend({
+  answers: z.record(z.string(), z.any()).default({}),
+  currentQuestion: z.string().default("1"),
+  isCompleted: z.enum(["true", "false"]).default("false"),
+});
+
+export const updateQuestionnaireSchema = z.object({
+  answers: z.record(z.string(), z.any()).optional(),
+  currentQuestion: z.string().optional(),
+  isCompleted: z.enum(["true", "false"]).optional(),
+});
+
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -198,3 +228,6 @@ export type LoginUser = z.infer<typeof loginUserSchema>;
 export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
 export type InsertMedicalDocument = z.infer<typeof insertMedicalDocumentSchema>;
 export type MedicalDocument = typeof medicalDocuments.$inferSelect;
+export type MedicalQuestionnaire = typeof medicalQuestionnaire.$inferSelect;
+export type InsertQuestionnaire = z.infer<typeof insertQuestionnaireSchema>;
+export type UpdateQuestionnaire = z.infer<typeof updateQuestionnaireSchema>;

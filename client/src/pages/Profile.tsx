@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Upload, FileText, Trash2, User, Mail, Calendar, ArrowLeft, Shield, Activity, Download, Eye, Search, Edit, Phone } from "lucide-react";
+import { Upload, FileText, Trash2, User, Mail, Calendar, ArrowLeft, Shield, Activity, Download, Eye, Search, Edit, Phone, ClipboardCheck, CheckCircle2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updateUserProfileSchema, type UpdateUserProfile, normalizeGender } from "@shared/schema";
@@ -73,6 +73,12 @@ export default function Profile() {
   // Fetch medical documents
   const { data: documentsData, isLoading: documentsLoading, error: documentsError } = useQuery({
     queryKey: ["/api/profile/medical-documents"],
+    enabled: isAuthenticated,
+  });
+
+  // Fetch questionnaire status
+  const { data: questionnaireData } = useQuery({
+    queryKey: ["/api/questionnaire"],
     enabled: isAuthenticated,
   });
 
@@ -437,6 +443,88 @@ export default function Profile() {
                     <span className="text-sm">{documents.length} documentos cargados</span>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Medical Questionnaire Card */}
+            <Card data-testid="card-questionnaire">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <ClipboardCheck className="h-5 w-5" />
+                  <span>Historial Clínico</span>
+                </CardTitle>
+                <CardDescription>
+                  Cuestionario de salud y antecedentes médicos
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists && 'questionnaire' in questionnaireData && questionnaireData.questionnaire && (questionnaireData.questionnaire as any).isCompleted === "true" ? (
+                  <>
+                    <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+                        <div>
+                          <p className="font-medium text-green-900 dark:text-green-100">
+                            Cuestionario completado
+                          </p>
+                          <p className="text-sm text-green-700 dark:text-green-300">
+                            Completado el {new Date((questionnaireData.questionnaire as any).completedAt).toLocaleDateString('es-ES')}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <Link href="/cuestionario">
+                      <Button variant="outline" className="w-full" data-testid="button-view-questionnaire">
+                        <Eye className="h-4 w-4 mr-2" />
+                        Ver respuestas
+                      </Button>
+                    </Link>
+                  </>
+                ) : questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists && 'questionnaire' in questionnaireData && questionnaireData.questionnaire && (questionnaireData.questionnaire as any).isCompleted === "false" ? (
+                  <>
+                    <div className="flex items-center justify-between p-3 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <Activity className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                        <div>
+                          <p className="font-medium text-amber-900 dark:text-amber-100">
+                            En progreso
+                          </p>
+                          <p className="text-sm text-amber-700 dark:text-amber-300">
+                            {Object.keys((questionnaireData.questionnaire as any).answers || {}).length} de 20 preguntas respondidas
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <Link href="/cuestionario">
+                      <Button className="w-full" data-testid="button-continue-questionnaire">
+                        <FileText className="h-4 w-4 mr-2" />
+                        Continuar cuestionario
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <ClipboardCheck className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                        <div>
+                          <p className="font-medium text-blue-900 dark:text-blue-100">
+                            Completa tu historial
+                          </p>
+                          <p className="text-sm text-blue-700 dark:text-blue-300">
+                            Ayúdanos a conocer mejor tu salud
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <Link href="/cuestionario">
+                      <Button className="w-full" data-testid="button-start-questionnaire">
+                        <ClipboardCheck className="h-4 w-4 mr-2" />
+                        Iniciar cuestionario
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </CardContent>
             </Card>
 
