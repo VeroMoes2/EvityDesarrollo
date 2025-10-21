@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Upload, FileText, Trash2, User, Mail, Calendar, ArrowLeft, Shield, Activity, Download, Eye, Search, Edit, Phone, ClipboardCheck, CheckCircle2 } from "lucide-react";
+import { Upload, FileText, Trash2, User, Mail, Calendar, ArrowLeft, Shield, Activity, Download, Eye, Search, Edit, Phone, ClipboardCheck, CheckCircle2, Bot, Sparkles } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updateUserProfileSchema, type UpdateUserProfile, normalizeGender } from "@shared/schema";
@@ -525,6 +525,40 @@ export default function Profile() {
                     </Link>
                   </>
                 )}
+              </CardContent>
+            </Card>
+
+            {/* AI Agent Card */}
+            <Card data-testid="card-ai-agent">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Bot className="h-5 w-5" />
+                  <span>Agente IA de Longevidad</span>
+                </CardTitle>
+                <CardDescription>
+                  Consulta tu asistente personal de salud
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <Sparkles className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                    <div>
+                      <p className="font-medium text-purple-900 dark:text-purple-100">
+                        Respuestas basadas en ciencia
+                      </p>
+                      <p className="text-sm text-purple-700 dark:text-purple-300">
+                        Pregunta sobre nutrición, ejercicio y más
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <Link href="/agente-ia">
+                  <Button className="w-full" variant="default" data-testid="button-open-ai-agent">
+                    <Bot className="h-4 w-4 mr-2" />
+                    Hablar con el agente
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 
