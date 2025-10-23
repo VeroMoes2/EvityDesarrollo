@@ -2,6 +2,8 @@ import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { spawn } from "child_process";
+import path from "path";
 
 const app = express();
 app.use(express.json());
@@ -38,6 +40,36 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Start Python AI Agent service automatically
+  const pythonAgentPath = path.join(process.cwd(), 'python_agent', 'api_server.py');
+  const pythonProcess = spawn('python3', [pythonAgentPath], {
+    cwd: path.join(process.cwd(), 'python_agent'),
+    stdio: ['ignore', 'pipe', 'pipe'],
+    detached: false,
+  });
+
+  pythonProcess.stdout?.on('data', (data) => {
+    console.log(`[Python AI] ${data.toString().trim()}`);
+  });
+
+  pythonProcess.stderr?.on('data', (data) => {
+    console.error(`[Python AI Error] ${data.toString().trim()}`);
+  });
+
+  pythonProcess.on('error', (error) => {
+    console.error('[Python AI] Failed to start:', error.message);
+  });
+
+  pythonProcess.on('exit', (code) => {
+    if (code !== null && code !== 0) {
+      console.error(`[Python AI] Process exited with code ${code}`);
+    }
+  });
+
+  // Give Python service a moment to start
+  await new Promise(resolve => setTimeout(resolve, 2000));
+  log('Python AI Agent service started on port 5001');
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
