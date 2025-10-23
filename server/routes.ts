@@ -1253,6 +1253,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI Agent endpoint - proxies requests to Python service
+  app.post('/api/ai-agent/ask', isAuthenticated, async (req: any, res) => {
+    try {
+      const { question } = req.body;
+      
+      if (!question || !question.trim()) {
+        return res.status(400).json({ message: "La pregunta no puede estar vacía" });
+      }
+
+      // Call Python API service
+      const pythonApiPort = process.env.PYTHON_API_PORT || 5001;
+      const pythonApiUrl = `http://localhost:${pythonApiPort}/ask`;
+
+      const response = await fetch(pythonApiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ question: question.trim() }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Python API error:', errorData);
+        
+        if (response.status === 404) {
+          return res.status(503).json({ 
+            message: "El agente aún no tiene documentos indexados. Por favor, agrega documentos a la carpeta 'python_agent/contenidos'.",
+            error: errorData.error 
+          });
+        }
+        
+        return res.status(503).json({ 
+          message: "El servicio de IA no está disponible en este momento",
+          error: errorData.error 
+        });
+      }
+
+      const data = await response.json();
+      
+      // Log AI interaction for audit
+      await AuditLogger.log(
+        req.user.claims.sub,
+        'ai_agent_query',
+        'AI Agent',
+        { question: question.substring(0, 100) },
+        req
+      );
+
+      res.json({
+        answer: data.answer,
+        question: data.question
+      });
+
+    } catch (error: any) {
+      console.error("Error calling AI agent:", error);
+      
+      if (error.code === 'ECONNREFUSED') {
+        return res.status(503).json({ 
+          message: "El servicio de IA no está iniciado. Por favor, contacta al administrador.",
+          error: "Service unavailable"
+        });
+      }
+      
+      res.status(500).json({ 
+        message: "Error al procesar tu pregunta",
+        error: error.message 
+      });
+    }
+  });
 
   const httpServer = createServer(app);
 

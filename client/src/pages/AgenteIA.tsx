@@ -65,21 +65,48 @@ export default function AgenteIA() {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const question = inputMessage.trim();
     setInputMessage("");
     setIsLoading(true);
 
-    // TODO: Aquí se integrará la llamada al backend del agente
-    // Por ahora, simulamos una respuesta
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/ai-agent/ask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ question }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al procesar la pregunta');
+      }
+
+      const data = await response.json();
+
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: "Esta es una respuesta de prueba. Pronto me conectaré con tu agente de IA real para darte respuestas basadas en la librería de longevidad.",
+        content: data.answer,
         timestamp: new Date(),
       };
+
       setMessages(prev => [...prev, assistantMessage]);
+    } catch (error: any) {
+      console.error('Error calling AI agent:', error);
+      
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: `Lo siento, hubo un error al procesar tu pregunta: ${error.message}. Por favor, intenta de nuevo.`,
+        timestamp: new Date(),
+      };
+
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
