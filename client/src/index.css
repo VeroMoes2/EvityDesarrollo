@@ -362,4 +362,10 @@
   .dark .header-link {
     color: hsl(220 15% 95%) !important;
   }
+
+  /* Word wrapping utility for chat messages */
+  .overflow-wrap-anywhere {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
 }
