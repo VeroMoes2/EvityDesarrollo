@@ -70,10 +70,19 @@ export default function AgenteIA() {
     setIsLoading(true);
 
     try {
+      // Get CSRF token first
+      const csrfResponse = await fetch('/api/csrf-token', {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+      const { csrfToken } = await csrfResponse.json();
+
       const response = await fetch('/api/ai-agent/ask', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken,
         },
         body: JSON.stringify({ question }),
       });
