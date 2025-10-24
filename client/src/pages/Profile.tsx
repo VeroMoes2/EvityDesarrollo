@@ -451,10 +451,10 @@ export default function Profile() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <ClipboardCheck className="h-5 w-5" />
-                  <span>Historial Clínico</span>
+                  <span>Mi Longevidad</span>
                 </CardTitle>
                 <CardDescription>
-                  Cuestionario de salud y antecedentes médicos
+                  Conócete mejor
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -473,6 +473,23 @@ export default function Profile() {
                         </div>
                       </div>
                     </div>
+                    
+                    {(questionnaireData.questionnaire as any).longevityPoints && (
+                      <div className="p-4 bg-primary/10 dark:bg-primary/20 border border-primary/20 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-muted-foreground">
+                              Mis puntos de longevidad
+                            </p>
+                            <p className="text-3xl font-bold text-primary mt-1" data-testid="text-longevity-points">
+                              {(questionnaireData.questionnaire as any).longevityPoints}
+                            </p>
+                          </div>
+                          <Sparkles className="h-8 w-8 text-primary" />
+                        </div>
+                      </div>
+                    )}
+                    
                     <Link href="/cuestionario">
                       <Button variant="outline" className="w-full" data-testid="button-view-questionnaire">
                         <Eye className="h-4 w-4 mr-2" />
@@ -490,7 +507,7 @@ export default function Profile() {
                             En progreso
                           </p>
                           <p className="text-sm text-amber-700 dark:text-amber-300">
-                            {Object.keys((questionnaireData.questionnaire as any).answers || {}).length} de 20 preguntas respondidas
+                            {Object.keys((questionnaireData.questionnaire as any).answers || {}).length} de 30 preguntas respondidas
                           </p>
                         </div>
                       </div>

@@ -71,6 +71,7 @@ export const medicalQuestionnaire = pgTable("medical_questionnaire", {
   answers: jsonb("answers").notNull().default(sql`'{}'::jsonb`),
   currentQuestion: varchar("current_question").default("1"),
   isCompleted: varchar("is_completed").default("false"),
+  longevityPoints: varchar("longevity_points"), // Calculated longevity score
   startedAt: timestamp("started_at").defaultNow(),
   completedAt: timestamp("completed_at"),
   updatedAt: timestamp("updated_at").defaultNow(),
