@@ -80,7 +80,7 @@ export default function ScheduleAppointment() {
               <Calendar className="h-8 w-8 text-primary" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold">Agendar Cita Médica</h1>
+          <h1 className="text-3xl font-bold">Agendar entrevista : Mi primer contacto</h1>
           <p className="text-muted-foreground">
             Selecciona el mejor horario para tu consulta
           </p>
