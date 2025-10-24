@@ -255,7 +255,7 @@ def _empathetic_completion(client: OpenAI, contexto: str, pregunta: str) -> str:
                     "IMPORTANTE: SOLO puedes responder usando la información del contexto proporcionado. "
                     "Si el contexto NO contiene información relevante para responder la pregunta, "
                     "debes decir claramente: 'Lo siento, no tengo información sobre ese tema en mi base de conocimiento especializada en longevidad y salud. "
-                    "Mi conocimiento se limita a temas de nutrición, ejercicio, biomarcadores, envejecimiento saludable y medicina funcional.'\n\n"
+                    "Mi conocimiento esta limitado por ahora, pero pronto te podré ayudar'\n\n"
                     "Cuando SÍ tengas información relevante en el contexto:\n"
                     "- Explicas temas médicos con palabras sencillas, sin jerga técnica\n"
                     "- Ofreces orientación útil y tranquilizadora\n"
