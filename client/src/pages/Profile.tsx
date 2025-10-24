@@ -497,21 +497,12 @@ export default function Profile() {
                       </div>
                     )}
                     
-                    <div className="space-y-2">
-                      <Link href="/cuestionario">
-                        <Button variant="outline" className="w-full" data-testid="button-view-questionnaire">
-                          <Eye className="h-4 w-4 mr-2" />
-                          Ver respuestas
-                        </Button>
-                      </Link>
-                      
-                      <Link href="/agendar-cita">
-                        <Button className="w-full" data-testid="button-schedule-interview">
-                          <Calendar className="h-4 w-4 mr-2" />
-                          Entrevista: Mi primer contacto
-                        </Button>
-                      </Link>
-                    </div>
+                    <Link href="/cuestionario">
+                      <Button variant="outline" className="w-full" data-testid="button-view-questionnaire">
+                        <Eye className="h-4 w-4 mr-2" />
+                        Ver respuestas
+                      </Button>
+                    </Link>
                   </>
                 ) : questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists && 'questionnaire' in questionnaireData && questionnaireData.questionnaire && (questionnaireData.questionnaire as any).isCompleted === "false" ? (
                   <>
@@ -558,6 +549,14 @@ export default function Profile() {
                     </Link>
                   </>
                 )}
+                
+                {/* Fixed Interview Button - Always Visible */}
+                <Link href="/agendar-cita">
+                  <Button className="w-full" data-testid="button-schedule-interview">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Entrevista: Mi primer contacto
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 
