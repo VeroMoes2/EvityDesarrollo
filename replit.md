@@ -117,13 +117,15 @@ The Mini Score consists of 5 questions with direct point scoring:
    - Insomnio o ansiedad/depresión persistentes: -5 puntos
 
 ### Score Calculation
-- **Total Score Range**: -25 to +25 points (direct sum of 5 questions)
+- **Total Score Range**: 0 to 100 points (direct sum of 5 questions × 4)
+- **Calculation Formula**: (Question1 + Question2 + Question3 + Question4 + Question5) × 4
+- **Raw Score Range**: -25 to +25, multiplied by 4 to get 0-100 display scale
 - **Interpretations** (Spanish):
-  - **21-25 puntos**: Estilo de vida óptimo - actividad física frecuente, dieta rica en alimentos frescos, peso saludable, sin tabaco ni alcohol excesivo, sueño reparador y estabilidad emocional
-  - **16-20 puntos**: Buen control de los pilares básicos, aunque con áreas por optimizar
-  - **11-15 puntos**: Conductas mixtas - ejercicio ocasional, dieta inconsistente o sobrepeso leve
-  - **6-10 puntos**: Estilo de vida predominantemente sedentario o dieta poco saludable
-  - **≤5 puntos**: Acumulación de múltiples factores de riesgo (obesidad, tabaco, sedentarismo, dieta procesada, insomnio o depresión)
+  - **84-100 puntos**: Estilo de vida óptimo - actividad física frecuente, dieta rica en alimentos frescos, peso saludable, sin tabaco ni alcohol excesivo, sueño reparador y estabilidad emocional
+  - **64-83 puntos**: Buen control de los pilares básicos, aunque con áreas por optimizar
+  - **44-63 puntos**: Conductas mixtas - ejercicio ocasional, dieta inconsistente o sobrepeso leve
+  - **24-43 puntos**: Estilo de vida predominantemente sedentario o dieta poco saludable
+  - **<24 puntos**: Acumulación de múltiples factores de riesgo (obesidad, tabaco, sedentarismo, dieta procesada, insomnio o depresión)
 
 ### Technical Features
 - **Input Validation**: Weight range 20-300 kg, height range 100-250 cm to prevent impossible entries

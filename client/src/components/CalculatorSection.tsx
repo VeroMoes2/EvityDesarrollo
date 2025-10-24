@@ -44,13 +44,13 @@ export default function CalculatorSection() {
   };
 
   const getInterpretation = (score: number): string => {
-    if (score >= 21 && score <= 25) {
+    if (score >= 84 && score <= 100) {
       return "Estilo de vida óptimo: actividad física frecuente, dieta rica en alimentos frescos, peso saludable, sin tabaco ni alcohol excesivo, sueño reparador y estabilidad emocional.";
-    } else if (score >= 16 && score <= 20) {
+    } else if (score >= 64 && score <= 83) {
       return "Buen control de los pilares básicos, aunque con áreas por optimizar (p. ej. dieta o sueño). Mantiene hábitos protectores pero con riesgo metabólico leve.";
-    } else if (score >= 11 && score <= 15) {
+    } else if (score >= 44 && score <= 63) {
       return "Conductas mixtas: ejercicio ocasional, dieta inconsistente o sobrepeso leve. Muestra factores de riesgo compensados parcialmente.";
-    } else if (score >= 6 && score <= 10) {
+    } else if (score >= 24 && score <= 43) {
       return "Estilo de vida predominantemente sedentario o dieta poco saludable. Posible sobrepeso, consumo frecuente de alcohol o alteración del sueño.";
     } else {
       return "Acumulación de múltiples factores de riesgo (obesidad, tabaco, sedentarismo, dieta procesada, insomnio o depresión). Perfil biológico asociado a envejecimiento acelerado.";
@@ -110,26 +110,28 @@ export default function CalculatorSection() {
     };
     totalScore += sleepScores[formData.sleepWellbeing] || 0;
 
-    const interpretation = getInterpretation(totalScore);
-    setResult({ score: totalScore, interpretation });
+    // Multiply by 4 to get 0-100 scale
+    const finalScore = totalScore * 4;
+    const interpretation = getInterpretation(finalScore);
+    setResult({ score: finalScore, interpretation });
     setShowResult(true);
   };
 
   const isFormComplete = formData.exercise && formData.diet && formData.weight && formData.height && formData.smokingDrinking && formData.sleepWellbeing;
 
   const getScoreColor = (score: number) => {
-    if (score >= 21) return "text-green-600 dark:text-green-400";
-    if (score >= 16) return "text-blue-600 dark:text-blue-400";
-    if (score >= 11) return "text-yellow-600 dark:text-yellow-400";
-    if (score >= 6) return "text-orange-600 dark:text-orange-400";
+    if (score >= 84) return "text-green-600 dark:text-green-400";
+    if (score >= 64) return "text-blue-600 dark:text-blue-400";
+    if (score >= 44) return "text-yellow-600 dark:text-yellow-400";
+    if (score >= 24) return "text-orange-600 dark:text-orange-400";
     return "text-red-600 dark:text-red-400";
   };
 
   const getScoreBgColor = (score: number) => {
-    if (score >= 21) return "bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800";
-    if (score >= 16) return "bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800";
-    if (score >= 11) return "bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-800";
-    if (score >= 6) return "bg-orange-50 dark:bg-orange-950 border-orange-200 dark:border-orange-800";
+    if (score >= 84) return "bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800";
+    if (score >= 64) return "bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800";
+    if (score >= 44) return "bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-800";
+    if (score >= 24) return "bg-orange-50 dark:bg-orange-950 border-orange-200 dark:border-orange-800";
     return "bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800";
   };
 
@@ -284,7 +286,7 @@ export default function CalculatorSection() {
                         <div className={`text-5xl font-bold ${getScoreColor(result.score)}`} data-testid="result-score">
                           {result.score}
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1">de 25 puntos</p>
+                        <p className="text-sm text-muted-foreground mt-1">de 100 puntos</p>
                       </div>
                     </div>
 
