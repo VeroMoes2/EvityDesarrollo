@@ -6,7 +6,6 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
@@ -17,7 +16,7 @@ import {
   Save, 
   CheckCircle2,
   Pause,
-  Play
+  Calculator
 } from "lucide-react";
 import {
   Select,
@@ -27,13 +26,34 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const QUESTIONS = [
+interface QuestionOption {
+  text: string;
+  points: number;
+}
+
+interface Question {
+  id: string;
+  section: string;
+  question: string;
+  type: "select" | "weight-height";
+  options?: QuestionOption[];
+  required: boolean;
+}
+
+const QUESTIONS: Question[] = [
+  // Sección: Actividad física y sedentarismo
   {
     id: "1",
     section: "Actividad física y sedentarismo",
     question: "¿Cuántos días por semana realiza actividad física moderada o vigorosa (correr, nadar, caminar rápido, baile)?",
     type: "select",
-    options: ["7 días", "6 días", "5 días", "4 días", "≤ 3 días"],
+    options: [
+      { text: "5-7 días/semana", points: 5 },
+      { text: "3-4 días/semana", points: 3 },
+      { text: "1-2 días/semana", points: 0 },
+      { text: "<1 día/semana", points: -3 },
+      { text: "Nada o totalmente sedentario", points: -5 },
+    ],
     required: true,
   },
   {
@@ -41,7 +61,13 @@ const QUESTIONS = [
     section: "Actividad física y sedentarismo",
     question: "¿Cuántos minutos dedica en promedio a cada sesión?",
     type: "select",
-    options: ["< 30 min", "40 min", "60 min", "90 min", "≥ 120 min"],
+    options: [
+      { text: "≥ 60 min/sesión", points: 5 },
+      { text: "30–59 min/sesión", points: 3 },
+      { text: "15–29 min/sesión", points: 0 },
+      { text: "< 15 min/sesión", points: -3 },
+      { text: "Sin sesiones estructuradas", points: -5 },
+    ],
     required: true,
   },
   {
@@ -49,20 +75,27 @@ const QUESTIONS = [
     section: "Actividad física y sedentarismo",
     question: "¿Cuántas horas al día pasa sentado/a o inactivo/a?",
     type: "select",
-    options: ["< 2 horas", "2 horas", "4 horas", "6 horas", "≥ 8 horas"],
+    options: [
+      { text: "< 4 horas/día", points: 5 },
+      { text: "4–6 horas/día", points: 3 },
+      { text: "6–8 horas/día", points: 0 },
+      { text: "> 8 horas/día sin pausas activas", points: -3 },
+      { text: "> 10 horas/día sedentario", points: -5 },
+    ],
     required: true,
   },
+  // Sección: Dieta y nutrición
   {
     id: "4",
     section: "Dieta y nutrición",
     question: "¿Cuántas porciones de frutas y verduras consume al día?",
     type: "select",
     options: [
-      "≥ 5 porciones al día (≥ 3 de verdura y ≥ 2 de fruta)",
-      "3–4 porciones al día",
-      "2 porciones al día",
-      "1 porción al día",
-      "Rara vez o nunca come frutas/verduras"
+      { text: "≥ 5 porciones al día", points: 5 },
+      { text: "3–4 porciones al día", points: 3 },
+      { text: "2 porciones al día", points: 0 },
+      { text: "1 porción al día", points: -3 },
+      { text: "Rara vez o nunca come frutas/verduras", points: -5 },
     ],
     required: true,
   },
@@ -72,11 +105,11 @@ const QUESTIONS = [
     question: "¿Con qué frecuencia come alimentos ultraprocesados o bebe refrescos/azucaradas?",
     type: "select",
     options: [
-      "Casi nunca o < 1 vez por semana",
-      "1-2 veces por semana",
-      "3-4 veces por semana",
-      "≥ 1 vez al día",
-      "Varias veces al día (refrescos o comida rápida frecuente)"
+      { text: "Casi nunca o < 1 vez por semana", points: 5 },
+      { text: "1-2 veces por semana", points: 3 },
+      { text: "3-4 veces por semana", points: 0 },
+      { text: "≥ 1 vez al día", points: -3 },
+      { text: "Varias veces al día (refrescos o comida rápida frecuente)", points: -5 },
     ],
     required: true,
   },
@@ -86,19 +119,20 @@ const QUESTIONS = [
     question: "¿Qué tipo de grasa utiliza habitualmente para cocinar (aceite de oliva, vegetal, mantequilla, manteca)?",
     type: "select",
     options: [
-      "Aceite de oliva extra virgen o aguacate como grasa principal",
-      "Aceites vegetales (canola, maíz, girasol) sin manteca o margarina",
-      "Mezcla entre aceites vegetales y mantequilla",
-      "Mantequilla, margarina o crema diariamente",
-      "Manteca o grasas animales como grasa principal"
+      { text: "Aceite de oliva extra virgen o aguacate como grasa principal", points: 5 },
+      { text: "Aceites vegetales no refinados (canola, maíz, girasol) sin manteca o margarina", points: 3 },
+      { text: "Mezcla entre aceites vegetales y mantequilla", points: 0 },
+      { text: "Mantequilla, margarina o crema diariamente", points: -3 },
+      { text: "Manteca o grasas animales como grasa principal", points: -5 },
     ],
     required: true,
   },
+  // Sección: Peso e índice de masa corporal
   {
     id: "7",
     section: "Peso e índice de masa corporal",
     question: "¿Cuál es su peso y estatura actual?",
-    type: "text",
+    type: "weight-height",
     required: true,
   },
   {
@@ -107,272 +141,43 @@ const QUESTIONS = [
     question: "¿Ha tenido cambios significativos de peso en el último año?",
     type: "select",
     options: [
-      "No, peso estable",
-      "Cambio leve (± 3-5 kg)",
-      "Cambio moderado (± 6-10 kg)",
-      "Fluctuaciones recurrentes o pérdida no intencionada"
-    ],
-    required: true,
-  },
-  {
-    id: "9",
-    section: "Tabaquismo",
-    question: "¿Ha fumado alguna vez (cigarrillos, vapeo u otros)?",
-    type: "select",
-    options: ["Sí", "No"],
-    required: true,
-  },
-  {
-    id: "10",
-    section: "Tabaquismo",
-    question: "Si sí, ¿cuántos cigarrillos por día y durante cuántos años?",
-    type: "text",
-    required: false,
-  },
-  {
-    id: "11",
-    section: "Tabaquismo",
-    question: "¿Hace cuánto tiempo dejó de fumar (si aplica)?",
-    type: "select",
-    options: [
-      "Hace > 10 años",
-      "Hace 5-10 años",
-      "Hace < 5 años",
-      "No he dejado de fumar"
-    ],
-    required: false,
-  },
-  {
-    id: "12",
-    section: "Alcohol",
-    question: "¿Cuántas bebidas alcohólicas consume por semana?",
-    type: "select",
-    options: [
-      "Ninguna o ≤1 bebida",
-      "2–4 bebidas",
-      "5–7 bebidas",
-      "8–14 bebidas",
-      "≥15 bebidas"
-    ],
-    required: true,
-  },
-  {
-    id: "13",
-    section: "Alcohol",
-    question: "¿Suele tomar más de 4 bebidas en una ocasión?",
-    type: "select",
-    options: [
-      "Nunca",
-      "Muy rara vez (1-2 veces/año)",
-      "Ocasional (mensual)",
-      "Frecuente (semanal)",
-      "Muy frecuente (varias veces/semana)"
-    ],
-    required: true,
-  },
-  {
-    id: "14",
-    section: "Alcohol",
-    question: "¿Tiene días sin alcohol cada semana?",
-    type: "select",
-    options: ["Sí", "No"],
-    required: true,
-  },
-  {
-    id: "15",
-    section: "Alcohol",
-    question: "Si sí, ¿cuántos días?",
-    type: "select",
-    options: ["6-7 días", "4-5 días", "2-3 días", "1 día"],
-    required: false,
-  },
-  {
-    id: "16",
-    section: "Sueño y descanso",
-    question: "¿Cuántas horas duerme por noche en promedio?",
-    type: "select",
-    options: ["> 9 horas", "7-8 horas", "6-7 horas", "< 6 horas", "Muy irregular"],
-    required: true,
-  },
-  {
-    id: "17",
-    section: "Sueño y descanso",
-    question: "¿Tiene dificultad para conciliar o mantener el sueño?",
-    type: "select",
-    options: [
-      "Nunca",
-      "Ocasionalmente",
-      "Algunas veces/semana",
-      "Casi todas las noches",
-      "Insomnio diagnosticado"
-    ],
-    required: true,
-  },
-  {
-    id: "18",
-    section: "Sueño y descanso",
-    question: "¿Siente cansancio o somnolencia durante el día?",
-    type: "select",
-    options: [
-      "Nunca",
-      "Rara vez",
-      "Ocasionalmente",
-      "Frecuente",
-      "Somnolencia diaria o apnea diagnosticada"
-    ],
-    required: true,
-  },
-  {
-    id: "19",
-    section: "Salud mental",
-    question: "En las últimas dos semanas, ¿con qué frecuencia se ha sentido triste o sin interés en las cosas?",
-    type: "select",
-    options: [
-      "Nunca",
-      "Varios días",
-      "Más de la mitad de los días",
-      "Casi todos los días",
-      "Todos los días"
-    ],
-    required: true,
-  },
-  {
-    id: "20",
-    section: "Salud mental",
-    question: "¿Ha sentido ansiedad o preocupación constante que interfiere en su vida diaria?",
-    type: "select",
-    options: [
-      "Nunca",
-      "Rara vez",
-      "Ocasional",
-      "Frecuente",
-      "Ansiedad diagnosticada"
-    ],
-    required: true,
-  },
-  {
-    id: "21",
-    section: "Salud mental",
-    question: "¿Ha tenido pensamientos negativos o autocríticos recurrentes?",
-    type: "select",
-    options: ["Nunca", "Rara vez", "Ocasional", "Frecuente"],
-    required: true,
-  },
-  {
-    id: "22",
-    section: "Enfermedades crónicas",
-    question: "¿Le han diagnosticado diabetes, hipertensión, cardiopatía, cáncer, renal o pulmonar? Marque todas las que apliquen",
-    type: "select",
-    options: [
-      "Ninguna",
-      "Diabetes",
-      "Hipertensión",
-      "Enfermedad del corazón",
-      "Cáncer",
-      "Enfermedad de los riñones",
-      "Enfermedad pulmonar"
-    ],
-    required: true,
-  },
-  {
-    id: "23",
-    section: "Enfermedades crónicas",
-    question: "¿Toma medicamentos de forma continua?",
-    type: "select",
-    options: [
-      "Ninguno",
-      "1 medicamento preventivo",
-      "2-3 medicamentos",
-      "≥ 4 medicamentos"
-    ],
-    required: true,
-  },
-  {
-    id: "24",
-    section: "Enfermedades crónicas",
-    question: "¿Sus enfermedades afectan su capacidad para mantener actividad física o vida diaria?",
-    type: "select",
-    options: [
-      "No",
-      "Leve impacto",
-      "Limitación moderada",
-      "Limitación frecuente",
-      "Dependencia o incapacidad"
-    ],
-    required: true,
-  },
-  {
-    id: "25",
-    section: "Apoyo social y propósito",
-    question: "¿Con qué frecuencia convive con amigos o familiares?",
-    type: "select",
-    options: [
-      "≥ 3 veces/semana",
-      "1-2 veces/semana",
-      "2-3 veces/mes",
-      "≤ 1 vez/mes",
-      "Casi nunca"
-    ],
-    required: true,
-  },
-  {
-    id: "26",
-    section: "Apoyo social y propósito",
-    question: "¿Participa en actividades sociales, religiosas o de voluntariado?",
-    type: "select",
-    options: [
-      "Nunca",
-      "Rara vez",
-      "Esporádicamente",
-      "Ocasionalmente",
-      "Frecuentemente"
-    ],
-    required: true,
-  },
-  {
-    id: "27",
-    section: "Apoyo social y propósito",
-    question: "¿Siente que su vida tiene propósito y metas significativas?",
-    type: "select",
-    options: ["Nunca", "Rara vez", "A veces", "Casi siempre", "Siempre"],
-    required: true,
-  },
-  {
-    id: "28",
-    section: "Cognición y funcionalidad",
-    question: "¿Ha notado olvidos frecuentes o lentitud mental reciente?",
-    type: "select",
-    options: ["Nunca", "Ocasional", "A veces", "Frecuente"],
-    required: true,
-  },
-  {
-    id: "29",
-    section: "Cognición y funcionalidad",
-    question: "¿Puede realizar sus actividades diarias (su higiene, comidas, finanzas) sin ayuda?",
-    type: "select",
-    options: [
-      "Necesito ayuda siempre",
-      "Necesito ayuda parcial",
-      "Necesito apoyos leves ocasionales",
-      "Soy completamente independiente"
-    ],
-    required: true,
-  },
-  {
-    id: "30",
-    section: "Cognición y funcionalidad",
-    question: "¿Se orienta bien en lugares conocidos y mantiene una buena comunicación?",
-    type: "select",
-    options: [
-      "Siempre",
-      "Desorientación ocasional",
-      "A veces pierdo el hilo de la conversación",
-      "Frecuentemente me confundo o estoy lenta",
-      "Desorientación o dificultad marcada"
+      { text: "No, peso estable (±2 kg)", points: 5 },
+      { text: "Cambio leve (±3–5 kg)", points: 3 },
+      { text: "Cambio moderado (±6–10 kg)", points: 0 },
+      { text: "Cambio importante (>10 kg)", points: -3 },
+      { text: "Fluctuaciones recurrentes o pérdida no intencionada", points: -5 },
     ],
     required: true,
   },
 ];
+
+function calculateBMI(weight: number, height: number): number {
+  // height in meters, weight in kg
+  return weight / (height * height);
+}
+
+function getBMIPoints(bmi: number): number {
+  if (bmi >= 18.5 && bmi <= 24.9) return 5;
+  if (bmi >= 25 && bmi <= 26.9) return 3;
+  if (bmi >= 27 && bmi <= 29.9) return 0;
+  if (bmi >= 30 && bmi <= 34.9) return -3;
+  return -5; // BMI >= 35
+}
+
+function calculateLongevityPoints(totalPoints: number): number {
+  // Según el documento:
+  // 10-15 puntos finales → 50 de longevidad
+  // 5-10 puntos finales → 50 de longevidad
+  // 0-5 puntos finales → 80 de longevidad
+  
+  if (totalPoints >= 10 && totalPoints <= 15) return 50;
+  if (totalPoints >= 5 && totalPoints < 10) return 50;
+  if (totalPoints >= 0 && totalPoints < 5) return 80;
+  
+  // Para valores fuera de rango, usar lógica similar
+  if (totalPoints > 15) return 50; // Asumimos mejor puntuación
+  return 80; // Para puntos negativos
+}
 
 export default function Cuestionario() {
   const { user, isAuthenticated } = useAuth();
@@ -403,7 +208,7 @@ export default function Cuestionario() {
   }, [questionnaireData]);
 
   const saveProgressMutation = useMutation({
-    mutationFn: async (data: { answers: Record<string, any>; currentQuestion: string; isCompleted?: string }) => {
+    mutationFn: async (data: { answers: Record<string, any>; currentQuestion: string; isCompleted?: string; longevityPoints?: string }) => {
       return await apiRequest("POST", "/api/questionnaire", data);
     },
     onSuccess: () => {
@@ -412,7 +217,7 @@ export default function Cuestionario() {
   });
 
   const updateProgressMutation = useMutation({
-    mutationFn: async (data: { answers: Record<string, any>; currentQuestion: string; isCompleted?: string }) => {
+    mutationFn: async (data: { answers: Record<string, any>; currentQuestion: string; isCompleted?: string; longevityPoints?: string }) => {
       return await apiRequest("PUT", "/api/questionnaire", data);
     },
     onSuccess: () => {
@@ -464,15 +269,31 @@ export default function Cuestionario() {
 
   const handleNext = async () => {
     const currentQuestion = QUESTIONS[currentQuestionIndex];
-    const currentAnswer = answers[currentQuestion.id];
-
-    if (currentQuestion.required && (!currentAnswer || currentAnswer.trim() === "")) {
-      toast({
-        title: "Campo requerido",
-        description: "Por favor responde esta pregunta antes de continuar.",
-        variant: "destructive",
-      });
-      return;
+    
+    // Validar respuesta requerida
+    if (currentQuestion.required) {
+      if (currentQuestion.type === "weight-height") {
+        const weight = answers[`${currentQuestion.id}_weight`];
+        const height = answers[`${currentQuestion.id}_height`];
+        if (!weight || !height || weight.trim() === "" || height.trim() === "") {
+          toast({
+            title: "Campo requerido",
+            description: "Por favor ingresa tu peso y estatura.",
+            variant: "destructive",
+          });
+          return;
+        }
+      } else {
+        const currentAnswer = answers[currentQuestion.id];
+        if (!currentAnswer || currentAnswer.trim() === "") {
+          toast({
+            title: "Campo requerido",
+            description: "Por favor responde esta pregunta antes de continuar.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
     }
 
     if (currentQuestionIndex < QUESTIONS.length - 1) {
@@ -540,26 +361,118 @@ export default function Cuestionario() {
     }
   };
 
-  const handleComplete = async () => {
-    const unansweredRequired = QUESTIONS.filter(
-      q => q.required && (!answers[q.id] || answers[q.id].trim() === "")
-    );
+  const calculateTotalPoints = (): { totalPoints: number; longevityPoints: number } => {
+    let totalPoints = 0;
+    let questionCount = 0;
 
-    if (unansweredRequired.length > 0) {
-      toast({
-        title: "Cuestionario incompleto",
-        description: `Faltan ${unansweredRequired.length} pregunta(s) requerida(s).`,
-        variant: "destructive",
-      });
-      return;
+    // Sección 1: Actividad física (preguntas 1-3)
+    let section1Points = 0;
+    let section1Count = 0;
+    for (let i = 1; i <= 3; i++) {
+      const answer = answers[i.toString()];
+      if (answer) {
+        const question = QUESTIONS.find(q => q.id === i.toString());
+        const option = question?.options?.find(opt => opt.text === answer);
+        if (option) {
+          section1Points += option.points;
+          section1Count++;
+        }
+      }
+    }
+    if (section1Count > 0) {
+      totalPoints += section1Points / section1Count;
+    }
+
+    // Sección 2: Dieta y nutrición (preguntas 4-6)
+    let section2Points = 0;
+    let section2Count = 0;
+    for (let i = 4; i <= 6; i++) {
+      const answer = answers[i.toString()];
+      if (answer) {
+        const question = QUESTIONS.find(q => q.id === i.toString());
+        const option = question?.options?.find(opt => opt.text === answer);
+        if (option) {
+          section2Points += option.points;
+          section2Count++;
+        }
+      }
+    }
+    if (section2Count > 0) {
+      totalPoints += section2Points / section2Count;
+    }
+
+    // Sección 3: Peso e IMC (preguntas 7-8)
+    let section3Points = 0;
+    let section3Count = 0;
+    
+    // Pregunta 7: Calcular IMC
+    const weight = parseFloat(answers["7_weight"]);
+    const height = parseFloat(answers["7_height"]) / 100; // convertir cm a metros
+    if (!isNaN(weight) && !isNaN(height) && height > 0) {
+      const bmi = calculateBMI(weight, height);
+      const bmiPoints = getBMIPoints(bmi);
+      section3Points += bmiPoints;
+      section3Count++;
+    }
+    
+    // Pregunta 8: Cambios de peso
+    const answer8 = answers["8"];
+    if (answer8) {
+      const question = QUESTIONS.find(q => q.id === "8");
+      const option = question?.options?.find(opt => opt.text === answer8);
+      if (option) {
+        section3Points += option.points;
+        section3Count++;
+      }
+    }
+    
+    if (section3Count > 0) {
+      totalPoints += section3Points / section3Count;
+    }
+
+    const longevityPoints = calculateLongevityPoints(totalPoints);
+    
+    return { totalPoints, longevityPoints };
+  };
+
+  const handleComplete = async () => {
+    // Validar todas las preguntas requeridas
+    for (const question of QUESTIONS) {
+      if (question.required) {
+        if (question.type === "weight-height") {
+          const weight = answers[`${question.id}_weight`];
+          const height = answers[`${question.id}_height`];
+          if (!weight || !height || weight.trim() === "" || height.trim() === "") {
+            toast({
+              title: "Cuestionario incompleto",
+              description: `Por favor completa la pregunta ${question.id}: ${question.question}`,
+              variant: "destructive",
+            });
+            return;
+          }
+        } else {
+          const answer = answers[question.id];
+          if (!answer || answer.trim() === "") {
+            toast({
+              title: "Cuestionario incompleto",
+              description: `Por favor completa la pregunta ${question.id}: ${question.question}`,
+              variant: "destructive",
+            });
+            return;
+          }
+        }
+      }
     }
 
     setIsSaving(true);
     try {
+      const { totalPoints, longevityPoints } = calculateTotalPoints();
+      
       const data = {
         answers,
         currentQuestion: QUESTIONS[QUESTIONS.length - 1].id,
         isCompleted: "true",
+        longevityPoints: longevityPoints.toString(),
       };
 
       if (questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists) {
@@ -570,7 +483,7 @@ export default function Cuestionario() {
 
       toast({
         title: "¡Cuestionario completado!",
-        description: "Tu historial clínico ha sido guardado exitosamente.",
+        description: `Tus puntos de longevidad: ${longevityPoints}`,
       });
 
       navigate("/perfil");
@@ -601,65 +514,85 @@ export default function Cuestionario() {
   const currentSection = currentQuestion.section;
 
   const renderQuestionInput = () => {
-    const value = answers[currentQuestion.id] || "";
+    if (currentQuestion.type === "weight-height") {
+      const weight = answers[`${currentQuestion.id}_weight`] || "";
+      const height = answers[`${currentQuestion.id}_height`] || "";
+      
+      // Calcular IMC si ambos campos tienen valores
+      let bmiDisplay = null;
+      const weightNum = parseFloat(weight);
+      const heightNum = parseFloat(height);
+      if (!isNaN(weightNum) && !isNaN(heightNum) && heightNum > 0) {
+        const bmi = calculateBMI(weightNum, heightNum / 100);
+        bmiDisplay = (
+          <div className="mt-4 p-3 bg-primary/10 dark:bg-primary/20 rounded-lg border border-primary/20">
+            <div className="flex items-center gap-2">
+              <Calculator className="h-4 w-4 text-primary" />
+              <p className="text-sm font-medium text-foreground">
+                Tu IMC: <span className="text-primary font-bold">{bmi.toFixed(1)}</span>
+              </p>
+            </div>
+          </div>
+        );
+      }
 
-    switch (currentQuestion.type) {
-      case "text":
-        return (
-          <Input
-            data-testid={`input-question-${currentQuestion.id}`}
-            value={value}
-            onChange={(e) => setAnswers({ ...answers, [currentQuestion.id]: e.target.value })}
-            placeholder="Tu respuesta..."
-            className="text-base"
-          />
-        );
-      
-      case "date":
-        return (
-          <Input
-            data-testid={`input-question-${currentQuestion.id}`}
-            type="date"
-            value={value}
-            onChange={(e) => setAnswers({ ...answers, [currentQuestion.id]: e.target.value })}
-            className="text-base"
-          />
-        );
-      
-      case "select":
-        return (
-          <Select
-            value={value}
-            onValueChange={(val) => setAnswers({ ...answers, [currentQuestion.id]: val })}
-          >
-            <SelectTrigger data-testid={`select-question-${currentQuestion.id}`} className="text-base">
-              <SelectValue placeholder="Selecciona una opción..." />
-            </SelectTrigger>
-            <SelectContent>
-              {currentQuestion.options?.map((option) => (
-                <SelectItem key={option} value={option}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        );
-      
-      case "textarea":
-        return (
-          <Textarea
-            data-testid={`textarea-question-${currentQuestion.id}`}
-            value={value}
-            onChange={(e) => setAnswers({ ...answers, [currentQuestion.id]: e.target.value })}
-            placeholder="Tu respuesta..."
-            rows={4}
-            className="text-base resize-none"
-          />
-        );
-      
-      default:
-        return null;
+      return (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="weight">Peso (kg)</Label>
+              <Input
+                id="weight"
+                data-testid={`input-question-${currentQuestion.id}-weight`}
+                type="number"
+                step="0.1"
+                value={weight}
+                onChange={(e) => setAnswers({ ...answers, [`${currentQuestion.id}_weight`]: e.target.value })}
+                placeholder="70.5"
+                className="text-base"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="height">Estatura (cm)</Label>
+              <Input
+                id="height"
+                data-testid={`input-question-${currentQuestion.id}-height`}
+                type="number"
+                step="0.1"
+                value={height}
+                onChange={(e) => setAnswers({ ...answers, [`${currentQuestion.id}_height`]: e.target.value })}
+                placeholder="170"
+                className="text-base"
+              />
+            </div>
+          </div>
+          {bmiDisplay}
+        </div>
+      );
     }
+    
+    if (currentQuestion.type === "select") {
+      const value = answers[currentQuestion.id] || "";
+      return (
+        <Select
+          value={value}
+          onValueChange={(val) => setAnswers({ ...answers, [currentQuestion.id]: val })}
+        >
+          <SelectTrigger data-testid={`select-question-${currentQuestion.id}`} className="text-base">
+            <SelectValue placeholder="Selecciona una opción..." />
+          </SelectTrigger>
+          <SelectContent>
+            {currentQuestion.options?.map((option) => (
+              <SelectItem key={option.text} value={option.text}>
+                {option.text}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      );
+    }
+    
+    return null;
   };
 
   return (
