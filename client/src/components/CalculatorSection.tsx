@@ -3,9 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Progress } from "@/components/ui/progress";
 import { useState } from "react";
-import { Calculator, TrendingUp, Heart, Activity, MessageCircle } from "lucide-react";
+import { Calculator, TrendingUp, Heart, MessageCircle, Sparkles } from "lucide-react";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
 import { useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -15,13 +14,14 @@ export default function CalculatorSection() {
   const [, navigate] = useLocation();
   const { t, language } = useLanguage();
   const [formData, setFormData] = useState({
-    age: "",
-    gender: "",
     exercise: "",
-    smoking: "",
-    diet: ""
+    diet: "",
+    weight: "",
+    height: "",
+    smokingDrinking: "",
+    sleepWellbeing: ""
   });
-  const [result, setResult] = useState<number | null>(null);
+  const [result, setResult] = useState<{ score: number; interpretation: string } | null>(null);
   const [showResult, setShowResult] = useState(false);
   
   const companyName = confluenceData?.companyName || "Evity";
@@ -30,46 +30,118 @@ export default function CalculatorSection() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const calculateLifeExpectancy = () => {
-    // todo: remove mock functionality - replace with real calculation
-    let baseExpectancy = 80;
-    
-    // Age factor
-    const age = parseInt(formData.age);
-    if (age < 30) baseExpectancy += 2;
-    else if (age > 60) baseExpectancy -= 1;
-    
-    // Gender factor
-    if (formData.gender === "female") baseExpectancy += 3;
-    
-    // Exercise factor
-    if (formData.exercise === "daily") baseExpectancy += 4;
-    else if (formData.exercise === "weekly") baseExpectancy += 2;
-    
-    // Smoking factor
-    if (formData.smoking === "current") baseExpectancy -= 8;
-    else if (formData.smoking === "former") baseExpectancy -= 2;
-    
-    // Diet factor
-    if (formData.diet === "mediterranean") baseExpectancy += 3;
-    else if (formData.diet === "balanced") baseExpectancy += 1;
-    
-    setResult(Math.max(baseExpectancy, 70));
-    setShowResult(true);
-    console.log("Life expectancy calculated:", baseExpectancy);
+  const calculateBMI = (weight: number, height: number): number => {
+    const heightInMeters = height / 100;
+    return weight / (heightInMeters * heightInMeters);
   };
 
-  const isFormComplete = formData.age && formData.gender && formData.exercise && formData.smoking && formData.diet;
+  const getBMIPoints = (bmi: number): number => {
+    if (bmi >= 18.5 && bmi <= 24.9) return 5;
+    if (bmi >= 25 && bmi <= 26.9) return 3;
+    if (bmi >= 27 && bmi <= 29.9) return 0;
+    if (bmi >= 30 && bmi <= 34.9) return -3;
+    return -5; // BMI >= 35
+  };
+
+  const getInterpretation = (score: number): string => {
+    if (score >= 21 && score <= 25) {
+      return "Estilo de vida óptimo: actividad física frecuente, dieta rica en alimentos frescos, peso saludable, sin tabaco ni alcohol excesivo, sueño reparador y estabilidad emocional.";
+    } else if (score >= 16 && score <= 20) {
+      return "Buen control de los pilares básicos, aunque con áreas por optimizar (p. ej. dieta o sueño). Mantiene hábitos protectores pero con riesgo metabólico leve.";
+    } else if (score >= 11 && score <= 15) {
+      return "Conductas mixtas: ejercicio ocasional, dieta inconsistente o sobrepeso leve. Muestra factores de riesgo compensados parcialmente.";
+    } else if (score >= 6 && score <= 10) {
+      return "Estilo de vida predominantemente sedentario o dieta poco saludable. Posible sobrepeso, consumo frecuente de alcohol o alteración del sueño.";
+    } else {
+      return "Acumulación de múltiples factores de riesgo (obesidad, tabaco, sedentarismo, dieta procesada, insomnio o depresión). Perfil biológico asociado a envejecimiento acelerado.";
+    }
+  };
+
+  const calculateLongevityScore = () => {
+    let totalScore = 0;
+
+    // Question 1: Exercise (5 options)
+    const exerciseScores: Record<string, number> = {
+      "5-7": 5,
+      "3-4": 3,
+      "1-2": 0,
+      "<1": -3,
+      "none": -5
+    };
+    totalScore += exerciseScores[formData.exercise] || 0;
+
+    // Question 2: Diet (5 options)
+    const dietScores: Record<string, number> = {
+      "excellent": 5,
+      "good": 3,
+      "mixed": 0,
+      "poor": -3,
+      "very-poor": -5
+    };
+    totalScore += dietScores[formData.diet] || 0;
+
+    // Question 3: BMI from weight and height
+    if (formData.weight && formData.height) {
+      const weight = parseFloat(formData.weight);
+      const height = parseFloat(formData.height);
+      if (!isNaN(weight) && !isNaN(height) && weight >= 20 && weight <= 300 && height >= 100 && height <= 250) {
+        const bmi = calculateBMI(weight, height);
+        totalScore += getBMIPoints(bmi);
+      }
+    }
+
+    // Question 4: Smoking and drinking (5 options)
+    const smokingDrinkingScores: Record<string, number> = {
+      "none": 5,
+      "ex-smoker-low": 3,
+      "ex-smoker-moderate": 0,
+      "occasional": -3,
+      "active": -5
+    };
+    totalScore += smokingDrinkingScores[formData.smokingDrinking] || 0;
+
+    // Question 5: Sleep and wellbeing (5 options)
+    const sleepScores: Record<string, number> = {
+      "excellent": 5,
+      "good": 3,
+      "irregular": 0,
+      "poor": -3,
+      "very-poor": -5
+    };
+    totalScore += sleepScores[formData.sleepWellbeing] || 0;
+
+    const interpretation = getInterpretation(totalScore);
+    setResult({ score: totalScore, interpretation });
+    setShowResult(true);
+  };
+
+  const isFormComplete = formData.exercise && formData.diet && formData.weight && formData.height && formData.smokingDrinking && formData.sleepWellbeing;
+
+  const getScoreColor = (score: number) => {
+    if (score >= 21) return "text-green-600 dark:text-green-400";
+    if (score >= 16) return "text-blue-600 dark:text-blue-400";
+    if (score >= 11) return "text-yellow-600 dark:text-yellow-400";
+    if (score >= 6) return "text-orange-600 dark:text-orange-400";
+    return "text-red-600 dark:text-red-400";
+  };
+
+  const getScoreBgColor = (score: number) => {
+    if (score >= 21) return "bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800";
+    if (score >= 16) return "bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800";
+    if (score >= 11) return "bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-800";
+    if (score >= 6) return "bg-orange-50 dark:bg-orange-950 border-orange-200 dark:border-orange-800";
+    return "bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800";
+  };
 
   return (
     <section id="calculadora" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-            {t('calculator.title')} {companyName}
+            Longevity Mini Score - {companyName}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            {language === 'es' && confluenceData?.mission ? confluenceData.mission : t('calculator.subtitle')}
+            Descubre tu puntuación de longevidad basada en tu estilo de vida actual y obtén recomendaciones personalizadas para mejorarlo
           </p>
         </div>
 
@@ -80,87 +152,114 @@ export default function CalculatorSection() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calculator className="h-5 w-5 text-primary" />
-                  {t('calculator.formTitle')}
+                  Completa el cuestionario
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
+                {/* Question 1: Exercise */}
                 <div className="space-y-2">
-                  <Label htmlFor="age">{t('calculator.age')}</Label>
-                  <Input
-                    id="age"
-                    type="number"
-                    placeholder={t('calculator.agePlaceholder')}
-                    value={formData.age}
-                    onChange={(e) => handleInputChange("age", e.target.value)}
-                    data-testid="input-age"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="gender">{t('calculator.gender')}</Label>
-                  <Select value={formData.gender} onValueChange={(value) => handleInputChange("gender", value)}>
-                    <SelectTrigger data-testid="select-gender">
-                      <SelectValue placeholder={t('calculator.gender')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="male">{t('calculator.male')}</SelectItem>
-                      <SelectItem value="female">{t('calculator.female')}</SelectItem>
-                      <SelectItem value="other">{t('calculator.genderOther')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="exercise">{t('calculator.exercise')}</Label>
+                  <Label htmlFor="exercise">1. ¿Cuántos días por semana realiza al menos 30 minutos de actividad moderada o vigorosa?</Label>
                   <Select value={formData.exercise} onValueChange={(value) => handleInputChange("exercise", value)}>
                     <SelectTrigger data-testid="select-exercise">
-                      <SelectValue placeholder={t('calculator.exercise')} />
+                      <SelectValue placeholder="Selecciona una opción" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="daily">{t('calculator.exerciseDaily')}</SelectItem>
-                      <SelectItem value="weekly">{t('calculator.exerciseWeekly')}</SelectItem>
-                      <SelectItem value="occasionally">{t('calculator.exerciseOccasional')}</SelectItem>
-                      <SelectItem value="never">{t('calculator.exerciseNever')}</SelectItem>
+                      <SelectItem value="5-7">5-7 días/semana (+5 puntos)</SelectItem>
+                      <SelectItem value="3-4">3-4 días/semana (+3 puntos)</SelectItem>
+                      <SelectItem value="1-2">1-2 días/semana (0 puntos)</SelectItem>
+                      <SelectItem value="<1">&lt; 1 día/semana (-3 puntos)</SelectItem>
+                      <SelectItem value="none">Ningún día o totalmente inactivo (-5 puntos)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
+                {/* Question 2: Diet */}
                 <div className="space-y-2">
-                  <Label htmlFor="smoking">{t('calculator.smoking')}</Label>
-                  <Select value={formData.smoking} onValueChange={(value) => handleInputChange("smoking", value)}>
-                    <SelectTrigger data-testid="select-smoking">
-                      <SelectValue placeholder={t('calculator.smoking')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="never">{t('calculator.smokingNever')}</SelectItem>
-                      <SelectItem value="former">{t('calculator.smokingFormer')}</SelectItem>
-                      <SelectItem value="current">{t('calculator.smokingCurrent')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="diet">{t('calculator.diet')}</Label>
+                  <Label htmlFor="diet">2. ¿Su dieta habitual incluye frutas, verduras, legumbres, pescado y evita ultraprocesados y bebidas azucaradas?</Label>
                   <Select value={formData.diet} onValueChange={(value) => handleInputChange("diet", value)}>
                     <SelectTrigger data-testid="select-diet">
-                      <SelectValue placeholder={t('calculator.dietPlaceholder')} />
+                      <SelectValue placeholder="Selecciona una opción" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="mediterranean">{t('calculator.dietMediterranean')}</SelectItem>
-                      <SelectItem value="balanced">{t('calculator.dietBalanced')}</SelectItem>
-                      <SelectItem value="western">{t('calculator.dietWestern')}</SelectItem>
-                      <SelectItem value="poor">{t('calculator.dietPoor')}</SelectItem>
+                      <SelectItem value="excellent">Rica en frutas, verduras, legumbres y aceite de oliva; sin ultraprocesados (+5 puntos)</SelectItem>
+                      <SelectItem value="good">Incluye frutas y verduras diarias, ocasionalmente alimentos procesados (+3 puntos)</SelectItem>
+                      <SelectItem value="mixed">Mezcla equilibrada entre alimentos frescos y procesados (0 puntos)</SelectItem>
+                      <SelectItem value="poor">Alta en azúcar, carnes procesadas o frituras frecuentes (-3 puntos)</SelectItem>
+                      <SelectItem value="very-poor">Predominantemente ultraprocesada y baja en vegetales o comida rápida frecuente (-5 puntos)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Question 3: Weight and Height */}
+                <div className="space-y-2">
+                  <Label>3. ¿Cuál es su peso y estatura actual?</Label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="weight">Peso (kg)</Label>
+                      <Input
+                        id="weight"
+                        type="number"
+                        placeholder="70"
+                        value={formData.weight}
+                        onChange={(e) => handleInputChange("weight", e.target.value)}
+                        data-testid="input-weight"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="height">Estatura (cm)</Label>
+                      <Input
+                        id="height"
+                        type="number"
+                        placeholder="170"
+                        value={formData.height}
+                        onChange={(e) => handleInputChange("height", e.target.value)}
+                        data-testid="input-height"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Question 4: Smoking and Drinking */}
+                <div className="space-y-2">
+                  <Label htmlFor="smoking-drinking">4. ¿Fuma o bebe con frecuencia?</Label>
+                  <Select value={formData.smokingDrinking} onValueChange={(value) => handleInputChange("smokingDrinking", value)}>
+                    <SelectTrigger data-testid="select-smoking-drinking">
+                      <SelectValue placeholder="Selecciona una opción" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No fumo ni bebo, o ≤ 1 bebida a la semana (+5 puntos)</SelectItem>
+                      <SelectItem value="ex-smoker-low">Exfumador &gt; 10 años o bajo consumo (≤ 7 bebidas/sem) (+3 puntos)</SelectItem>
+                      <SelectItem value="ex-smoker-moderate">Exfumador reciente o consumo moderado (≈ 1 bebida/día) (0 puntos)</SelectItem>
+                      <SelectItem value="occasional">Fumador ocasional o &gt; 7 bebidas por semana (-3 puntos)</SelectItem>
+                      <SelectItem value="active">Fumador activo o episodios de "binge drinking" (-5 puntos)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Question 5: Sleep and Wellbeing */}
+                <div className="space-y-2">
+                  <Label htmlFor="sleep">5. ¿Cómo describiría su sueño y su bienestar emocional general?</Label>
+                  <Select value={formData.sleepWellbeing} onValueChange={(value) => handleInputChange("sleepWellbeing", value)}>
+                    <SelectTrigger data-testid="select-sleep">
+                      <SelectValue placeholder="Selecciona una opción" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="excellent">Duermo 7–8 h, ánimo estable, bajo estrés (+5 puntos)</SelectItem>
+                      <SelectItem value="good">Duermo 6–7 h, estrés leve u ocasional (+3 puntos)</SelectItem>
+                      <SelectItem value="irregular">Sueño irregular o ánimo variable (0 puntos)</SelectItem>
+                      <SelectItem value="poor">Duerme &lt; 6 h o estrés frecuente (-3 puntos)</SelectItem>
+                      <SelectItem value="very-poor">Insomnio o ansiedad/depresión persistentes (-5 puntos)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <Button 
                   className="w-full" 
-                  onClick={calculateLifeExpectancy}
+                  onClick={calculateLongevityScore}
                   disabled={!isFormComplete}
                   data-testid="button-calculate"
                 >
-                  {t('calculator.buttonText')}
+                  Calcular mi puntuación
                 </Button>
               </CardContent>
             </Card>
@@ -170,59 +269,36 @@ export default function CalculatorSection() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-primary" />
-                  {t('calculator.resultsTitle')}
+                  Tu Resultado
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {showResult && result ? (
                   <div className="space-y-6">
-                    <div className="text-center">
-                      <div className="text-4xl font-bold text-primary mb-2" data-testid="result-age">
-                        {result} {t('calculator.years')}
+                    <div className={`p-6 rounded-lg border-2 ${getScoreBgColor(result.score)}`}>
+                      <div className="text-center mb-4">
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                          <Sparkles className={`h-6 w-6 ${getScoreColor(result.score)}`} />
+                          <span className="text-sm font-medium text-muted-foreground">Tu Puntuación</span>
+                        </div>
+                        <div className={`text-5xl font-bold ${getScoreColor(result.score)}`} data-testid="result-score">
+                          {result.score}
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">de 25 puntos</p>
                       </div>
-                      <p className="text-muted-foreground">{t('calculator.lifeExpectancy')}</p>
                     </div>
 
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Heart className="h-4 w-4 text-red-500" />
-                          <span className="text-sm">{t('calculator.cardiovascularHealth')}</span>
-                        </div>
-                        <div className="text-sm font-medium">85%</div>
-                      </div>
-                      <Progress value={85} className="h-2" />
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Activity className="h-4 w-4 text-green-500" />
-                          <span className="text-sm">{t('calculator.activityLevel')}</span>
-                        </div>
-                        <div className="text-sm font-medium">70%</div>
-                      </div>
-                      <Progress value={70} className="h-2" />
-                    </div>
-
-                    <div className="bg-primary/10 p-4 rounded-lg">
-                      <h4 className="font-semibold text-primary mb-2">{t('calculator.mainRecommendations')}</h4>
-                      <ul className="text-sm space-y-1 text-muted-foreground">
-                        <li>• {t('calculator.recommendation1')}</li>
-                        <li>• {t('calculator.recommendation2')}</li>
-                        <li>• {t('calculator.recommendation3')}</li>
-                        <li>• {t('calculator.recommendation4')}</li>
-                      </ul>
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <h4 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                        <Heart className="h-4 w-4 text-primary" />
+                        Interpretación
+                      </h4>
+                      <p className="text-sm text-muted-foreground" data-testid="result-interpretation">
+                        {result.interpretation}
+                      </p>
                     </div>
 
                     <div className="space-y-3">
-                      <Button 
-                        variant="outline" 
-                        className="w-full"
-                        onClick={() => console.log("Get detailed plan clicked")} // todo: remove mock functionality
-                        data-testid="button-detailed-plan"
-                      >
-                        {t('calculator.getPersonalizedPlan')}
-                      </Button>
-                      
                       <Button 
                         variant="default" 
                         className="w-full"
@@ -230,7 +306,26 @@ export default function CalculatorSection() {
                         data-testid="button-contact-specialist"
                       >
                         <MessageCircle className="mr-2 h-4 w-4" />
-                        {t('calculator.contactSpecialist')}
+                        Contactar a un especialista
+                      </Button>
+                      
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={() => {
+                          setShowResult(false);
+                          setFormData({
+                            exercise: "",
+                            diet: "",
+                            weight: "",
+                            height: "",
+                            smokingDrinking: "",
+                            sleepWellbeing: ""
+                          });
+                        }}
+                        data-testid="button-reset"
+                      >
+                        Calcular de nuevo
                       </Button>
                     </div>
                   </div>
@@ -238,7 +333,7 @@ export default function CalculatorSection() {
                   <div className="text-center py-12">
                     <Calculator className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                     <p className="text-muted-foreground">
-                      {t('calculator.emptyStateMessage')}
+                      Completa el cuestionario para conocer tu puntuación de longevidad
                     </p>
                   </div>
                 )}
@@ -252,7 +347,7 @@ export default function CalculatorSection() {
           {isLoading && (
             <div className="inline-flex items-center px-4 py-2 bg-gray-50 dark:bg-gray-900/20 rounded-full border border-gray-200 dark:border-gray-800">
               <span className="text-gray-800 dark:text-gray-200 text-sm font-medium">
-                {t('calculator.configuringStatus').replace('{company}', companyName)}
+                Configurando cálculo personalizado para {companyName}...
               </span>
             </div>
           )}
@@ -260,7 +355,7 @@ export default function CalculatorSection() {
           {error && (
             <div className="inline-flex items-center px-4 py-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-full border border-yellow-200 dark:border-yellow-800">
               <span className="text-yellow-800 dark:text-yellow-200 text-sm font-medium">
-                {t('calculator.defaultAlgorithmStatus')}
+                Usando algoritmo de longevidad estándar
               </span>
             </div>
           )}
@@ -268,7 +363,7 @@ export default function CalculatorSection() {
           {confluenceData && !error && (
             <div className="inline-flex items-center px-4 py-2 bg-purple-50 dark:bg-purple-900/20 rounded-full border border-purple-200 dark:border-purple-800">
               <span className="text-purple-800 dark:text-purple-200 text-sm font-medium">
-                {t('calculator.personalizedStatus').replace('{company}', companyName)}
+                Cálculo personalizado por {companyName}
               </span>
             </div>
           )}

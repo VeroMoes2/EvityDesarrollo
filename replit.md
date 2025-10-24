@@ -73,7 +73,66 @@ Preferred communication style: Simple, everyday language.
 
 The architecture prioritizes performance, accessibility, and maintainability while providing a seamless user experience for longevity and wellness content consumption.
 
-## Longevity Questionnaire System
+## Public Longevity Mini Score Calculator
+
+### Overview
+The public landing page features a quick "Longevity Mini Score" calculator accessible to all visitors without authentication. This 5-question assessment provides an immediate snapshot of lifestyle health factors.
+
+### Calculator Structure
+The Mini Score consists of 5 questions with direct point scoring:
+
+1. **Ejercicio físico** (Exercise frequency): ¿Cuántos días por semana realiza al menos 30 minutos de actividad moderada o vigorosa?
+   - 5-7 días/semana: +5 puntos
+   - 3-4 días/semana: +3 puntos
+   - 1-2 días/semana: 0 puntos
+   - < 1 día/semana: -3 puntos
+   - Ningún día o totalmente inactivo: -5 puntos
+
+2. **Dieta y nutrición**: ¿Su dieta habitual incluye frutas, verduras, legumbres, pescado y evita ultraprocesados y bebidas azucaradas?
+   - Rica en frutas, verduras, legumbres y aceite de oliva; sin ultraprocesados: +5 puntos
+   - Incluye frutas y verduras diarias, ocasionalmente alimentos procesados: +3 puntos
+   - Mezcla equilibrada entre alimentos frescos y procesados: 0 puntos
+   - Alta en azúcar, carnes procesadas o frituras frecuentes: -3 puntos
+   - Predominantemente ultraprocesada y baja en vegetales: -5 puntos
+
+3. **Peso y estatura** (BMI calculation): ¿Cuál es su peso y estatura actual?
+   - IMC 18.5-24.9: +5 puntos
+   - IMC 25-26.9: +3 puntos
+   - IMC 27-29.9: 0 puntos
+   - IMC 30-34.9: -3 puntos
+   - IMC ≥ 35: -5 puntos
+
+4. **Tabaco y alcohol**: ¿Fuma o bebe con frecuencia?
+   - No fumo ni bebo, o ≤ 1 bebida a la semana: +5 puntos
+   - Exfumador > 10 años o bajo consumo (≤ 7 bebidas/sem): +3 puntos
+   - Exfumador reciente o consumo moderado (≈ 1 bebida/día): 0 puntos
+   - Fumador ocasional o > 7 bebidas por semana: -3 puntos
+   - Fumador activo o episodios de "binge drinking": -5 puntos
+
+5. **Sueño y bienestar emocional**: ¿Cómo describiría su sueño y su bienestar emocional general?
+   - Duermo 7-8 h, ánimo estable, bajo estrés: +5 puntos
+   - Duermo 6-7 h, estrés leve u ocasional: +3 puntos
+   - Sueño irregular o ánimo variable: 0 puntos
+   - Duerme < 6 h o estrés frecuente: -3 puntos
+   - Insomnio o ansiedad/depresión persistentes: -5 puntos
+
+### Score Calculation
+- **Total Score Range**: -25 to +25 points (direct sum of 5 questions)
+- **Interpretations** (Spanish):
+  - **21-25 puntos**: Estilo de vida óptimo - actividad física frecuente, dieta rica en alimentos frescos, peso saludable, sin tabaco ni alcohol excesivo, sueño reparador y estabilidad emocional
+  - **16-20 puntos**: Buen control de los pilares básicos, aunque con áreas por optimizar
+  - **11-15 puntos**: Conductas mixtas - ejercicio ocasional, dieta inconsistente o sobrepeso leve
+  - **6-10 puntos**: Estilo de vida predominantemente sedentario o dieta poco saludable
+  - **≤5 puntos**: Acumulación de múltiples factores de riesgo (obesidad, tabaco, sedentarismo, dieta procesada, insomnio o depresión)
+
+### Technical Features
+- **Input Validation**: Weight range 20-300 kg, height range 100-250 cm to prevent impossible entries
+- **BMI Auto-calculation**: Automatic calculation from weight/height inputs
+- **Color-coded Results**: Score-based visual indicators (green for optimal, red for high risk)
+- **Instant Feedback**: Results displayed immediately after completion
+- **No Authentication Required**: Publicly accessible on landing page at section `#calculadora`
+
+## Authenticated Longevity Questionnaire System
 
 ### Overview
 The platform features a comprehensive 29-question health assessment questionnaire titled "Conócete mejor" accessible through the patient portal at `/cuestionario`. The questionnaire evaluates 10 key health dimensions and provides personalized longevity scores with health status legends.
