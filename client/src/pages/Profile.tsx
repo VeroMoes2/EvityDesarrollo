@@ -475,7 +475,7 @@ export default function Profile() {
                     </div>
                     
                     {(questionnaireData.questionnaire as any).longevityPoints && (
-                      <div className="p-4 bg-primary/10 dark:bg-primary/20 border border-primary/20 rounded-lg">
+                      <div className="p-4 bg-primary/10 dark:bg-primary/20 border border-primary/20 rounded-lg space-y-3">
                         <div className="flex items-center justify-between">
                           <div>
                             <p className="text-sm font-medium text-muted-foreground">
@@ -487,6 +487,13 @@ export default function Profile() {
                           </div>
                           <Sparkles className="h-8 w-8 text-primary" />
                         </div>
+                        {(questionnaireData.questionnaire as any).healthStatus && (
+                          <div className="pt-2 border-t border-primary/20">
+                            <p className="text-sm text-muted-foreground capitalize" data-testid="text-health-status">
+                              {(questionnaireData.questionnaire as any).healthStatus}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     )}
                     

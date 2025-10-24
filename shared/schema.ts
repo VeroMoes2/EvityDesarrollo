@@ -72,6 +72,7 @@ export const medicalQuestionnaire = pgTable("medical_questionnaire", {
   currentQuestion: varchar("current_question").default("1"),
   isCompleted: varchar("is_completed").default("false"),
   longevityPoints: varchar("longevity_points"), // Calculated longevity score
+  healthStatus: varchar("health_status"), // Health status legend
   startedAt: timestamp("started_at").defaultNow(),
   completedAt: timestamp("completed_at"),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -221,6 +222,7 @@ export const updateQuestionnaireSchema = z.object({
   currentQuestion: z.string().optional(),
   isCompleted: z.enum(["true", "false"]).optional(),
   longevityPoints: z.string().optional(),
+  healthStatus: z.string().optional(),
 });
 
 export type UpsertUser = typeof users.$inferInsert;
