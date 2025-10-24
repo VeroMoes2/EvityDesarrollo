@@ -164,11 +164,11 @@ export default function CalculatorSection() {
                       <SelectValue placeholder="Selecciona una opción" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="5-7">5-7 días/semana (+5 puntos)</SelectItem>
-                      <SelectItem value="3-4">3-4 días/semana (+3 puntos)</SelectItem>
-                      <SelectItem value="1-2">1-2 días/semana (0 puntos)</SelectItem>
-                      <SelectItem value="<1">&lt; 1 día/semana (-3 puntos)</SelectItem>
-                      <SelectItem value="none">Ningún día o totalmente inactivo (-5 puntos)</SelectItem>
+                      <SelectItem value="5-7">5-7 días/semana</SelectItem>
+                      <SelectItem value="3-4">3-4 días/semana</SelectItem>
+                      <SelectItem value="1-2">1-2 días/semana</SelectItem>
+                      <SelectItem value="<1">&lt; 1 día/semana</SelectItem>
+                      <SelectItem value="none">Ningún día o totalmente inactivo</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -181,11 +181,11 @@ export default function CalculatorSection() {
                       <SelectValue placeholder="Selecciona una opción" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="excellent">Rica en frutas, verduras, legumbres y aceite de oliva; sin ultraprocesados (+5 puntos)</SelectItem>
-                      <SelectItem value="good">Incluye frutas y verduras diarias, ocasionalmente alimentos procesados (+3 puntos)</SelectItem>
-                      <SelectItem value="mixed">Mezcla equilibrada entre alimentos frescos y procesados (0 puntos)</SelectItem>
-                      <SelectItem value="poor">Alta en azúcar, carnes procesadas o frituras frecuentes (-3 puntos)</SelectItem>
-                      <SelectItem value="very-poor">Predominantemente ultraprocesada y baja en vegetales o comida rápida frecuente (-5 puntos)</SelectItem>
+                      <SelectItem value="excellent">Rica en frutas, verduras, legumbres y aceite de oliva; sin ultraprocesados</SelectItem>
+                      <SelectItem value="good">Incluye frutas y verduras diarias, ocasionalmente alimentos procesados</SelectItem>
+                      <SelectItem value="mixed">Mezcla equilibrada entre alimentos frescos y procesados</SelectItem>
+                      <SelectItem value="poor">Alta en azúcar, carnes procesadas o frituras frecuentes</SelectItem>
+                      <SelectItem value="very-poor">Predominantemente ultraprocesada y baja en vegetales o comida rápida frecuente</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -227,11 +227,11 @@ export default function CalculatorSection() {
                       <SelectValue placeholder="Selecciona una opción" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">No fumo ni bebo, o ≤ 1 bebida a la semana (+5 puntos)</SelectItem>
-                      <SelectItem value="ex-smoker-low">Exfumador &gt; 10 años o bajo consumo (≤ 7 bebidas/sem) (+3 puntos)</SelectItem>
-                      <SelectItem value="ex-smoker-moderate">Exfumador reciente o consumo moderado (≈ 1 bebida/día) (0 puntos)</SelectItem>
-                      <SelectItem value="occasional">Fumador ocasional o &gt; 7 bebidas por semana (-3 puntos)</SelectItem>
-                      <SelectItem value="active">Fumador activo o episodios de "binge drinking" (-5 puntos)</SelectItem>
+                      <SelectItem value="none">No fumo ni bebo, o ≤ 1 bebida a la semana</SelectItem>
+                      <SelectItem value="ex-smoker-low">Exfumador &gt; 10 años o bajo consumo (≤ 7 bebidas/sem)</SelectItem>
+                      <SelectItem value="ex-smoker-moderate">Exfumador reciente o consumo moderado (≈ 1 bebida/día)</SelectItem>
+                      <SelectItem value="occasional">Fumador ocasional o &gt; 7 bebidas por semana</SelectItem>
+                      <SelectItem value="active">Fumador activo o episodios de "binge drinking"</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -244,11 +244,11 @@ export default function CalculatorSection() {
                       <SelectValue placeholder="Selecciona una opción" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="excellent">Duermo 7–8 h, ánimo estable, bajo estrés (+5 puntos)</SelectItem>
-                      <SelectItem value="good">Duermo 6–7 h, estrés leve u ocasional (+3 puntos)</SelectItem>
-                      <SelectItem value="irregular">Sueño irregular o ánimo variable (0 puntos)</SelectItem>
-                      <SelectItem value="poor">Duerme &lt; 6 h o estrés frecuente (-3 puntos)</SelectItem>
-                      <SelectItem value="very-poor">Insomnio o ansiedad/depresión persistentes (-5 puntos)</SelectItem>
+                      <SelectItem value="excellent">Duermo 7–8 h, ánimo estable, bajo estrés</SelectItem>
+                      <SelectItem value="good">Duermo 6–7 h, estrés leve u ocasional</SelectItem>
+                      <SelectItem value="irregular">Sueño irregular o ánimo variable</SelectItem>
+                      <SelectItem value="poor">Duerme &lt; 6 h o estrés frecuente</SelectItem>
+                      <SelectItem value="very-poor">Insomnio o ansiedad/depresión persistentes</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
