@@ -166,17 +166,17 @@ function getBMIPoints(bmi: number): number {
 
 function calculateLongevityPoints(totalPoints: number): number {
   // Según el documento:
-  // 10-15 puntos finales → 50 de longevidad
-  // 5-10 puntos finales → 50 de longevidad
-  // 0-5 puntos finales → 80 de longevidad
+  // 10-15 puntos finales → 100 puntos de longevidad
+  // 5-10 puntos finales → 80 puntos de longevidad
+  // 0-5 puntos finales → 50 puntos de longevidad
   
-  if (totalPoints >= 10 && totalPoints <= 15) return 50;
-  if (totalPoints >= 5 && totalPoints < 10) return 50;
-  if (totalPoints >= 0 && totalPoints < 5) return 80;
+  if (totalPoints >= 10 && totalPoints <= 15) return 100;
+  if (totalPoints >= 5 && totalPoints < 10) return 80;
+  if (totalPoints >= 0 && totalPoints < 5) return 50;
   
-  // Para valores fuera de rango, usar lógica similar
-  if (totalPoints > 15) return 50; // Asumimos mejor puntuación
-  return 80; // Para puntos negativos
+  // Para valores fuera de rango
+  if (totalPoints > 15) return 100; // Mejor puntuación posible
+  return 50; // Para puntos negativos, dar la puntuación mínima
 }
 
 export default function Cuestionario() {
