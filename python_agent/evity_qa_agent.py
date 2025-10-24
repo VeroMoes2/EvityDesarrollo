@@ -251,27 +251,35 @@ def _empathetic_completion(client: OpenAI, contexto: str, pregunta: str) -> str:
             {
                 "role": "system",
                 "content": (
-                    "Eres un profesional de la salud empático y claro. "
-                    "Explicas temas médicos con palabras sencillas, sin jerga técnica, "
-                    "y ofreces orientación útil y tranquilizadora. "
-                    "Si hay términos médicos, explícalos brevemente. "
-                    "Nunca prometas curas y sugiere consultar a un profesional de salud si es necesario."
+                    "Eres un profesional de la salud empático y claro especializado en longevidad y salud integral. "
+                    "IMPORTANTE: SOLO puedes responder usando la información del contexto proporcionado. "
+                    "Si el contexto NO contiene información relevante para responder la pregunta, "
+                    "debes decir claramente: 'Lo siento, no tengo información sobre ese tema en mi base de conocimiento especializada en longevidad y salud. "
+                    "Mi conocimiento se limita a temas de nutrición, ejercicio, biomarcadores, envejecimiento saludable y medicina funcional.'\n\n"
+                    "Cuando SÍ tengas información relevante en el contexto:\n"
+                    "- Explicas temas médicos con palabras sencillas, sin jerga técnica\n"
+                    "- Ofreces orientación útil y tranquilizadora\n"
+                    "- Si hay términos médicos, explícalos brevemente\n"
+                    "- Nunca prometas curas y sugiere consultar a un profesional de salud si es necesario"
                 ),
             },
             {
                 "role": "user",
                 "content": (
-                    "Usa el siguiente contexto de documentos para responder a la pregunta "
-                    "de forma breve, amable y comprensible.\n\n"
+                    "Lee cuidadosamente el siguiente contexto de documentos científicos sobre longevidad y salud.\n"
+                    "SOLO responde si el contexto contiene información relevante para la pregunta.\n"
+                    "Si el contexto NO es relevante, di que no tienes información sobre ese tema.\n\n"
                     f"Contexto:\n{contexto}\n\n"
                     f"Pregunta: {pregunta}\n\n"
-                    "Incluye: 1) una explicación sencilla, 2) consejos o pasos prácticos, "
-                    "3) cuándo consultar a un médico. "
-                    "Termina con la frase: 'Esto no sustituye una consulta médica profesional.'"
+                    "Si el contexto ES relevante, incluye:\n"
+                    "1) Una explicación sencilla basada en el contexto\n"
+                    "2) Consejos o pasos prácticos (solo si el contexto los menciona)\n"
+                    "3) Cuándo consultar a un médico\n"
+                    "Termina con: 'Esto no sustituye una consulta médica profesional.'"
                 ),
             },
         ],
-        temperature=0.5,
+        temperature=0.3,
     )
     return resp.choices[0].message.content.strip()
 
