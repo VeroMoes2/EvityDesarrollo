@@ -64,7 +64,7 @@ export const medicalDocuments = pgTable("medical_documents", {
   deletedAt: timestamp("deleted_at"), // LS-103: Soft delete timestamp for tracking eliminated files
 });
 
-// Medical questionnaire table for storing patient medical history
+// Medical questionnaire table for storing patient medical history (in-progress questionnaires)
 export const medicalQuestionnaire = pgTable("medical_questionnaire", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
@@ -76,6 +76,16 @@ export const medicalQuestionnaire = pgTable("medical_questionnaire", {
   startedAt: timestamp("started_at").defaultNow(),
   completedAt: timestamp("completed_at"),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Questionnaire results table for storing completed questionnaire history
+export const questionnaireResults = pgTable("questionnaire_results", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  answers: jsonb("answers").notNull(),
+  longevityPoints: varchar("longevity_points").notNull(), // Final calculated score
+  healthStatus: varchar("health_status").notNull(), // Health status legend
+  completedAt: timestamp("completed_at").defaultNow().notNull(),
 });
 
 // LS-108: Security audit log table for tracking administrative actions
@@ -225,6 +235,11 @@ export const updateQuestionnaireSchema = z.object({
   healthStatus: z.string().optional(),
 });
 
+export const insertQuestionnaireResultSchema = createInsertSchema(questionnaireResults).omit({
+  id: true,
+  completedAt: true,
+});
+
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -235,3 +250,5 @@ export type MedicalDocument = typeof medicalDocuments.$inferSelect;
 export type MedicalQuestionnaire = typeof medicalQuestionnaire.$inferSelect;
 export type InsertQuestionnaire = z.infer<typeof insertQuestionnaireSchema>;
 export type UpdateQuestionnaire = z.infer<typeof updateQuestionnaireSchema>;
+export type QuestionnaireResult = typeof questionnaireResults.$inferSelect;
+export type InsertQuestionnaireResult = z.infer<typeof insertQuestionnaireResultSchema>;

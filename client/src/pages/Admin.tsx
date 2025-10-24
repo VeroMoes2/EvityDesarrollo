@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, FileText, TrendingUp, Calendar, Mail, User, Clock, HardDrive, Download, Eye } from "lucide-react";
+import { Users, FileText, TrendingUp, Calendar, Mail, User, Clock, HardDrive, Download, Eye, ClipboardCheck, Sparkles } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useAuth } from "@/hooks/useAuth";
@@ -53,6 +53,17 @@ interface AdminStats {
   storageUsed: string;
 }
 
+interface QuestionnaireResult {
+  id: string;
+  userId: string;
+  answers: any;
+  longevityPoints: string;
+  healthStatus: string;
+  completedAt: string;
+  userEmail: string;
+  userName: string;
+}
+
 export default function Admin() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [, navigate] = useLocation();
@@ -92,6 +103,11 @@ export default function Admin() {
     enabled: userIsAdmin // Only fetch if user is admin
   });
 
+  const { data: questionnaireResultsData, isLoading: questionnaireResultsLoading } = useQuery<{ results: QuestionnaireResult[] }>({
+    queryKey: ['/api/admin/questionnaire-results'],
+    enabled: userIsAdmin // Only fetch if user is admin
+  });
+
   const formatFileSize = (sizeStr: string) => {
     const size = parseInt(sizeStr);
     if (size < 1024) return `${size} bytes`;
@@ -125,7 +141,7 @@ export default function Admin() {
     );
   }
 
-  if (usersLoading || documentsLoading || statsLoading) {
+  if (usersLoading || documentsLoading || statsLoading || questionnaireResultsLoading) {
     return (
       <div className="min-h-screen bg-background p-8">
         <div className="max-w-7xl mx-auto">
@@ -409,6 +425,85 @@ export default function Admin() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Questionnaire Results Section */}
+        <Card className="mt-6" data-testid="card-questionnaire-results">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ClipboardCheck className="h-5 w-5" />
+              Resultados de Cuestionarios
+            </CardTitle>
+            <CardDescription>
+              Histórico completo de todos los cuestionarios completados
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {questionnaireResultsData?.results?.map((result) => {
+                const getStatusColor = (points: string) => {
+                  const numPoints = parseInt(points);
+                  if (numPoints >= 84) return "text-green-600 dark:text-green-400";
+                  if (numPoints >= 64) return "text-yellow-600 dark:text-yellow-400";
+                  if (numPoints >= 44) return "text-orange-600 dark:text-orange-400";
+                  return "text-red-600 dark:text-red-400";
+                };
+
+                const getStatusBadgeVariant = (points: string) => {
+                  const numPoints = parseInt(points);
+                  if (numPoints >= 84) return "default";
+                  if (numPoints >= 64) return "secondary";
+                  return "outline";
+                };
+
+                return (
+                  <div
+                    key={result.id}
+                    className="flex items-center justify-between p-4 border rounded-lg hover-elevate"
+                    data-testid={`questionnaire-result-${result.id}`}
+                  >
+                    <div className="flex items-center gap-3 flex-1">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <Sparkles className="h-5 w-5 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium" data-testid={`result-user-name-${result.id}`}>
+                          {result.userName}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {result.userEmail}
+                        </div>
+                        <div className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {formatDate(result.completedAt)}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-2 items-end">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-2xl font-bold ${getStatusColor(result.longevityPoints)}`} data-testid={`result-points-${result.id}`}>
+                          {result.longevityPoints}
+                        </span>
+                        <span className="text-sm text-muted-foreground">pts</span>
+                      </div>
+                      <Badge 
+                        variant={getStatusBadgeVariant(result.longevityPoints)}
+                        className="capitalize"
+                        data-testid={`result-status-${result.id}`}
+                      >
+                        {result.healthStatus}
+                      </Badge>
+                    </div>
+                  </div>
+                );
+              })}
+              {!questionnaireResultsData?.results?.length && (
+                <div className="text-center text-muted-foreground py-8">
+                  No hay cuestionarios completados
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import {
   users,
   medicalDocuments,
   medicalQuestionnaire,
+  questionnaireResults,
   securityAuditLog,
   type User,
   type UpsertUser,
@@ -10,6 +11,8 @@ import {
   type MedicalQuestionnaire,
   type InsertQuestionnaire,
   type UpdateQuestionnaire,
+  type QuestionnaireResult,
+  type InsertQuestionnaireResult,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, sql } from "drizzle-orm";
@@ -120,6 +123,11 @@ export interface IStorage {
   createQuestionnaire(data: InsertQuestionnaire): Promise<MedicalQuestionnaire>;
   updateQuestionnaire(userId: string, data: UpdateQuestionnaire): Promise<MedicalQuestionnaire>;
   markQuestionnaireComplete(userId: string): Promise<void>;
+
+  // Questionnaire Results operations
+  saveQuestionnaireResult(data: InsertQuestionnaireResult): Promise<QuestionnaireResult>;
+  getUserQuestionnaireResults(userId: string): Promise<QuestionnaireResult[]>;
+  getAllQuestionnaireResults(): Promise<Array<QuestionnaireResult & { userEmail: string; userName: string }>>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -755,6 +763,49 @@ export class DatabaseStorage implements IStorage {
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId));
+  }
+
+  async saveQuestionnaireResult(data: InsertQuestionnaireResult): Promise<QuestionnaireResult> {
+    const [result] = await db
+      .insert(questionnaireResults)
+      .values({
+        ...data,
+        completedAt: new Date(),
+      })
+      .returning();
+    return result;
+  }
+
+  async getUserQuestionnaireResults(userId: string): Promise<QuestionnaireResult[]> {
+    const results = await db
+      .select()
+      .from(questionnaireResults)
+      .where(eq(questionnaireResults.userId, userId))
+      .orderBy(sql`${questionnaireResults.completedAt} DESC`);
+    return results;
+  }
+
+  async getAllQuestionnaireResults(): Promise<Array<QuestionnaireResult & { userEmail: string; userName: string }>> {
+    const results = await db
+      .select({
+        id: questionnaireResults.id,
+        userId: questionnaireResults.userId,
+        answers: questionnaireResults.answers,
+        longevityPoints: questionnaireResults.longevityPoints,
+        healthStatus: questionnaireResults.healthStatus,
+        completedAt: questionnaireResults.completedAt,
+        userEmail: users.email,
+        userName: sql<string>`CONCAT(${users.firstName}, ' ', ${users.lastName})`,
+      })
+      .from(questionnaireResults)
+      .leftJoin(users, eq(questionnaireResults.userId, users.id))
+      .orderBy(sql`${questionnaireResults.completedAt} DESC`);
+    
+    return results.map(r => ({
+      ...r,
+      userEmail: r.userEmail || '',
+      userName: r.userName || 'Usuario desconocido',
+    }));
   }
 
 }

@@ -998,6 +998,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get('/api/admin/questionnaire-results', isAdmin, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      console.log(`ADMIN ACCESS: User ${user?.email} accessed /api/admin/questionnaire-results`);
+      
+      const results = await storage.getAllQuestionnaireResults();
+      res.json({ results });
+    } catch (error) {
+      console.error("Error fetching questionnaire results:", error);
+      res.status(500).json({ message: "Failed to fetch questionnaire results" });
+    }
+  });
+
   // LS-108: Security audit logs endpoint for administrators
   app.get('/api/admin/audit-logs', isAdmin, securityAdminRateLimit.middleware, async (req: any, res) => {
     try {
@@ -1243,6 +1258,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (validatedData.isCompleted === "true") {
         await storage.markQuestionnaireComplete(userId);
         updated = await storage.getUserQuestionnaire(userId);
+        
+        // Save the completed questionnaire result to history
+        if (updated && updated.longevityPoints && updated.healthStatus) {
+          await storage.saveQuestionnaireResult({
+            userId: userId,
+            answers: updated.answers || {},
+            longevityPoints: updated.longevityPoints,
+            healthStatus: updated.healthStatus,
+          });
+        }
       }
 
       res.json(updated);
