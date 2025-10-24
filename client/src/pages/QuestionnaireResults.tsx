@@ -38,7 +38,10 @@ export default function QuestionnaireResults() {
 
   const questionnaire = (questionnaireData as any)?.questionnaire;
   
-  if (!questionnaire || questionnaire.isCompleted !== "true") {
+  // Check if questionnaire is completed (handles both boolean and string values)
+  const isCompleted = questionnaire?.isCompleted === "true" || questionnaire?.isCompleted === true;
+  
+  if (!questionnaire || !isCompleted) {
     navigate("/cuestionario");
     return null;
   }
