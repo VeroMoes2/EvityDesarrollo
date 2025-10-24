@@ -767,7 +767,7 @@ export default function Cuestionario() {
       });
 
       setTimeout(() => {
-        navigate("/perfil");
+        navigate("/cuestionario-resultados");
       }, 1500);
     } catch (error) {
       toast({

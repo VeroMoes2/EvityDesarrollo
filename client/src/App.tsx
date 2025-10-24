@@ -24,6 +24,8 @@ import ForgotPassword from "@/pages/ForgotPassword";
 import ResetPassword from "@/pages/ResetPassword";
 import VerifyEmail from "@/pages/VerifyEmail";
 import Cuestionario from "@/pages/Cuestionario";
+import QuestionnaireResults from "@/pages/QuestionnaireResults";
+import ScheduleAppointment from "@/pages/ScheduleAppointment";
 import AgenteIA from "@/pages/AgenteIA";
 import NotFound from "@/pages/not-found";
 
@@ -71,6 +73,8 @@ function Router() {
           <Route path="/profile" component={Profile} />
           <Route path="/perfil" component={Profile} />
           <Route path="/cuestionario" component={Cuestionario} />
+          <Route path="/cuestionario-resultados" component={QuestionnaireResults} />
+          <Route path="/agendar-cita" component={ScheduleAppointment} />
           <Route path="/historial-clinico" component={Cuestionario} />
           <Route path="/mis-archivos" component={MisArchivos} />
           <Route path="/archivos" component={MisArchivos} />
