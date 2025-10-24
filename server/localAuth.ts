@@ -344,6 +344,8 @@ export async function setupAuth(app: Express) {
       const hashedPassword = await hashPassword(password);
 
       // Create user
+      // In development, make all new users admins for easier testing
+      const isDevelopment = process.env.NODE_ENV === 'development';
       const newUser = await storage.createUser({
         email: email.toLowerCase(),
         password: hashedPassword,
@@ -352,6 +354,7 @@ export async function setupAuth(app: Express) {
         gender: gender || null,
         phoneNumber: phoneNumber || null, // LS-110: Phone number
         isEmailVerified: "false",
+        isAdmin: isDevelopment ? "true" : "false", // Auto-admin in development
       });
 
       // LS-99: Send email verification
