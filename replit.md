@@ -76,13 +76,20 @@ The architecture prioritizes performance, accessibility, and maintainability whi
 ## Longevity Questionnaire System
 
 ### Overview
-The platform features a comprehensive 8-question health assessment questionnaire titled "Conócete mejor" accessible through the patient portal at `/cuestionario`. The questionnaire evaluates three key health dimensions and provides personalized longevity scores.
+The platform features a comprehensive 29-question health assessment questionnaire titled "Conócete mejor" accessible through the patient portal at `/cuestionario`. The questionnaire evaluates 10 key health dimensions and provides personalized longevity scores with health status legends.
 
 ### Questionnaire Structure
-The questionnaire consists of 8 questions organized in 3 sections:
+The questionnaire consists of 29 questions organized in 10 sections:
 1. **Actividad física y sedentarismo** (3 questions): Evaluates exercise frequency, session duration, and sedentary behavior
 2. **Dieta y nutrición** (3 questions): Assesses fruit/vegetable intake, processed food consumption, and cooking fat choices
 3. **Peso e índice de masa corporal** (2 questions): Calculates BMI from weight/height and evaluates weight stability
+4. **Tabaquismo** (3 questions): Assesses smoking history, frequency, and cessation timeline
+5. **Alcohol** (3 questions): Evaluates alcohol consumption patterns and binge drinking
+6. **Sueño y descanso** (3 questions): Measures sleep quality, duration, and daytime fatigue
+7. **Salud mental** (3 questions): Screens for depression, anxiety, and negative thoughts
+8. **Enfermedades crónicas** (3 questions): Assesses chronic disease burden and medication use
+9. **Apoyo social y propósito** (3 questions): Evaluates social connections and life purpose
+10. **Cognición y funcionalidad** (3 questions): Measures cognitive function and daily independence
 
 ### Point Calculation System
 Each question offers 5 response options with assigned point values:
@@ -94,17 +101,23 @@ Each question offers 5 response options with assigned point values:
 
 ### Score Calculation Logic
 1. **Section Averages**: Points within each section are averaged
-   - Section 1 Average = (Q1 + Q2 + Q3) / 3
-   - Section 2 Average = (Q4 + Q5 + Q6) / 3
-   - Section 3 Average = (Q7_BMI + Q8) / 2
+   - Example: Section 1 Average = (Q1 + Q2 + Q3) / 3
+   - Example: Section 2 Average = (Q4 + Q5 + Q6) / 3
+   - All 10 sections calculated the same way
 
-2. **Total Score**: Sum of all three section averages (range: typically 0-15 points)
-   - Total = Section 1 Average + Section 2 Average + Section 3 Average
+2. **Total Score**: Sum of all 10 section averages (range: -50 to +50 points)
+   - Total = Section 1 Avg + Section 2 Avg + ... + Section 10 Avg
+   - Maximum possible: 50 points (all best answers)
+   - Minimum possible: -50 points (all worst answers)
 
-3. **Longevity Points Conversion**: Total score is converted to final longevity points
-   - **10-15 points** → **100 longevity points** (Excellent health profile)
-   - **5-10 points** → **80 longevity points** (Good health profile)
-   - **0-5 points** → **50 longevity points** (Needs improvement)
+3. **Longevity Points Display**: Total score multiplied by 2 (range: 0-100)
+   - **Display Formula**: longevityPoints = totalPoints × 2
+   - This provides a more intuitive 0-100 scale for users
+
+4. **Health Status Legends** (Spanish):
+   - **40-50 points** (80-100 displayed) → "excelente longevidad y healthspan; riesgo bajo de mortalidad prematura"
+   - **30-39 points** (60-79 displayed) → "riesgo moderado; priorizar hábitos saludables"
+   - **0-30 points** (0-59 displayed) → "riesgo alto de envejecimiento acelerado y morbilidad crónica"
 
 ### BMI Calculation (Question 7)
 Automatic BMI calculation: BMI = weight(kg) / [height(m)]²
@@ -117,16 +130,20 @@ Automatic BMI calculation: BMI = weight(kg) / [height(m)]²
 ### Database Schema
 - **Table**: `medicalQuestionnaire`
 - **Key Fields**: 
-  - `answers`: JSON object storing user responses
-  - `longevityPoints`: Calculated final score (varchar)
-  - `isCompleted`: Completion status
+  - `answers`: JSON object storing user responses (29 questions)
+  - `longevityPoints`: Calculated and displayed score (0-100 range, varchar)
+  - `healthStatus`: Health status legend text (varchar)
+  - `isCompleted`: Completion status ("true" or "false")
   - `completedAt`: Timestamp of completion
 
 ### User Experience
-- Progress indicator shows completion percentage
-- Ability to pause and resume questionnaire
+- Progress indicator shows completion percentage across 29 questions
+- Ability to pause and resume questionnaire at any time
 - Automatic save on each answer
-- Results displayed on user profile with visual indicator (Sparkles icon)
+- Results displayed on user profile with:
+  - Longevity points (0-100 scale)
+  - Health status legend in Spanish
+  - Visual indicator (Sparkles icon)
 - Spanish-language interface throughout
 
 ## AI Agent System
