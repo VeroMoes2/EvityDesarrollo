@@ -38,9 +38,10 @@ Preferred communication style: Simple, everyday language.
 
 ### Key Features
 - **Public Longevity Mini Score Calculator**: A 5-question assessment providing an immediate lifestyle health snapshot without authentication. Calculates a score from 0-100 based on exercise, diet, BMI, tobacco/alcohol, and sleep/emotional well-being. Features calculation history (stored in localStorage) showing last 10 calculations with Spanish-formatted dates and color-coded scores.
-- **Authenticated Longevity Questionnaire System ("Conócete mejor")**: A comprehensive 29-question assessment in the patient portal, evaluating 10 health dimensions. It calculates personalized longevity scores (0-100) and provides health status legends, with automatic BMI calculation and progress tracking.
+- **Authenticated Longevity Questionnaire System ("Conócete mejor")**: A comprehensive 29-question assessment in the patient portal, evaluating 10 health dimensions. It calculates personalized longevity scores (0-100) and provides health status legends, with automatic BMI calculation and progress tracking. **All completed questionnaires are automatically saved to the database**, allowing administrators to view all user results in the admin panel.
 - **AI Agent System**: An intelligent AI accessible to authenticated users that answers health and longevity questions using RAG (Retrieval-Augmented Generation) based on a custom knowledge library (PDF/TXT files).
 - **Appointment Scheduling System**: Integrated Calendly widget for authenticated users to book appointments, with pre-filled user data.
+- **Admin Questionnaire Results Dashboard**: Administrators can view all completed questionnaires from all users in the admin panel at `/admin`, including user information, completion dates, scores, and health status.
 
 ## External Dependencies
 

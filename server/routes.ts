@@ -1220,7 +1220,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (validatedData.isCompleted === "true") {
           await storage.markQuestionnaireComplete(userId);
-          updated = await storage.getUserQuestionnaire(userId);
+          const refreshed = await storage.getUserQuestionnaire(userId);
+          if (refreshed) {
+            updated = refreshed;
+          }
         }
         
         return res.json(updated);
@@ -1257,16 +1260,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (validatedData.isCompleted === "true") {
         await storage.markQuestionnaireComplete(userId);
-        updated = await storage.getUserQuestionnaire(userId);
-        
-        // Save the completed questionnaire result to history
-        if (updated && updated.longevityPoints && updated.healthStatus) {
-          await storage.saveQuestionnaireResult({
-            userId: userId,
-            answers: updated.answers || {},
-            longevityPoints: updated.longevityPoints,
-            healthStatus: updated.healthStatus,
-          });
+        const refreshed = await storage.getUserQuestionnaire(userId);
+        if (refreshed) {
+          updated = refreshed;
+          
+          // Save the completed questionnaire result to history
+          if (refreshed.longevityPoints && refreshed.healthStatus) {
+            await storage.saveQuestionnaireResult({
+              userId: userId,
+              answers: refreshed.answers || {},
+              longevityPoints: refreshed.longevityPoints,
+              healthStatus: refreshed.healthStatus,
+            });
+          }
         }
       }
 
