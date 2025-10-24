@@ -1,10 +1,10 @@
-# LongeVida - Longevity Platform
+# Evity - Longevity and Health Platform
 
 ## Overview
 
-LongeVida is a comprehensive longevity and wellness platform designed to help users live longer, healthier lives through science-based insights and personalized tools. The platform combines modern web technologies with health and wellness content management, featuring a clean, trustworthy design inspired by medical/health startups like Headspace, Calm, and Oura.
+Evity is a comprehensive longevity and wellness platform designed to help users live longer, healthier lives through science-based insights and personalized tools. The platform combines modern web technologies with health and wellness content management, featuring a clean, trustworthy design inspired by medical/health startups like Headspace, Calm, and Oura.
 
-The application serves as a content-rich platform offering longevity resources, interactive calculators, educational blog content, and personalized health guidance. It integrates with Confluence for dynamic content management and features a responsive, accessible design built with React and modern UI components.
+The application serves as a content-rich platform offering longevity resources, interactive health assessments, educational blog content, and personalized health guidance. It features a patient portal with an 8-question longevity questionnaire that calculates personalized health scores. The platform integrates with Confluence for dynamic content management and features a responsive, accessible design built with React and modern UI components.
 
 ## User Preferences
 
@@ -72,6 +72,62 @@ Preferred communication style: Simple, everyday language.
 - **TanStack Query**: Server state management with intelligent caching
 
 The architecture prioritizes performance, accessibility, and maintainability while providing a seamless user experience for longevity and wellness content consumption.
+
+## Longevity Questionnaire System
+
+### Overview
+The platform features a comprehensive 8-question health assessment questionnaire titled "Conócete mejor" accessible through the patient portal at `/cuestionario`. The questionnaire evaluates three key health dimensions and provides personalized longevity scores.
+
+### Questionnaire Structure
+The questionnaire consists of 8 questions organized in 3 sections:
+1. **Actividad física y sedentarismo** (3 questions): Evaluates exercise frequency, session duration, and sedentary behavior
+2. **Dieta y nutrición** (3 questions): Assesses fruit/vegetable intake, processed food consumption, and cooking fat choices
+3. **Peso e índice de masa corporal** (2 questions): Calculates BMI from weight/height and evaluates weight stability
+
+### Point Calculation System
+Each question offers 5 response options with assigned point values:
+- **+5 points**: Excellent health behavior
+- **+3 points**: Good health behavior
+- **0 points**: Neutral health behavior
+- **-3 points**: Poor health behavior
+- **-5 points**: Very poor health behavior
+
+### Score Calculation Logic
+1. **Section Averages**: Points within each section are averaged
+   - Section 1 Average = (Q1 + Q2 + Q3) / 3
+   - Section 2 Average = (Q4 + Q5 + Q6) / 3
+   - Section 3 Average = (Q7_BMI + Q8) / 2
+
+2. **Total Score**: Sum of all three section averages (range: typically 0-15 points)
+   - Total = Section 1 Average + Section 2 Average + Section 3 Average
+
+3. **Longevity Points Conversion**: Total score is converted to final longevity points
+   - **10-15 points** → **100 longevity points** (Excellent health profile)
+   - **5-10 points** → **80 longevity points** (Good health profile)
+   - **0-5 points** → **50 longevity points** (Needs improvement)
+
+### BMI Calculation (Question 7)
+Automatic BMI calculation: BMI = weight(kg) / [height(m)]²
+- BMI 18.5-24.9 (healthy) → +5 points
+- BMI 25-26.9 (mild overweight) → +3 points
+- BMI 27-29.9 (moderate overweight) → 0 points
+- BMI 30-34.9 (obesity grade I) → -3 points
+- BMI ≥35 (severe obesity) → -5 points
+
+### Database Schema
+- **Table**: `medicalQuestionnaire`
+- **Key Fields**: 
+  - `answers`: JSON object storing user responses
+  - `longevityPoints`: Calculated final score (varchar)
+  - `isCompleted`: Completion status
+  - `completedAt`: Timestamp of completion
+
+### User Experience
+- Progress indicator shows completion percentage
+- Ability to pause and resume questionnaire
+- Automatic save on each answer
+- Results displayed on user profile with visual indicator (Sparkles icon)
+- Spanish-language interface throughout
 
 ## AI Agent System
 
