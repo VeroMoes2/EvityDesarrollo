@@ -1204,7 +1204,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         let updated = await storage.updateQuestionnaire(userId, validatedData);
         
         if (validatedData.isCompleted === "true") {
-          updated = await storage.markQuestionnaireComplete(userId);
+          await storage.markQuestionnaireComplete(userId);
+          updated = await storage.getUserQuestionnaire(userId);
         }
         
         return res.json(updated);
@@ -1240,7 +1241,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let updated = await storage.updateQuestionnaire(userId, validatedData);
 
       if (validatedData.isCompleted === "true") {
-        updated = await storage.markQuestionnaireComplete(userId);
+        await storage.markQuestionnaireComplete(userId);
+        updated = await storage.getUserQuestionnaire(userId);
       }
 
       res.json(updated);
@@ -1294,13 +1296,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const data = await response.json();
       
       // Log AI interaction for audit
-      await AuditLogger.log(
-        req.user.claims.sub,
-        'ai_agent_query',
-        'AI Agent',
-        { question: question.substring(0, 100) },
-        req
-      );
+      await AuditLogger.log({
+        userId: req.user.claims.sub,
+        userEmail: req.user.claims.email || 'unknown',
+        action: 'ai_agent_query',
+        resource: 'AI Agent',
+        details: { question: question.substring(0, 100) },
+        outcome: 'SUCCESS',
+        riskLevel: 'LOW',
+        ipAddress: req.ip,
+        userAgent: req.get('user-agent'),
+        sessionId: req.sessionID,
+      });
 
       res.json({
         answer: data.answer,

@@ -207,7 +207,7 @@ export const insertMedicalDocumentSchema = createInsertSchema(medicalDocuments).
 
 export const insertQuestionnaireSchema = createInsertSchema(medicalQuestionnaire).omit({
   id: true,
-  createdAt: true,
+  startedAt: true,
   updatedAt: true,
   completedAt: true,
 }).extend({
@@ -220,6 +220,7 @@ export const updateQuestionnaireSchema = z.object({
   answers: z.record(z.string(), z.any()).optional(),
   currentQuestion: z.string().optional(),
   isCompleted: z.enum(["true", "false"]).optional(),
+  longevityPoints: z.string().optional(),
 });
 
 export type UpsertUser = typeof users.$inferInsert;

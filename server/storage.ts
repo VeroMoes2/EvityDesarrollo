@@ -727,6 +727,7 @@ export class DatabaseStorage implements IStorage {
     if (data.answers !== undefined) updateData.answers = data.answers;
     if (data.currentQuestion !== undefined) updateData.currentQuestion = data.currentQuestion;
     if (data.isCompleted !== undefined) updateData.isCompleted = data.isCompleted;
+    if (data.longevityPoints !== undefined) updateData.longevityPoints = data.longevityPoints;
     
     const [questionnaire] = await db
       .update(medicalQuestionnaire)
@@ -736,16 +737,15 @@ export class DatabaseStorage implements IStorage {
     return questionnaire;
   }
 
-  async markQuestionnaireComplete(userId: string): Promise<MedicalQuestionnaire> {
-    const [questionnaire] = await db
+  async markQuestionnaireComplete(userId: string): Promise<void> {
+    await db
       .update(medicalQuestionnaire)
       .set({
         isCompleted: "true",
         completedAt: new Date(),
         updatedAt: new Date(),
       })
-      .where(eq(medicalQuestionnaire.userId, userId))
-      .returning();
+      .where(eq(medicalQuestionnaire.userId, userId));
 
     await db
       .update(users)
@@ -754,8 +754,6 @@ export class DatabaseStorage implements IStorage {
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId));
-    
-    return questionnaire;
   }
 
 }
