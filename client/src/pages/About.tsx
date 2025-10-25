@@ -1,15 +1,17 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Heart, Target, Users, ArrowRight, Mail, AlertCircle } from "lucide-react";
+import { Heart, Target, Users, ArrowRight, Mail, AlertCircle, Home } from "lucide-react";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useLocation } from "wouter";
 
 
 export default function About() {
   // Fetch real company information from Confluence
   const { data: companyInfo, isLoading, error } = useConfluenceData();
   const { t } = useLanguage();
+  const [, navigate] = useLocation();
 
   if (isLoading) {
     return (
@@ -160,7 +162,7 @@ export default function About() {
         )}
 
         {/* Call to Action */}
-        <div className="text-center">
+        <div className="text-center mb-12">
           <Card className="bg-primary text-primary-foreground hover-elevate max-w-2xl mx-auto" data-testid="cta-card">
             <CardContent className="p-8">
               <h3 className="text-2xl font-bold mb-4" data-testid="cta-title">
@@ -191,6 +193,19 @@ export default function About() {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Back to Home Button */}
+        <div className="text-center">
+          <Button 
+            variant="outline" 
+            onClick={() => navigate("/")}
+            data-testid="button-back-home"
+            className="gap-2"
+          >
+            <Home className="h-4 w-4" />
+            Volver al Inicio
+          </Button>
         </div>
       </div>
     </div>

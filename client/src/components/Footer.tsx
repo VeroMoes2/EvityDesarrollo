@@ -60,27 +60,6 @@ export default function Footer() {
               >
                 {t('footer.aboutUs')}
               </button>
-              <button 
-                onClick={() => handleLinkClick("research")}
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                data-testid="footer-link-research"
-              >
-                {t('footer.research')}
-              </button>
-              <button 
-                onClick={() => handleLinkClick("community")}
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                data-testid="footer-link-community"
-              >
-                {t('footer.community')}
-              </button>
-              <button 
-                onClick={() => handleLinkClick("faq")}
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                data-testid="footer-link-faq"
-              >
-                {t('footer.faq')}
-              </button>
             </nav>
           </div>
 
