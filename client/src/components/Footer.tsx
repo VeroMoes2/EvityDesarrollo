@@ -36,8 +36,75 @@ export default function Footer() {
   return (
     <footer className="bg-card border-t border-card-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Company Info */}
+        <div className="space-y-12">
+          {/* Primera fila: Enlaces Rápidos, Recursos y Contacto */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+            {/* Quick Links */}
+            <div className="space-y-4">
+              <h4 className="font-semibold text-card-foreground">{t('footer.quickLinks')}</h4>
+              <nav className="space-y-2">
+                <button 
+                  onClick={() => handleLinkClick("about")}
+                  className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+                  data-testid="footer-link-about"
+                >
+                  {t('footer.aboutUs')}
+                </button>
+              </nav>
+            </div>
+
+            {/* Resources */}
+            <div className="space-y-4">
+              <h4 className="font-semibold text-card-foreground">{t('footer.resources')}</h4>
+              <nav className="space-y-2">
+                <button 
+                  onClick={() => {
+                    window.location.href = "/#calculadora";
+                  }}
+                  className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+                  data-testid="footer-link-calculators"
+                >
+                  {t('footer.calculators')}
+                </button>
+                <button 
+                  onClick={() => {
+                    window.location.href = "/#blog";
+                  }}
+                  className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+                  data-testid="footer-link-blog"
+                >
+                  {t('footer.blog')}
+                </button>
+              </nav>
+            </div>
+
+            {/* Contact */}
+            <div className="space-y-4">
+              <h4 className="font-semibold text-card-foreground">{t('footer.contact')}</h4>
+              <div className="space-y-3">
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <Mail className="h-4 w-4 mr-3" />
+                  <button 
+                    onClick={() => handleLinkClick("Email")}
+                    className="hover:text-primary transition-colors"
+                    data-testid="footer-contact-email"
+                  >
+                    evitycontacto@gmail.com
+                  </button>
+                </div>
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <Phone className="h-4 w-4 mr-3" />
+                  <span>Por definir</span>
+                </div>
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <MapPin className="h-4 w-4 mr-3" />
+                  <span>Monterrey, México</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Segunda fila: Company Info (abarcando todo el ancho) */}
           <div className="space-y-4">
             <h3 className="text-xl font-bold text-primary">{companyName}</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
@@ -46,70 +113,6 @@ export default function Footer() {
             <div className="flex items-center text-sm text-muted-foreground">
               <Heart className="h-4 w-4 mr-2 text-red-500" />
               {t('footer.madeWithLove')}
-            </div>
-          </div>
-
-          {/* Quick Links */}
-          <div className="space-y-4">
-            <h4 className="font-semibold text-card-foreground">{t('footer.quickLinks')}</h4>
-            <nav className="space-y-2">
-              <button 
-                onClick={() => handleLinkClick("about")}
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                data-testid="footer-link-about"
-              >
-                {t('footer.aboutUs')}
-              </button>
-            </nav>
-          </div>
-
-          {/* Resources */}
-          <div className="space-y-4">
-            <h4 className="font-semibold text-card-foreground">{t('footer.resources')}</h4>
-            <nav className="space-y-2">
-              <button 
-                onClick={() => {
-                  window.location.href = "/#calculadora";
-                }}
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                data-testid="footer-link-calculators"
-              >
-                {t('footer.calculators')}
-              </button>
-              <button 
-                onClick={() => {
-                  window.location.href = "/#blog";
-                }}
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                data-testid="footer-link-blog"
-              >
-                {t('footer.blog')}
-              </button>
-            </nav>
-          </div>
-
-          {/* Contact */}
-          <div className="space-y-4">
-            <h4 className="font-semibold text-card-foreground">{t('footer.contact')}</h4>
-            <div className="space-y-3">
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Mail className="h-4 w-4 mr-3" />
-                <button 
-                  onClick={() => handleLinkClick("Email")}
-                  className="hover:text-primary transition-colors"
-                  data-testid="footer-contact-email"
-                >
-                  evitycontacto@gmail.com
-                </button>
-              </div>
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Phone className="h-4 w-4 mr-3" />
-                <span>Por definir</span>
-              </div>
-              <div className="flex items-center text-sm text-muted-foreground">
-                <MapPin className="h-4 w-4 mr-3" />
-                <span>Monterrey, México</span>
-              </div>
             </div>
           </div>
         </div>
