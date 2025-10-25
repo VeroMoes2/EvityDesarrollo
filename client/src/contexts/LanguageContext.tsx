@@ -1224,23 +1224,20 @@ interface LanguageProviderProps {
 }
 
 export function LanguageProvider({ children }: LanguageProviderProps) {
-  const [language, setLanguageState] = useState<Language>(() => {
-    // Obtener idioma guardado del localStorage
-    const saved = localStorage.getItem('evity-language') as Language;
-    return saved || 'es'; // Español por defecto
-  });
+  // Siempre usar español - idioma único
+  const [language] = useState<Language>('es');
 
-  const setLanguage = (lang: Language) => {
-    setLanguageState(lang);
-    localStorage.setItem('evity-language', lang);
+  // Función setLanguage vacía (ya que solo usamos español)
+  const setLanguage = () => {
+    // No hace nada, solo español
   };
 
   const t = (key: string): string => {
-    return (translations[language] as Record<string, string>)[key] || key;
+    return (translations['es'] as Record<string, string>)[key] || key;
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language: 'es', setLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );

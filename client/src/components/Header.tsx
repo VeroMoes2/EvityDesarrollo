@@ -8,7 +8,6 @@ import { logout } from "@/lib/queryClient";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useLanguage } from "@/contexts/LanguageContext";
-import LanguageSelector from "@/components/LanguageSelector";
 
 // Helper function to check if user is admin (case-insensitive)
 const isUserAdmin = (user: any): boolean => {
@@ -89,8 +88,6 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center space-x-4">
-            <LanguageSelector />
-            
             <Button 
               variant="ghost" 
               size="icon" 
@@ -171,10 +168,6 @@ export default function Header() {
         {isMenuOpen && (
           <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-md">
             <nav className="px-4 py-4 space-y-4">
-              <div className="flex justify-center mb-4">
-                <LanguageSelector />
-              </div>
-              
               <button 
                 onClick={() => scrollToSection("inicio")} 
                 className="block w-full text-left text-foreground hover:text-primary transition-colors"
