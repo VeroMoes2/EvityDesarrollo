@@ -179,10 +179,10 @@ export default function CalculatorSection() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-            Longevity Mini Score - {companyName}
+            {t('miniCalc.title')} - {companyName}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Descubre tu puntuación de longevidad basada en tu estilo de vida actual y obtén recomendaciones personalizadas para mejorarlo
+            {t('miniCalc.subtitle')}
           </p>
         </div>
 
@@ -193,7 +193,7 @@ export default function CalculatorSection() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calculator className="h-5 w-5 text-primary" />
-                  Completa el cuestionario
+                  {t('miniCalc.completeForm')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -202,7 +202,7 @@ export default function CalculatorSection() {
                   <Label htmlFor="exercise">1. ¿Cuántos días por semana realiza al menos 30 minutos de actividad moderada o vigorosa?</Label>
                   <Select value={formData.exercise} onValueChange={(value) => handleInputChange("exercise", value)}>
                     <SelectTrigger data-testid="select-exercise">
-                      <SelectValue placeholder="Selecciona una opción" />
+                      <SelectValue placeholder={t('miniCalc.selectOption')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="5-7">5-7 días/semana</SelectItem>
@@ -219,7 +219,7 @@ export default function CalculatorSection() {
                   <Label htmlFor="diet">2. ¿Su dieta habitual incluye frutas, verduras, legumbres, pescado y evita ultraprocesados y bebidas azucaradas?</Label>
                   <Select value={formData.diet} onValueChange={(value) => handleInputChange("diet", value)}>
                     <SelectTrigger data-testid="select-diet">
-                      <SelectValue placeholder="Selecciona una opción" />
+                      <SelectValue placeholder={t('miniCalc.selectOption')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="excellent">Rica en frutas, verduras, legumbres y aceite de oliva; sin ultraprocesados</SelectItem>
@@ -236,7 +236,7 @@ export default function CalculatorSection() {
                   <Label>3. ¿Cuál es su peso y estatura actual?</Label>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="weight">Peso (kg)</Label>
+                      <Label htmlFor="weight">{t('miniCalc.weight')}</Label>
                       <Input
                         id="weight"
                         type="number"
@@ -247,7 +247,7 @@ export default function CalculatorSection() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="height">Estatura (cm)</Label>
+                      <Label htmlFor="height">{t('miniCalc.height')}</Label>
                       <Input
                         id="height"
                         type="number"
@@ -265,7 +265,7 @@ export default function CalculatorSection() {
                   <Label htmlFor="smoking-drinking">4. ¿Fuma o bebe con frecuencia?</Label>
                   <Select value={formData.smokingDrinking} onValueChange={(value) => handleInputChange("smokingDrinking", value)}>
                     <SelectTrigger data-testid="select-smoking-drinking">
-                      <SelectValue placeholder="Selecciona una opción" />
+                      <SelectValue placeholder={t('miniCalc.selectOption')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">No fumo ni bebo, o ≤ 1 bebida a la semana</SelectItem>
@@ -282,7 +282,7 @@ export default function CalculatorSection() {
                   <Label htmlFor="sleep">5. ¿Cómo describiría su sueño y su bienestar emocional general?</Label>
                   <Select value={formData.sleepWellbeing} onValueChange={(value) => handleInputChange("sleepWellbeing", value)}>
                     <SelectTrigger data-testid="select-sleep">
-                      <SelectValue placeholder="Selecciona una opción" />
+                      <SelectValue placeholder={t('miniCalc.selectOption')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="excellent">Duermo 7–8 h, ánimo estable, bajo estrés</SelectItem>
@@ -300,7 +300,7 @@ export default function CalculatorSection() {
                   disabled={!isFormComplete}
                   data-testid="button-calculate"
                 >
-                  Calcular mi puntuación
+                  {t('miniCalc.calculateButton')}
                 </Button>
               </CardContent>
             </Card>
@@ -310,7 +310,7 @@ export default function CalculatorSection() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-primary" />
-                  Tu Resultado
+                  {t('miniCalc.yourResult')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -417,7 +417,7 @@ export default function CalculatorSection() {
                   <div className="text-center py-12">
                     <Calculator className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                     <p className="text-muted-foreground">
-                      Completa el cuestionario para conocer tu puntuación de longevidad
+                      {t('miniCalc.emptyMessage')}
                     </p>
                   </div>
                 )}
@@ -447,7 +447,7 @@ export default function CalculatorSection() {
           {confluenceData && !error && (
             <div className="inline-flex items-center px-4 py-2 bg-purple-50 dark:bg-purple-900/20 rounded-full border border-purple-200 dark:border-purple-800">
               <span className="text-purple-800 dark:text-purple-200 text-sm font-medium">
-                Cálculo personalizado por {companyName}
+                {t('miniCalc.customizedBy')} {companyName}
               </span>
             </div>
           )}

@@ -121,7 +121,7 @@ export default function Landing() {
       <section id="blog" className="bg-background py-16">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold text-center text-foreground mb-12">
-            Blog Evity
+            {t('blog.title')} Evity
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             {features.map((feature, index) => (

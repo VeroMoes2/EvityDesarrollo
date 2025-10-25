@@ -427,20 +427,20 @@ export default function Profile() {
                   <div className="flex items-center text-gray-400">
                     <Calendar className="h-4 w-4 mr-2" />
                     <span className="text-sm">
-                      Miembro desde {new Date((user as any)?.createdAt).toLocaleDateString('es-ES')}
+                      {t('userProfile.memberSince')} {new Date((user as any)?.createdAt).toLocaleDateString('es-ES')}
                     </span>
                   </div>
                   
                   <div className="flex items-center text-gray-400">
                     <Shield className="h-4 w-4 mr-2" />
                     <span className="text-sm" data-testid="verification-status">
-                      {(user as any)?.isEmailVerified === "true" ? "Perfil verificado" : "Email pendiente de verificación"}
+                      {(user as any)?.isEmailVerified === "true" ? "Perfil verificado" : t('userProfile.emailPending')}
                     </span>
                   </div>
                   
                   <div className="flex items-center text-gray-400">
                     <Activity className="h-4 w-4 mr-2" />
-                    <span className="text-sm">{documents.length} documentos cargados</span>
+                    <span className="text-sm">{documents.length} {documents.length === 1 ? t('userProfile.documento') : t('userProfile.documentsLoaded')}</span>
                   </div>
                 </div>
               </CardContent>
@@ -451,10 +451,10 @@ export default function Profile() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <ClipboardCheck className="h-5 w-5" />
-                  <span>Mi Longevidad</span>
+                  <span>{t('userProfile.myLongevity')}</span>
                 </CardTitle>
                 <CardDescription>
-                  Conócete mejor
+                  {t('userProfile.knowYourself')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -511,7 +511,7 @@ export default function Profile() {
                         <Activity className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                         <div>
                           <p className="font-medium text-amber-900 dark:text-amber-100">
-                            En progreso
+                            {t('userProfile.inProgress')}
                           </p>
                           <p className="text-sm text-amber-700 dark:text-amber-300">
                             {Object.keys((questionnaireData.questionnaire as any).answers || {}).length} de 29 preguntas respondidas
@@ -522,7 +522,7 @@ export default function Profile() {
                     <Link href="/cuestionario">
                       <Button className="w-full" data-testid="button-continue-questionnaire">
                         <FileText className="h-4 w-4 mr-2" />
-                        Continuar cuestionario
+                        {t('userProfile.continueQuestionnaire')}
                       </Button>
                     </Link>
                   </>
@@ -554,7 +554,7 @@ export default function Profile() {
                 <Link href="/agendar-cita">
                   <Button className="w-full" data-testid="button-schedule-interview">
                     <Calendar className="h-4 w-4 mr-2" />
-                    Entrevista: Mi primer contacto
+                    {t('userProfile.scheduleInterview')}
                   </Button>
                 </Link>
               </CardContent>
@@ -565,10 +565,10 @@ export default function Profile() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Bot className="h-5 w-5" />
-                  <span>Agente IA de Longevidad</span>
+                  <span>{t('userProfile.aiAgent')}</span>
                 </CardTitle>
                 <CardDescription>
-                  Consulta tu asistente personal de salud
+                  {t('userProfile.consultAgent')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -577,10 +577,10 @@ export default function Profile() {
                     <Sparkles className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                     <div>
                       <p className="font-medium text-purple-900 dark:text-purple-100">
-                        Respuestas basadas en ciencia
+                        {t('userProfile.scienceBasedAnswers')}
                       </p>
                       <p className="text-sm text-purple-700 dark:text-purple-300">
-                        Pregunta sobre nutrición, ejercicio y más
+                        {t('userProfile.askAbout')}
                       </p>
                     </div>
                   </div>
@@ -588,7 +588,7 @@ export default function Profile() {
                 <Link href="/agente-ia">
                   <Button className="w-full" variant="default" data-testid="button-open-ai-agent">
                     <Bot className="h-4 w-4 mr-2" />
-                    Hablar con el agente
+                    {t('userProfile.talkToAgent')}
                   </Button>
                 </Link>
               </CardContent>
@@ -603,7 +603,7 @@ export default function Profile() {
               <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
                 <Shield className="h-4 w-4" />
                 <AlertDescription>
-                  <strong>Privacidad de Datos Médicos:</strong> Tus documentos médicos están protegidos con validaciones de seguridad avanzadas, 
+                  <strong>{t('userProfile.dataPrivacy')}:</strong> {t('userProfile.dataPrivacyDesc').substring(0, 80)} 
                   límites de acceso y almacenamiento seguro. Solo tú puedes ver y descargar tus documentos. Seguimos buenas prácticas de privacidad.
                 </AlertDescription>
               </Alert>
@@ -613,17 +613,17 @@ export default function Profile() {
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <Search className="h-5 w-5" />
-                    <span>Buscar y Filtrar Documentos</span>
+                    <span>{t('userProfile.searchAndFilter')}</span>
                   </CardTitle>
                   <CardDescription>
-                    Encuentra rápidamente tus estudios y laboratorios
+                    {t('userProfile.searchDesc')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-col sm:flex-row gap-4">
                     <div className="flex-1">
                       <Input
-                        placeholder="Buscar por nombre de archivo..."
+                        placeholder={t('userProfile.searchPlaceholder')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full"
@@ -636,7 +636,7 @@ export default function Profile() {
                           <SelectValue placeholder="Tipo de documento" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="all">Todos los documentos</SelectItem>
+                          <SelectItem value="all">{t('userProfile.allDocuments')}</SelectItem>
                           <SelectItem value="study">Solo estudios médicos</SelectItem>
                           <SelectItem value="lab">Solo laboratorios</SelectItem>
                         </SelectContent>
@@ -670,11 +670,11 @@ export default function Profile() {
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <FileText className="h-5 w-5" />
-                    <span>Estudios y Laboratorios</span>
+                    <span>{t('userProfile.studiesAndLabs')}</span>
                     <Badge variant="secondary">{allDocuments.length}</Badge>
                   </CardTitle>
                   <CardDescription>
-                    Gestiona todos tus estudios médicos y resultados de laboratorios en un solo lugar
+                    {t('userProfile.manageStudies')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">

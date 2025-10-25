@@ -5,40 +5,42 @@ import yogaImage from "@assets/generated_images/Seniors_yoga_outdoors_983aaba4.p
 import dietImage from "@assets/generated_images/Healthy_diet_spread_92eea712.png";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
 import { useLocation } from "wouter";
-
-const resources = [
-  {
-    type: "Guía",
-    icon: BookOpen,
-    title: "Los 7 Pilares de la Longevidad",
-    description: "Una guía completa sobre los fundamentos científicos para vivir más años con calidad de vida.",
-    image: yogaImage,
-    readTime: "15 min",
-    category: "Fundamentos"
-  },
-  {
-    type: "Video",
-    icon: Video,
-    title: "Nutrición para la Longevidad",
-    description: "Descubre qué alimentos y patrones dietéticos han demostrado extender la vida saludable.",
-    image: dietImage,
-    readTime: "12 min",
-    category: "Nutrición"
-  },
-  {
-    type: "Artículo",
-    icon: FileText,
-    title: "Ejercicio Anti-Envejecimiento",
-    description: "Los tipos de ejercicio más efectivos para mantener la vitalidad y prevenir el envejecimiento.",
-    image: yogaImage,
-    readTime: "8 min",
-    category: "Ejercicio"
-  }
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function ResourcesSection() {
   const { data: confluenceData, isLoading, error } = useConfluenceData();
   const [, setLocation] = useLocation();
+  const { t } = useLanguage();
+  
+  const resources = [
+    {
+      type: t('blog.guide'),
+      icon: BookOpen,
+      title: "Los 7 Pilares de la Longevidad",
+      description: "Una guía completa sobre los fundamentos científicos para vivir más años con calidad de vida.",
+      image: yogaImage,
+      readTime: "15 min",
+      category: t('blog.fundamentals')
+    },
+    {
+      type: t('blog.video'),
+      icon: Video,
+      title: "Nutrición para la Longevidad",
+      description: "Descubre qué alimentos y patrones dietéticos han demostrado extender la vida saludable.",
+      image: dietImage,
+      readTime: "12 min",
+      category: t('blog.nutrition')
+    },
+    {
+      type: t('blog.article'),
+      icon: FileText,
+      title: "Ejercicio Anti-Envejecimiento",
+      description: "Los tipos de ejercicio más efectivos para mantener la vitalidad y prevenir el envejecimiento.",
+      image: yogaImage,
+      readTime: "8 min",
+      category: t('blog.exercise')
+    }
+  ];
   
   const handleResourceClick = (resourceTitle: string) => {
     const slug = resourceTitle.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
@@ -52,10 +54,10 @@ export default function ResourcesSection() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-            Blog {companyName}
+            {t('blog.title')} {companyName}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            {confluenceData?.mission || "Contenido basado en evidencia científica para guiarte en tu camino hacia la longevidad."}
+            {confluenceData?.mission || t('blog.defaultMission')}
           </p>
         </div>
 
