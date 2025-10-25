@@ -339,8 +339,8 @@ export default function CalculatorSection() {
                       </p>
                     </div>
 
-                    <div className="bg-primary/10 border-2 border-primary/30 p-4 rounded-lg">
-                      <p className="text-sm font-medium text-primary text-center">
+                    <div className="bg-primary p-4 rounded-lg shadow-lg">
+                      <p className="text-base font-semibold text-white text-center">
                         ¡Da el siguiente paso y únete a la comunidad de Evity para aumentar tus puntos de longevidad!
                       </p>
                     </div>
