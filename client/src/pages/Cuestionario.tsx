@@ -465,22 +465,22 @@ function getBMIPoints(bmi: number): number {
 }
 
 function getHealthStatus(totalPoints: number): string {
-  // Nueva escala: 30-150 puntos totales (30 preguntas × 1-5 puntos cada una)
-  if (totalPoints >= 120) {
+  // Nueva escala: 10-50 puntos totales (10 secciones × promedio 1-5 puntos cada una)
+  if (totalPoints >= 42) { // ≥ 84% (promedio 4.2+)
     return "excelente";
-  } else if (totalPoints >= 90) {
+  } else if (totalPoints >= 32) { // 64-83% (promedio 3.2-4.1)
     return "bueno";
-  } else if (totalPoints >= 60) {
+  } else if (totalPoints >= 22) { // 44-63% (promedio 2.2-3.1)
     return "regular";
-  } else {
+  } else { // < 44% (promedio < 2.2)
     return "necesita atención";
   }
 }
 
 function calculateLongevityPoints(totalPoints: number): number {
-  // Convertir escala de 30-150 a 0-100
-  // Fórmula: ((totalPoints - 30) / 120) × 100
-  const normalized = ((totalPoints - 30) / 120) * 100;
+  // Convertir escala de 10-50 a 0-100
+  // Fórmula: ((totalPoints - 10) / 40) × 100
+  const normalized = ((totalPoints - 10) / 40) * 100;
   return Math.round(Math.max(0, Math.min(100, normalized)));
 }
 
