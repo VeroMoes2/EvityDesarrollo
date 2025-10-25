@@ -829,28 +829,16 @@ export default function Cuestionario() {
             <ClipboardCheck className="h-6 w-6 text-primary" />
             <h1 className="text-2xl font-bold">Conócete mejor</h1>
           </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handlePauseAndExit}
-              disabled={isSaving}
-              data-testid="button-pause"
-            >
-              <Pause className="h-4 w-4 mr-2" />
-              Pausar
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/perfil")}
-              disabled={isSaving}
-              data-testid="button-back-profile"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Volver al perfil
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/perfil")}
+            disabled={isSaving}
+            data-testid="button-back-profile"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Volver al perfil
+          </Button>
         </div>
 
         <div className="space-y-2">
@@ -952,6 +940,15 @@ export default function Cuestionario() {
                 data-testid="button-save"
               >
                 <Save className="h-4 w-4" />
+              </Button>
+
+              <Button
+                variant="outline"
+                onClick={handlePauseAndExit}
+                disabled={isSaving}
+                data-testid="button-pause"
+              >
+                <Pause className="h-4 w-4" />
               </Button>
             </div>
           </CardContent>
