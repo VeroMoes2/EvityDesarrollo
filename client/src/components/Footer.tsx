@@ -68,21 +68,14 @@ export default function Footer() {
             <h4 className="font-semibold text-card-foreground">{t('footer.resources')}</h4>
             <nav className="space-y-2">
               <button 
-                onClick={() => handleLinkClick("guides")}
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                data-testid="footer-link-guides"
-              >
-                {t('footer.guides')}
-              </button>
-              <button 
-                onClick={() => handleLinkClick("calculators")}
+                onClick={() => navigate("/#calculadora")}
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
                 data-testid="footer-link-calculators"
               >
                 {t('footer.calculators')}
               </button>
               <button 
-                onClick={() => handleLinkClick("blog")}
+                onClick={() => navigate("/blog")}
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
                 data-testid="footer-link-blog"
               >
