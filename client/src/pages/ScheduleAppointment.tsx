@@ -155,9 +155,9 @@ export default function ScheduleAppointment() {
                 <div className="h-2 w-2 rounded-full bg-primary"></div>
               </div>
               <div>
-                <p className="font-medium">Plan personalizado</p>
+                <p className="font-medium">Platiquemos sobre Evity</p>
                 <p className="text-sm text-muted-foreground">
-                  Crearemos un plan de acción adaptado a tus necesidades
+                  Te brindaremos toda la información que necesitas saber sobre Evity y su comunidad
                 </p>
               </div>
             </div>
