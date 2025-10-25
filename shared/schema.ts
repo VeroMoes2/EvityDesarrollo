@@ -30,7 +30,8 @@ export const users = pgTable("users", {
   email: varchar("email").unique().notNull(),
   firstName: varchar("first_name").notNull(),
   lastName: varchar("last_name").notNull(),
-  gender: varchar("gender"), // 'M', 'F', 'Other', 'Prefer not to say'
+  gender: varchar("gender"), // 'masculino', 'femenino', 'otro', 'prefiero_no_decir'
+  dateOfBirth: varchar("date_of_birth"), // Date of birth in YYYY-MM-DD format
   phoneNumber: varchar("phone_number"), // LS-110: User's phone number
   password: varchar("password").notNull(), // Hashed password
   profileImageUrl: varchar("profile_image_url"),
@@ -158,6 +159,16 @@ export const insertUserSchema = createInsertSchema(users, {
   lastName: z.string().min(1, "Apellido es requerido"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
   gender: genderEnum.optional(),
+  dateOfBirth: z.string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Formato de fecha inválido (YYYY-MM-DD)")
+    .optional()
+    .refine((date) => {
+      if (!date) return true;
+      const birthDate = new Date(date);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      return age >= 18 && age <= 120;
+    }, "Debes ser mayor de 18 años"),
   phoneNumber: phoneNumberSchema, // LS-110: Phone number validation
 }).omit({
   id: true,
@@ -188,6 +199,16 @@ export const updateUserProfileSchema = z.object({
     .max(100, "El email no puede exceder 100 caracteres")
     .optional(),
   gender: genderEnum.optional(),
+  dateOfBirth: z.string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Formato de fecha inválido (YYYY-MM-DD)")
+    .optional()
+    .refine((date) => {
+      if (!date) return true;
+      const birthDate = new Date(date);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      return age >= 18 && age <= 120;
+    }, "Debes ser mayor de 18 años"),
   phoneNumber: phoneNumberSchema, // LS-110: Phone number update validation
 });
 

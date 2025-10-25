@@ -47,6 +47,7 @@ type RegisterForm = {
   password: string;
   confirmPassword: string;
   gender?: string;
+  dateOfBirth?: string;
   phoneNumber: string;
 };
 
@@ -82,6 +83,16 @@ export default function Register() {
     gender: z.enum(["masculino", "femenino", "otro", ""], {
       errorMap: () => ({ message: t('register.genderInvalid') })
     }).optional(),
+    dateOfBirth: z.string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "Formato de fecha inválido")
+      .optional()
+      .refine((date) => {
+        if (!date) return true;
+        const birthDate = new Date(date);
+        const today = new Date();
+        const age = today.getFullYear() - birthDate.getFullYear();
+        return age >= 18 && age <= 120;
+      }, "Debes ser mayor de 18 años"),
     phoneNumber: phoneNumberSchema,
   }).refine((data) => data.password === data.confirmPassword, {
     message: t('register.passwordMismatch'),
@@ -97,6 +108,7 @@ export default function Register() {
       password: "",
       confirmPassword: "",
       gender: "",
+      dateOfBirth: "",
       phoneNumber: "", // LS-110: Phone number default value
     },
   });
@@ -230,29 +242,49 @@ export default function Register() {
                 )}
               />
 
-              {/* Gender field */}
-              <FormField
-                control={form.control}
-                name="gender"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('register.genderLabel')}</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+              {/* Gender and Date of Birth fields */}
+              <div className="grid grid-cols-2 gap-3">
+                <FormField
+                  control={form.control}
+                  name="gender"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('register.genderLabel')}</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger data-testid="select-gender">
+                            <SelectValue placeholder={t('register.genderPlaceholder')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="masculino">{t('register.genderMale')}</SelectItem>
+                          <SelectItem value="femenino">{t('register.genderFemale')}</SelectItem>
+                          <SelectItem value="otro">{t('register.genderOther')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="dateOfBirth"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Fecha de nacimiento</FormLabel>
                       <FormControl>
-                        <SelectTrigger data-testid="select-gender">
-                          <SelectValue placeholder={t('register.genderPlaceholder')} />
-                        </SelectTrigger>
+                        <Input
+                          {...field}
+                          type="date"
+                          data-testid="input-date-of-birth"
+                          max={new Date().toISOString().split('T')[0]}
+                        />
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value="masculino">{t('register.genderMale')}</SelectItem>
-                        <SelectItem value="femenino">{t('register.genderFemale')}</SelectItem>
-                        <SelectItem value="otro">{t('register.genderOther')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               {/* LS-110: Phone number field */}
               <FormField
