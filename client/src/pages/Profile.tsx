@@ -514,7 +514,7 @@ export default function Profile() {
                             En progreso
                           </p>
                           <p className="text-sm text-amber-700 dark:text-amber-300">
-                            {Object.keys((questionnaireData.questionnaire as any).answers || {}).length} de 8 preguntas respondidas
+                            {Object.keys((questionnaireData.questionnaire as any).answers || {}).length} de 29 preguntas respondidas
                           </p>
                         </div>
                       </div>
