@@ -253,20 +253,6 @@ export default function Contacto() {
                   </CardContent>
                 </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Immediate Help Needed?</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground mb-4">
-                      {t('contact.urgentNote')}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      For platform inquiries, we respond within 24 hours.
-                    </p>
-                  </CardContent>
-                </Card>
-
               </div>
 
             </div>
