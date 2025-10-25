@@ -84,7 +84,7 @@ export default function Register() {
       errorMap: () => ({ message: t('register.genderInvalid') })
     }).optional(),
     dateOfBirth: z.string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, "Formato de fecha inválido")
+      .regex(/^\d{4}-\d{2}-\d{2}$/, t('register.invalidDateFormat'))
       .optional()
       .refine((date) => {
         if (!date) return true;
@@ -92,7 +92,7 @@ export default function Register() {
         const today = new Date();
         const age = today.getFullYear() - birthDate.getFullYear();
         return age >= 18 && age <= 120;
-      }, "Debes ser mayor de 18 años"),
+      }, t('register.minimumAge')),
     phoneNumber: phoneNumberSchema,
   }).refine((data) => data.password === data.confirmPassword, {
     message: t('register.passwordMismatch'),
@@ -271,7 +271,7 @@ export default function Register() {
                   name="dateOfBirth"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Fecha de nacimiento</FormLabel>
+                      <FormLabel>{t('register.dateOfBirthLabel')}</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -389,17 +389,17 @@ export default function Register() {
                 disabled={registerMutation.isPending}
                 data-testid="button-register"
               >
-                {registerMutation.isPending ? "Creando cuenta..." : "Crear Cuenta"}
+                {registerMutation.isPending ? t('register.registering') : t('register.registerButton')}
               </Button>
             </form>
           </Form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
-              ¿Ya tienes cuenta?{" "}
+              {t('register.haveAccount')}{" "}
               <Link href="/login" data-testid="link-login">
                 <Button variant="ghost" className="p-0 h-auto">
-                  Inicia sesión aquí
+                  {t('register.loginHere')}
                 </Button>
               </Link>
             </p>

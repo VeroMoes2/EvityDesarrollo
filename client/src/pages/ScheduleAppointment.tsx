@@ -4,10 +4,12 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Calendar, ExternalLink, Clock, User } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function ScheduleAppointment() {
   const { user, isAuthenticated } = useAuth();
   const [, navigate] = useLocation();
+  const { t } = useLanguage();
 
   // Build Calendly URL with user prefill data
   const calendlyUrl = useMemo(() => {
@@ -52,7 +54,7 @@ export default function ScheduleAppointment() {
             data-testid="button-back"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver
+            {t('register.backButton')}
           </Button>
         </div>
 
@@ -133,9 +135,9 @@ export default function ScheduleAppointment() {
         {/* What to expect */}
         <Card className="bg-muted/50">
           <CardHeader>
-            <CardTitle>¿Qué esperar de tu primera consulta?</CardTitle>
+            <CardTitle>{t('scheduleAppointment.whatToExpect')}</CardTitle>
             <CardDescription>
-              Te prepararemos para una experiencia productiva
+              {t('scheduleAppointment.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -144,9 +146,9 @@ export default function ScheduleAppointment() {
                 <div className="h-2 w-2 rounded-full bg-primary"></div>
               </div>
               <div>
-                <p className="font-medium">Evaluación inicial</p>
+                <p className="font-medium">{t('scheduleAppointment.initialEvaluation')}</p>
                 <p className="text-sm text-muted-foreground">
-                  Revisaremos tu estado de salud actual y objetivos de longevidad
+                  {t('scheduleAppointment.initialEvaluationDesc')}
                 </p>
               </div>
             </div>
@@ -155,9 +157,9 @@ export default function ScheduleAppointment() {
                 <div className="h-2 w-2 rounded-full bg-primary"></div>
               </div>
               <div>
-                <p className="font-medium">Platiquemos sobre Evity</p>
+                <p className="font-medium">{t('scheduleAppointment.learnAboutEvity')}</p>
                 <p className="text-sm text-muted-foreground">
-                  Te brindaremos toda la información que necesitas saber sobre Evity
+                  {t('scheduleAppointment.learnAboutEvityDesc')}
                 </p>
               </div>
             </div>
@@ -166,9 +168,9 @@ export default function ScheduleAppointment() {
                 <div className="h-2 w-2 rounded-full bg-primary"></div>
               </div>
               <div>
-                <p className="font-medium">Próximos pasos</p>
+                <p className="font-medium">{t('scheduleAppointment.nextSteps')}</p>
                 <p className="text-sm text-muted-foreground">
-                  Te guiaremos en tu camino hacia una vida más larga y saludable
+                  {t('scheduleAppointment.nextStepsDesc')}
                 </p>
               </div>
             </div>

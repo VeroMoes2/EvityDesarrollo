@@ -360,6 +360,20 @@ const translations = {
     'register.confirmPasswordPlaceholder': 'Confirma tu contraseña',
     'register.phonePlaceholder': 'Ej: +52 5551234567 (MX) o +1 5551234567 (US)',
     'register.genderPlaceholder': 'Selecciona una opción',
+    'register.dateOfBirthLabel': 'Fecha de nacimiento',
+    'register.invalidDateFormat': 'Formato de fecha inválido',
+    'register.minimumAge': 'Debes ser mayor de 18 años',
+    
+    // Schedule Appointment
+    'scheduleAppointment.title': 'Agenda tu Cita',
+    'scheduleAppointment.whatToExpect': '¿Qué esperar de tu primera consulta?',
+    'scheduleAppointment.description': 'Te prepararemos para una experiencia productiva',
+    'scheduleAppointment.initialEvaluation': 'Evaluación inicial',
+    'scheduleAppointment.initialEvaluationDesc': 'Revisaremos tu estado de salud actual y objetivos de longevidad',
+    'scheduleAppointment.learnAboutEvity': 'Platiquemos sobre Evity',
+    'scheduleAppointment.learnAboutEvityDesc': 'Te brindaremos toda la información que necesitas saber sobre Evity',
+    'scheduleAppointment.nextSteps': 'Próximos pasos',
+    'scheduleAppointment.nextStepsDesc': 'Te guiaremos en tu camino hacia una vida más larga y saludable',
     
     // Footer
     'footer.company': 'Empresa',
@@ -904,6 +918,20 @@ const translations = {
     'register.confirmPasswordPlaceholder': 'Confirm your password',
     'register.phonePlaceholder': 'Ex: +52 5551234567 (MX) or +1 5551234567 (US)',
     'register.genderPlaceholder': 'Select an option',
+    'register.dateOfBirthLabel': 'Date of birth',
+    'register.invalidDateFormat': 'Invalid date format',
+    'register.minimumAge': 'You must be 18 years or older',
+    
+    // Schedule Appointment
+    'scheduleAppointment.title': 'Schedule Your Appointment',
+    'scheduleAppointment.whatToExpect': 'What to expect from your first consultation?',
+    'scheduleAppointment.description': 'We will prepare you for a productive experience',
+    'scheduleAppointment.initialEvaluation': 'Initial evaluation',
+    'scheduleAppointment.initialEvaluationDesc': 'We will review your current health status and longevity goals',
+    'scheduleAppointment.learnAboutEvity': 'Let\'s talk about Evity',
+    'scheduleAppointment.learnAboutEvityDesc': 'We will provide you with all the information you need to know about Evity',
+    'scheduleAppointment.nextSteps': 'Next steps',
+    'scheduleAppointment.nextStepsDesc': 'We will guide you on your path to a longer and healthier life',
     
     // Footer
     'footer.company': 'Company',
