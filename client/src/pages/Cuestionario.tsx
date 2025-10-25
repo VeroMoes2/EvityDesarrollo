@@ -466,9 +466,9 @@ function getBMIPoints(bmi: number): number {
 
 function getHealthStatus(totalPoints: number): string {
   // Nueva escala: 10-50 puntos totales (10 secciones × promedio 1-5 puntos cada una)
-  if (totalPoints >= 42) { // ≥ 84% (promedio 4.2+)
-    return "excelente";
-  } else if (totalPoints >= 32) { // 64-83% (promedio 3.2-4.1)
+  if (totalPoints >= 40) { // ≥ 80% (promedio 4.0+)
+    return "Buena longevidad y esperanza de vida: riesgo bajo de mortalidad prematura";
+  } else if (totalPoints >= 32) { // 64-79% (promedio 3.2-3.9)
     return "bueno";
   } else if (totalPoints >= 22) { // 44-63% (promedio 2.2-3.1)
     return "regular";
