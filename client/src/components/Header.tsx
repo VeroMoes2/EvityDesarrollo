@@ -66,13 +66,6 @@ export default function Header() {
               {t('nav.home')}
             </button>
             <button 
-              onClick={() => scrollToSection("recursos")} 
-              className="text-foreground hover:text-primary transition-colors"
-              data-testid="nav-recursos"
-            >
-              {t('footer.resources')}
-            </button>
-            <button 
               onClick={() => scrollToSection("calculadora")} 
               className="text-foreground hover:text-primary transition-colors"
               data-testid="nav-calculadora"
@@ -80,7 +73,7 @@ export default function Header() {
               {t('nav.calculator')}
             </button>
             <button 
-              onClick={() => navigate('/blog')} 
+              onClick={() => scrollToSection("blog")} 
               className="text-foreground hover:text-primary transition-colors"
               data-testid="nav-blog"
             >
@@ -190,13 +183,6 @@ export default function Header() {
                 {t('nav.home')}
               </button>
               <button 
-                onClick={() => scrollToSection("recursos")} 
-                className="block w-full text-left text-foreground hover:text-primary transition-colors"
-                data-testid="nav-mobile-recursos"
-              >
-                {t('footer.resources')}
-              </button>
-              <button 
                 onClick={() => scrollToSection("calculadora")} 
                 className="block w-full text-left text-foreground hover:text-primary transition-colors"
                 data-testid="nav-mobile-calculadora"
@@ -204,10 +190,7 @@ export default function Header() {
                 {t('nav.calculator')}
               </button>
               <button 
-                onClick={() => {
-                  navigate('/blog');
-                  setIsMenuOpen(false);
-                }} 
+                onClick={() => scrollToSection("blog")} 
                 className="block w-full text-left text-foreground hover:text-primary transition-colors"
                 data-testid="nav-mobile-blog"
               >
