@@ -123,22 +123,16 @@ export default function Footer() {
                   className="hover:text-primary transition-colors"
                   data-testid="footer-contact-email"
                 >
-                  hola@evity.com
+                  evitycontacto@gmail.com
                 </button>
               </div>
               <div className="flex items-center text-sm text-muted-foreground">
                 <Phone className="h-4 w-4 mr-3" />
-                <button 
-                  onClick={() => handleLinkClick("Phone")}
-                  className="hover:text-primary transition-colors"
-                  data-testid="footer-contact-phone"
-                >
-                  +34 900 123 456
-                </button>
+                <span>Por definir</span>
               </div>
               <div className="flex items-center text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4 mr-3" />
-                <span>{t('footer.location')}</span>
+                <span>Monterrey, México</span>
               </div>
             </div>
           </div>
