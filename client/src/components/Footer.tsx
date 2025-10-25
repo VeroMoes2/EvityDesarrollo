@@ -68,7 +68,9 @@ export default function Footer() {
             <h4 className="font-semibold text-card-foreground">{t('footer.resources')}</h4>
             <nav className="space-y-2">
               <button 
-                onClick={() => navigate("/#calculadora")}
+                onClick={() => {
+                  window.location.href = "/#calculadora";
+                }}
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
                 data-testid="footer-link-calculators"
               >
