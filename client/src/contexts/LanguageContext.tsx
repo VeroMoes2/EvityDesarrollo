@@ -167,9 +167,7 @@ const translations = {
     'verifyEmail.linkRequiredDescription': 'Para verificar tu email, necesitas hacer clic en el enlace que enviamos a tu correo electrónico.',
     'verifyEmail.backToHome': 'Volver al inicio',
 
-    // Blog Section
-    'blog.title': 'Blog',
-    'blog.subtitle': 'Las últimas noticias, investigaciones y consejos prácticos del mundo de la longevidad y la salud.',
+    // Blog Section - See dedicated section below
     'blog.featured': 'Destacado',
     'blog.readMore': 'Leer más',
     'blog.post1.title': 'Los Nuevos Descubrimientos en Investigación de Telómeros',
@@ -375,7 +373,7 @@ const translations = {
     'scheduleAppointment.nextSteps': 'Próximos pasos',
     'scheduleAppointment.nextStepsDesc': 'Te guiaremos en tu camino hacia una vida más larga y saludable',
     
-    // Blog/Resources
+    // Blog/Resources Section
     'blog.title': 'Blog',
     'blog.subtitle': 'Transformar la forma en que las personas envejecen, proporcionando herramientas científicas y personalizadas para vivir vidas más largas, saludables y plenas.',
     'blog.defaultMission': 'Contenido basado en evidencia científica para guiarte en tu camino hacia la longevidad.',
@@ -799,7 +797,7 @@ const translations = {
     'community.cta.joinButton': 'Join the Community',
     'community.cta.learnMore': 'Learn More',
 
-    // Blog Section
+    // Blog/Resources Section
     'blog.title': 'Blog',
     'blog.subtitle': 'Transform the way people age, providing scientific and personalized tools to live longer, healthier and fuller lives.',
     'blog.defaultMission': 'Evidence-based content to guide you on your path to longevity.',
