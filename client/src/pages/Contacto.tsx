@@ -224,7 +224,7 @@ export default function Contacto() {
                       </div>
                       <div>
                         <h3 className="font-medium">{t('contact.phone')}</h3>
-                        <p className="text-muted-foreground">+52 55 1234 5678</p>
+                        <p className="text-muted-foreground">Por definir</p>
                       </div>
                     </div>
 
@@ -235,7 +235,7 @@ export default function Contacto() {
                       <div>
                         <h3 className="font-medium">{t('contact.office')}</h3>
                         <p className="text-muted-foreground">
-                          {t('contact.officeAddress')}
+                          Monterrey, México
                         </p>
                       </div>
                     </div>
