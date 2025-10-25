@@ -49,10 +49,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "5-7 días/semana", points: 5 },
-      { text: "3-4 días/semana", points: 3 },
-      { text: "1-2 días/semana", points: 0 },
-      { text: "<1 día/semana", points: -3 },
-      { text: "Nada o totalmente sedentario", points: -5 },
+      { text: "3-4 días/semana", points: 4 },
+      { text: "1-2 días/semana", points: 3 },
+      { text: "<1 día/semana", points: 2 },
+      { text: "Nada o totalmente sedentario", points: 1 },
     ],
     required: true,
   },
@@ -63,10 +63,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "≥ 60 min/sesión", points: 5 },
-      { text: "30–59 min/sesión", points: 3 },
-      { text: "15–29 min/sesión", points: 0 },
-      { text: "< 15 min/sesión", points: -3 },
-      { text: "Sin sesiones estructuradas", points: -5 },
+      { text: "30–59 min/sesión", points: 4 },
+      { text: "15–29 min/sesión", points: 3 },
+      { text: "< 15 min/sesión", points: 2 },
+      { text: "Sin sesiones estructuradas", points: 1 },
     ],
     required: true,
   },
@@ -77,10 +77,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "< 4 horas/día", points: 5 },
-      { text: "4–6 horas/día", points: 3 },
-      { text: "6–8 horas/día", points: 0 },
-      { text: "> 8 horas/día sin pausas activas", points: -3 },
-      { text: "> 10 horas/día sedentario", points: -5 },
+      { text: "4–6 horas/día", points: 4 },
+      { text: "6–8 horas/día", points: 3 },
+      { text: "> 8 horas/día sin pausas activas", points: 2 },
+      { text: "> 10 horas/día sedentario", points: 1 },
     ],
     required: true,
   },
@@ -92,10 +92,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "≥ 5 porciones al día", points: 5 },
-      { text: "3–4 porciones al día", points: 3 },
-      { text: "2 porciones al día", points: 0 },
-      { text: "1 porción al día", points: -3 },
-      { text: "Rara vez o nunca come frutas/verduras", points: -5 },
+      { text: "3–4 porciones al día", points: 4 },
+      { text: "2 porciones al día", points: 3 },
+      { text: "1 porción al día", points: 2 },
+      { text: "Rara vez o nunca come frutas/verduras", points: 1 },
     ],
     required: true,
   },
@@ -106,10 +106,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Casi nunca o < 1 vez por semana", points: 5 },
-      { text: "1-2 veces por semana", points: 3 },
-      { text: "3-4 veces por semana", points: 0 },
-      { text: "≥ 1 vez al día", points: -3 },
-      { text: "Varias veces al día (refrescos o comida rápida frecuente)", points: -5 },
+      { text: "1-2 veces por semana", points: 4 },
+      { text: "3-4 veces por semana", points: 3 },
+      { text: "≥ 1 vez al día", points: 2 },
+      { text: "Varias veces al día (refrescos o comida rápida frecuente)", points: 1 },
     ],
     required: true,
   },
@@ -120,10 +120,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Aceite de oliva extra virgen o aguacate como grasa principal", points: 5 },
-      { text: "Aceites vegetales no refinados (canola, maíz, girasol) sin manteca o margarina", points: 3 },
-      { text: "Mezcla entre aceites vegetales y mantequilla", points: 0 },
-      { text: "Mantequilla, margarina o crema diariamente", points: -3 },
-      { text: "Manteca o grasas animales como grasa principal", points: -5 },
+      { text: "Aceites vegetales no refinados (canola, maíz, girasol) sin manteca o margarina", points: 4 },
+      { text: "Mezcla entre aceites vegetales y mantequilla", points: 3 },
+      { text: "Mantequilla, margarina o crema diariamente", points: 2 },
+      { text: "Manteca o grasas animales como grasa principal", points: 1 },
     ],
     required: true,
   },
@@ -142,10 +142,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "No, peso estable (±2 kg)", points: 5 },
-      { text: "Cambio leve (±3–5 kg)", points: 3 },
-      { text: "Cambio moderado (±6–10 kg)", points: 0 },
-      { text: "Cambio importante (>10 kg)", points: -3 },
-      { text: "Fluctuaciones recurrentes o pérdida no intencionada", points: -5 },
+      { text: "Cambio leve (±3–5 kg)", points: 4 },
+      { text: "Cambio moderado (±6–10 kg)", points: 3 },
+      { text: "Cambio importante (>10 kg)", points: 2 },
+      { text: "Fluctuaciones recurrentes o pérdida no intencionada", points: 1 },
     ],
     required: true,
   },
@@ -157,10 +157,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Nunca ha fumado", points: 5 },
-      { text: "Exfumador ocasional (≤1 cajetilla/mes)", points: 3 },
-      { text: "Exfumador moderado (<10 años o <5 paquetes-año)", points: 0 },
-      { text: "Fumador activo leve (5–15 paquetes-año)", points: -3 },
-      { text: "Fumador activo crónico (>15 paquetes-año o diario)", points: -5 },
+      { text: "Exfumador ocasional (≤1 cajetilla/mes)", points: 4 },
+      { text: "Exfumador moderado (<10 años o <5 paquetes-año)", points: 3 },
+      { text: "Fumador activo leve (5–15 paquetes-año)", points: 2 },
+      { text: "Fumador activo crónico (>15 paquetes-año o diario)", points: 1 },
     ],
     required: true,
   },
@@ -171,10 +171,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Nunca fumó", points: 5 },
-      { text: "≤1 cigarro/día, <5 años", points: 3 },
-      { text: "5–10 cig/día o <10 años", points: 0 },
-      { text: "10–20 cig/día, 10–20 años", points: -3 },
-      { text: "≥20 cig/día o >20 años", points: -5 },
+      { text: "≤1 cigarro/día, <5 años", points: 4 },
+      { text: "5–10 cig/día o <10 años", points: 3 },
+      { text: "10–20 cig/día, 10–20 años", points: 2 },
+      { text: "≥20 cig/día o >20 años", points: 1 },
     ],
     required: true,
   },
@@ -185,10 +185,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Nunca fumó", points: 5 },
-      { text: "Dejó hace >10 años", points: 3 },
-      { text: "Dejó hace 5–10 años", points: 0 },
-      { text: "Dejó hace <5 años", points: -3 },
-      { text: "Aún fuma", points: -5 },
+      { text: "Dejó hace >10 años", points: 4 },
+      { text: "Dejó hace 5–10 años", points: 3 },
+      { text: "Dejó hace <5 años", points: 2 },
+      { text: "Aún fuma", points: 1 },
     ],
     required: true,
   },
@@ -200,10 +200,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Ninguna o ≤1 bebida", points: 5 },
-      { text: "2–4 bebidas", points: 3 },
-      { text: "5–7 bebidas", points: 0 },
-      { text: "8–14 bebidas", points: -3 },
-      { text: "≥15 bebidas", points: -5 },
+      { text: "2–4 bebidas", points: 4 },
+      { text: "5–7 bebidas", points: 3 },
+      { text: "8–14 bebidas", points: 2 },
+      { text: "≥15 bebidas", points: 1 },
     ],
     required: true,
   },
@@ -214,10 +214,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Nunca", points: 5 },
-      { text: "Muy rara vez (1–2 veces/año)", points: 3 },
-      { text: "Ocasional (mensual)", points: 0 },
-      { text: "Frecuente (semanal)", points: -3 },
-      { text: "Muy frecuente (varias veces/semana)", points: -5 },
+      { text: "Muy rara vez (1–2 veces/año)", points: 4 },
+      { text: "Ocasional (mensual)", points: 3 },
+      { text: "Frecuente (semanal)", points: 2 },
+      { text: "Muy frecuente (varias veces/semana)", points: 1 },
     ],
     required: true,
   },
@@ -228,10 +228,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Sí, 6–7 días sin alcohol", points: 5 },
-      { text: "4–5 días sin alcohol", points: 3 },
-      { text: "2–3 días sin alcohol", points: 0 },
-      { text: "1 día sin alcohol", points: -3 },
-      { text: "Bebe todos los días", points: -5 },
+      { text: "4–5 días sin alcohol", points: 4 },
+      { text: "2–3 días sin alcohol", points: 3 },
+      { text: "1 día sin alcohol", points: 2 },
+      { text: "Bebe todos los días", points: 1 },
     ],
     required: true,
   },
@@ -243,10 +243,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "7–8 horas", points: 5 },
-      { text: "6–7 horas", points: 3 },
-      { text: "<6 horas o >9 horas", points: 0 },
-      { text: "Sueño fragmentado o <5 horas", points: -3 },
-      { text: "Insomnio crónico o muy irregular", points: -5 },
+      { text: "6–7 horas", points: 4 },
+      { text: "<6 horas o >9 horas", points: 3 },
+      { text: "Sueño fragmentado o <5 horas", points: 2 },
+      { text: "Insomnio crónico o muy irregular", points: 1 },
     ],
     required: true,
   },
@@ -257,10 +257,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Nunca", points: 5 },
-      { text: "Ocasionalmente", points: 3 },
-      { text: "Algunas veces/semana", points: 0 },
-      { text: "Casi todas las noches", points: -3 },
-      { text: "Insomnio diagnosticado o uso crónico de hipnóticos", points: -5 },
+      { text: "Ocasionalmente", points: 4 },
+      { text: "Algunas veces/semana", points: 3 },
+      { text: "Casi todas las noches", points: 2 },
+      { text: "Insomnio diagnosticado o uso crónico de hipnóticos", points: 1 },
     ],
     required: true,
   },
@@ -271,10 +271,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Nunca", points: 5 },
-      { text: "Rara vez", points: 3 },
-      { text: "Ocasionalmente", points: 0 },
-      { text: "Frecuente", points: -3 },
-      { text: "Somnolencia diaria o apnea diagnosticada", points: -5 },
+      { text: "Rara vez", points: 4 },
+      { text: "Ocasionalmente", points: 3 },
+      { text: "Frecuente", points: 2 },
+      { text: "Somnolencia diaria o apnea diagnosticada", points: 1 },
     ],
     required: true,
   },
@@ -286,10 +286,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Nunca", points: 5 },
-      { text: "Varios días", points: 3 },
-      { text: "Más de la mitad de los días", points: 0 },
-      { text: "Casi todos los días", points: -3 },
-      { text: "Todos los días, con interferencia funcional", points: -5 },
+      { text: "Varios días", points: 4 },
+      { text: "Más de la mitad de los días", points: 3 },
+      { text: "Casi todos los días", points: 2 },
+      { text: "Todos los días, con interferencia funcional", points: 1 },
     ],
     required: true,
   },
@@ -300,10 +300,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Nunca", points: 5 },
-      { text: "Rara vez", points: 3 },
-      { text: "Ocasionalmente", points: 0 },
-      { text: "Frecuente", points: -3 },
-      { text: "Constante o diagnosticada", points: -5 },
+      { text: "Rara vez", points: 4 },
+      { text: "Ocasionalmente", points: 3 },
+      { text: "Frecuente", points: 2 },
+      { text: "Constante o diagnosticada", points: 1 },
     ],
     required: true,
   },
@@ -314,10 +314,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Nunca", points: 5 },
-      { text: "Rara vez", points: 3 },
-      { text: "Ocasionalmente", points: 0 },
-      { text: "Frecuente", points: -3 },
-      { text: "Pensamientos autodestructivos", points: -5 },
+      { text: "Rara vez", points: 4 },
+      { text: "Ocasionalmente", points: 3 },
+      { text: "Frecuente", points: 2 },
+      { text: "Pensamientos autodestructivos", points: 1 },
     ],
     required: true,
   },
@@ -329,10 +329,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Nunca", points: 5 },
-      { text: "Una leve o controlada", points: 3 },
-      { text: "1–2 moderadas", points: 0 },
-      { text: "1 severa o complicada", points: -3 },
-      { text: "≥2 enfermedades crónicas graves", points: -5 },
+      { text: "Una leve o controlada", points: 4 },
+      { text: "1–2 moderadas", points: 3 },
+      { text: "1 severa o complicada", points: 2 },
+      { text: "≥2 enfermedades crónicas graves", points: 1 },
     ],
     required: true,
   },
@@ -343,10 +343,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Ninguno", points: 5 },
-      { text: "1 medicamento preventivo", points: 3 },
-      { text: "2–3 medicamentos", points: 0 },
-      { text: "≥4 medicamentos", points: -3 },
-      { text: "Polifarmacia o tratamiento complejo", points: -5 },
+      { text: "1 medicamento preventivo", points: 4 },
+      { text: "2–3 medicamentos", points: 3 },
+      { text: "≥4 medicamentos", points: 2 },
+      { text: "Polifarmacia o tratamiento complejo", points: 1 },
     ],
     required: true,
   },
@@ -357,10 +357,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "No", points: 5 },
-      { text: "Leve impacto", points: 3 },
-      { text: "Limitación moderada", points: 0 },
-      { text: "Limitación frecuente", points: -3 },
-      { text: "Dependencia o incapacidad", points: -5 },
+      { text: "Leve impacto", points: 4 },
+      { text: "Limitación moderada", points: 3 },
+      { text: "Limitación frecuente", points: 2 },
+      { text: "Dependencia o incapacidad", points: 1 },
     ],
     required: true,
   },
@@ -372,10 +372,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "≥ 3 veces/semana", points: 5 },
-      { text: "1–2 veces/semana", points: 3 },
-      { text: "2–3 veces/mes", points: 0 },
-      { text: "1 vez/mes o menos", points: -3 },
-      { text: "Casi nunca", points: -5 },
+      { text: "1–2 veces/semana", points: 4 },
+      { text: "2–3 veces/mes", points: 3 },
+      { text: "1 vez/mes o menos", points: 2 },
+      { text: "Casi nunca", points: 1 },
     ],
     required: true,
   },
@@ -386,10 +386,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Frecuentemente", points: 5 },
-      { text: "Ocasionalmente", points: 3 },
-      { text: "Esporádicamente", points: 0 },
-      { text: "Rara vez", points: -3 },
-      { text: "Nunca", points: -5 },
+      { text: "Ocasionalmente", points: 4 },
+      { text: "Esporádicamente", points: 3 },
+      { text: "Rara vez", points: 2 },
+      { text: "Nunca", points: 1 },
     ],
     required: true,
   },
@@ -400,10 +400,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Siempre", points: 5 },
-      { text: "Casi siempre", points: 3 },
-      { text: "A veces", points: 0 },
-      { text: "Rara vez", points: -3 },
-      { text: "Nunca", points: -5 },
+      { text: "Casi siempre", points: 4 },
+      { text: "A veces", points: 3 },
+      { text: "Rara vez", points: 2 },
+      { text: "Nunca", points: 1 },
     ],
     required: true,
   },
@@ -415,10 +415,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Nunca", points: 5 },
-      { text: "Ocasional", points: 3 },
-      { text: "A veces afecta tareas", points: 0 },
-      { text: "Frecuente", points: -3 },
-      { text: "Grave o con diagnóstico", points: -5 },
+      { text: "Ocasional", points: 4 },
+      { text: "A veces afecta tareas", points: 3 },
+      { text: "Frecuente", points: 2 },
+      { text: "Grave o con diagnóstico", points: 1 },
     ],
     required: true,
   },
@@ -429,10 +429,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Completamente independiente", points: 5 },
-      { text: "Leves apoyos ocasionales", points: 3 },
-      { text: "Requiere ayuda parcial", points: 0 },
-      { text: "Dependencia moderada", points: -3 },
-      { text: "Dependencia total", points: -5 },
+      { text: "Leves apoyos ocasionales", points: 4 },
+      { text: "Requiere ayuda parcial", points: 3 },
+      { text: "Dependencia moderada", points: 2 },
+      { text: "Dependencia total", points: 1 },
     ],
     required: true,
   },
@@ -443,10 +443,10 @@ const QUESTIONS: Question[] = [
     type: "select",
     options: [
       { text: "Siempre", points: 5 },
-      { text: "Ocasional desorientación", points: 3 },
-      { text: "A veces pierde el hilo de la conversación", points: 0 },
-      { text: "Frecuente confusión o lentitud", points: -3 },
-      { text: "Desorientación o dificultad marcada", points: -5 },
+      { text: "Ocasional desorientación", points: 4 },
+      { text: "A veces pierde el hilo de la conversación", points: 3 },
+      { text: "Frecuente confusión o lentitud", points: 2 },
+      { text: "Desorientación o dificultad marcada", points: 1 },
     ],
     required: true,
   },
@@ -458,24 +458,30 @@ function calculateBMI(weight: number, height: number): number {
 
 function getBMIPoints(bmi: number): number {
   if (bmi >= 18.5 && bmi <= 24.9) return 5;
-  if (bmi >= 25 && bmi <= 26.9) return 3;
-  if (bmi >= 27 && bmi <= 29.9) return 0;
-  if (bmi >= 30 && bmi <= 34.9) return -3;
-  return -5;
+  if (bmi >= 25 && bmi <= 26.9) return 4;
+  if (bmi >= 27 && bmi <= 29.9) return 3;
+  if (bmi >= 30 && bmi <= 34.9) return 2;
+  return 1;
 }
 
 function getHealthStatus(totalPoints: number): string {
-  if (totalPoints >= 40 && totalPoints <= 50) {
-    return "excelente longevidad y healthspan; riesgo bajo de mortalidad prematura";
-  } else if (totalPoints >= 30 && totalPoints < 40) {
-    return "riesgo moderado; priorizar hábitos saludables";
+  // Nueva escala: 30-150 puntos totales (30 preguntas × 1-5 puntos cada una)
+  if (totalPoints >= 120) {
+    return "excelente";
+  } else if (totalPoints >= 90) {
+    return "bueno";
+  } else if (totalPoints >= 60) {
+    return "regular";
   } else {
-    return "riesgo alto de envejecimiento acelerado y morbilidad crónica";
+    return "necesita atención";
   }
 }
 
 function calculateLongevityPoints(totalPoints: number): number {
-  return Math.round(totalPoints * 2);
+  // Convertir escala de 30-150 a 0-100
+  // Fórmula: ((totalPoints - 30) / 120) × 100
+  const normalized = ((totalPoints - 30) / 120) * 100;
+  return Math.round(Math.max(0, Math.min(100, normalized)));
 }
 
 export default function Cuestionario() {
