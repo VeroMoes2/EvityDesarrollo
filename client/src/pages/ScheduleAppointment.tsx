@@ -1,87 +1,33 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar, Loader2 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-
-// Declare Calendly types for TypeScript
-declare global {
-  interface Window {
-    Calendly: {
-      initInlineWidget: (options: {
-        url: string;
-        parentElement: HTMLElement;
-        prefill?: {
-          name?: string;
-          email?: string;
-        };
-        utm?: Record<string, string>;
-      }) => void;
-    };
-  }
-}
+import { ArrowLeft, Calendar } from "lucide-react";
 
 export default function ScheduleAppointment() {
   const { user, isAuthenticated } = useAuth();
   const [, navigate] = useLocation();
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Load Calendly CSS
-    const link = document.createElement('link');
-    link.href = 'https://assets.calendly.com/assets/external/widget.css';
-    link.rel = 'stylesheet';
-    document.head.appendChild(link);
-
-    // Load Calendly script
-    const script = document.createElement('script');
-    script.src = 'https://assets.calendly.com/assets/external/widget.js';
-    script.async = true;
+  // Build Calendly URL with user prefill data
+  const calendlyUrl = useMemo(() => {
+    const baseUrl = 'https://calendly.com/elena-evity/30min';
+    const params = new URLSearchParams();
     
-    // Handle script load
-    script.onload = () => {
-      try {
-        const calendlyElement = document.getElementById('calendly-inline-widget');
-        if (calendlyElement && window.Calendly) {
-          window.Calendly.initInlineWidget({
-            url: 'https://calendly.com/elena-evity/30min',
-            parentElement: calendlyElement,
-            prefill: {
-              name: `${(user as any)?.firstName || ""} ${(user as any)?.lastName || ""}`.trim(),
-              email: (user as any)?.email || "",
-            },
-          });
-          setIsLoading(false);
-        } else {
-          setError("No se pudo cargar el widget de Calendly");
-          setIsLoading(false);
-        }
-      } catch (err) {
-        console.error("Error initializing Calendly:", err);
-        setError("Error al inicializar Calendly");
-        setIsLoading(false);
+    if (user) {
+      const firstName = (user as any)?.firstName || '';
+      const lastName = (user as any)?.lastName || '';
+      const fullName = `${firstName} ${lastName}`.trim();
+      
+      if (fullName) {
+        params.append('name', fullName);
       }
-    };
-
-    // Handle script error
-    script.onerror = () => {
-      setError("No se pudo cargar el script de Calendly");
-      setIsLoading(false);
-    };
-
-    document.body.appendChild(script);
-
-    // Cleanup script on unmount
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
+      if ((user as any)?.email) {
+        params.append('email', (user as any).email);
       }
-      if (document.head.contains(link)) {
-        document.head.removeChild(link);
-      }
-    };
+    }
+    
+    const queryString = params.toString();
+    return queryString ? `${baseUrl}?${queryString}` : baseUrl;
   }, [user]);
 
   if (!isAuthenticated) {
@@ -117,38 +63,18 @@ export default function ScheduleAppointment() {
           </p>
         </div>
 
-        {/* Loading State */}
-        {isLoading && (
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-                <p className="text-muted-foreground">Cargando calendario...</p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Error State */}
-        {error && (
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center justify-center py-12">
-                <p className="text-destructive mb-4">{error}</p>
-                <p className="text-sm text-muted-foreground">
-                  Por favor, intenta recargar la página o contacta con soporte.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Calendly Widget */}
-        <div 
-          id="calendly-inline-widget" 
-          style={{ minWidth: '320px', height: '700px', display: isLoading ? 'none' : 'block' }}
-          data-testid="calendly-widget"
-        ></div>
+        {/* Calendly iFrame */}
+        <div className="w-full rounded-lg overflow-hidden border border-border bg-card shadow-sm">
+          <iframe
+            src={calendlyUrl}
+            width="100%"
+            height="700"
+            frameBorder="0"
+            title="Calendly - Agendar Cita"
+            data-testid="calendly-iframe"
+            className="w-full"
+          />
+        </div>
       </div>
     </div>
   );
