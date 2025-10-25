@@ -212,7 +212,7 @@ export default function Profile() {
             <div className="flex items-center space-x-4">
               <Link href="/">
                 <Button 
-                  variant="ghost" 
+                  variant="default" 
                   size="sm"
                   data-testid="button-back-home"
                   className="flex items-center space-x-2"
@@ -224,7 +224,7 @@ export default function Profile() {
               <h1 className="text-2xl font-bold text-gray-900">{t('profile.myProfile')}</h1>
             </div>
             <Button 
-              variant="outline" 
+              variant="default" 
               onClick={logout}
               data-testid="button-logout"
             >
@@ -407,13 +407,13 @@ export default function Profile() {
                     <p className="font-semibold text-lg" data-testid="text-username">
                       {(user as any)?.firstName} {(user as any)?.lastName}
                     </p>
-                    <div className="flex items-center text-gray-600 mt-1">
+                    <div className="flex items-center text-gray-400 mt-1">
                       <Mail className="h-4 w-4 mr-1" />
                       <span className="text-sm" data-testid="text-email">{(user as any)?.email}</span>
                     </div>
                     {/* LS-110: Display phone number if available */}
                     {(user as any)?.phoneNumber && (
-                      <div className="flex items-center text-gray-600 mt-1">
+                      <div className="flex items-center text-gray-400 mt-1">
                         <Phone className="h-4 w-4 mr-1" />
                         <span className="text-sm" data-testid="text-phone-number">{(user as any)?.phoneNumber}</span>
                       </div>
@@ -424,21 +424,21 @@ export default function Profile() {
                 <Separator />
                 
                 <div className="space-y-3">
-                  <div className="flex items-center text-gray-600">
+                  <div className="flex items-center text-gray-400">
                     <Calendar className="h-4 w-4 mr-2" />
                     <span className="text-sm">
                       Miembro desde {new Date((user as any)?.createdAt).toLocaleDateString('es-ES')}
                     </span>
                   </div>
                   
-                  <div className="flex items-center text-gray-600">
+                  <div className="flex items-center text-gray-400">
                     <Shield className="h-4 w-4 mr-2" />
                     <span className="text-sm" data-testid="verification-status">
                       {(user as any)?.isEmailVerified === "true" ? "Perfil verificado" : "Email pendiente de verificación"}
                     </span>
                   </div>
                   
-                  <div className="flex items-center text-gray-600">
+                  <div className="flex items-center text-gray-400">
                     <Activity className="h-4 w-4 mr-2" />
                     <span className="text-sm">{documents.length} documentos cargados</span>
                   </div>
