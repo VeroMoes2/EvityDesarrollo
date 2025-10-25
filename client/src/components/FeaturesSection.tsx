@@ -76,6 +76,14 @@ export default function FeaturesSection() {
             </Card>
           ))}
         </div>
+
+        <div className="mt-16 text-center">
+          <div className="inline-flex items-center px-6 py-3 bg-primary/10 rounded-full">
+            <span className="text-primary font-medium">
+              🏆 Respaldado por más de 500 estudios científicos
+            </span>
+          </div>
+        </div>
       </div>
     </section>
   );
