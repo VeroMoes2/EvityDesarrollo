@@ -122,6 +122,15 @@ export default function QuestionnaireResults() {
           </CardContent>
         </Card>
 
+        {/* Motivational Call to Action */}
+        <Card className="bg-primary/10 border-2 border-primary/30">
+          <CardContent className="pt-6">
+            <p className="text-base font-medium text-primary text-center">
+              ¡Da el siguiente paso y únete a la comunidad de Evity para aumentar tus puntos de longevidad!
+            </p>
+          </CardContent>
+        </Card>
+
         {/* Action Cards */}
         <div className="grid gap-4 md:grid-cols-2">
           {/* Schedule Appointment */}
