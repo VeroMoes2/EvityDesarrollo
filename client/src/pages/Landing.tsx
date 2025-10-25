@@ -7,7 +7,6 @@ import heroImage from "@assets/image_1758350191302.png";
 import CalculatorSection from "@/components/CalculatorSection";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import BlogSection from "@/components/BlogSection";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Landing() {
@@ -307,9 +306,6 @@ export default function Landing() {
 
       {/* Calculator Section - Available for all users */}
       <CalculatorSection />
-
-      {/* Blog Section - LS-140: Show blog posts before login */}
-      <BlogSection />
 
       {/* Footer */}
       <Footer />
