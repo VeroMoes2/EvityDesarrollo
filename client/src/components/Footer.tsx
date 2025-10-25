@@ -77,7 +77,9 @@ export default function Footer() {
                 {t('footer.calculators')}
               </button>
               <button 
-                onClick={() => navigate("/blog")}
+                onClick={() => {
+                  window.location.href = "/#blog";
+                }}
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
                 data-testid="footer-link-blog"
               >

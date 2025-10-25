@@ -117,11 +117,11 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Features Section - Recursos Evity */}
-      <section id="recursos" className="bg-background py-16">
+      {/* Blog Section */}
+      <section id="blog" className="bg-background py-16">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold text-center text-foreground mb-12">
-            Recursos Evity
+            Blog Evity
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             {features.map((feature, index) => (
