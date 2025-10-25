@@ -10,9 +10,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Mail, MapPin, Phone, Clock } from "lucide-react";
+import { Mail, MapPin, Phone, Clock, Home } from "lucide-react";
 import Header from "@/components/Header";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useLocation } from "wouter";
 
 // Validation schema for contact form - will be created inside component to access t()
 
@@ -27,6 +28,7 @@ export default function Contacto() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { t } = useLanguage();
+  const [, navigate] = useLocation();
   
   // Create schema inside component to access t() for translations
   const contactSchema = z.object({
@@ -255,6 +257,19 @@ export default function Contacto() {
 
               </div>
 
+            </div>
+
+            {/* Back to Home Button */}
+            <div className="mt-12 text-center">
+              <Button 
+                variant="outline" 
+                onClick={() => navigate("/")}
+                data-testid="button-back-home"
+                className="gap-2"
+              >
+                <Home className="h-4 w-4" />
+                Volver al Inicio
+              </Button>
             </div>
 
           </div>
