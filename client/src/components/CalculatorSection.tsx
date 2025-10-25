@@ -72,10 +72,10 @@ export default function CalculatorSection() {
 
   const getBMIPoints = (bmi: number): number => {
     if (bmi >= 18.5 && bmi <= 24.9) return 5;
-    if (bmi >= 25 && bmi <= 26.9) return 3;
-    if (bmi >= 27 && bmi <= 29.9) return 0;
-    if (bmi >= 30 && bmi <= 34.9) return -3;
-    return -5; // BMI >= 35
+    if (bmi >= 25 && bmi <= 26.9) return 4;
+    if (bmi >= 27 && bmi <= 29.9) return 3;
+    if (bmi >= 30 && bmi <= 34.9) return 2;
+    return 1; // BMI >= 35
   };
 
   const getInterpretation = (score: number): string => {
@@ -98,20 +98,20 @@ export default function CalculatorSection() {
     // Question 1: Exercise (5 options)
     const exerciseScores: Record<string, number> = {
       "5-7": 5,
-      "3-4": 3,
-      "1-2": 0,
-      "<1": -3,
-      "none": -5
+      "3-4": 4,
+      "1-2": 3,
+      "<1": 2,
+      "none": 1
     };
     totalScore += exerciseScores[formData.exercise] || 0;
 
     // Question 2: Diet (5 options)
     const dietScores: Record<string, number> = {
       "excellent": 5,
-      "good": 3,
-      "mixed": 0,
-      "poor": -3,
-      "very-poor": -5
+      "good": 4,
+      "mixed": 3,
+      "poor": 2,
+      "very-poor": 1
     };
     totalScore += dietScores[formData.diet] || 0;
 
@@ -128,25 +128,26 @@ export default function CalculatorSection() {
     // Question 4: Smoking and drinking (5 options)
     const smokingDrinkingScores: Record<string, number> = {
       "none": 5,
-      "ex-smoker-low": 3,
-      "ex-smoker-moderate": 0,
-      "occasional": -3,
-      "active": -5
+      "ex-smoker-low": 4,
+      "ex-smoker-moderate": 3,
+      "occasional": 2,
+      "active": 1
     };
     totalScore += smokingDrinkingScores[formData.smokingDrinking] || 0;
 
     // Question 5: Sleep and wellbeing (5 options)
     const sleepScores: Record<string, number> = {
       "excellent": 5,
-      "good": 3,
-      "irregular": 0,
-      "poor": -3,
-      "very-poor": -5
+      "good": 4,
+      "irregular": 3,
+      "poor": 2,
+      "very-poor": 1
     };
     totalScore += sleepScores[formData.sleepWellbeing] || 0;
 
-    // Multiply by 4 to get 0-100 scale
-    const finalScore = totalScore * 4;
+    // Convert from 5-25 scale to 0-100 scale
+    // Formula: ((totalScore - 5) / 20) × 100
+    const finalScore = Math.round(((totalScore - 5) / 20) * 100);
     const interpretation = getInterpretation(finalScore);
     setResult({ score: finalScore, interpretation });
     setShowResult(true);
