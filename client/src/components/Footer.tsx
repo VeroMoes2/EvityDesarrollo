@@ -50,7 +50,7 @@ export default function Footer() {
           </div>
 
           {/* Enlaces Rápidos, Recursos y Contacto */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-4 lg:gap-6">
             {/* Quick Links */}
             <div className="space-y-4">
               <h4 className="font-semibold text-card-foreground">{t('footer.quickLinks')}</h4>
