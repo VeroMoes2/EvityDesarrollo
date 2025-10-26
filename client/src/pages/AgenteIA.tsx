@@ -185,7 +185,7 @@ export default function AgenteIA() {
                 {messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`flex gap-3 ${
+                    className={`flex gap-3 w-full ${
                       message.role === "user" ? "justify-end" : "justify-start"
                     }`}
                   >
@@ -196,25 +196,26 @@ export default function AgenteIA() {
                     )}
                     
                     <div
-                      className={`max-w-[85%] min-w-0 rounded-lg px-4 py-3 ${
+                      className={`flex-1 max-w-[calc(100%-3rem)] rounded-lg px-4 py-3 overflow-hidden ${
                         message.role === "user"
                           ? "bg-primary text-primary-foreground"
                           : "bg-muted"
                       }`}
-                      style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
                     >
-                      <p className="text-sm whitespace-pre-wrap">
-                        {message.content}
-                      </p>
-                      <p
-                        className={`text-xs mt-1 ${
-                          message.role === "user"
-                            ? "text-primary-foreground/70"
-                            : "text-muted-foreground"
-                        }`}
-                      >
-                        {formatTime(message.timestamp)}
-                      </p>
+                      <div className="break-words overflow-wrap-break-word">
+                        <p className="text-sm whitespace-pre-wrap break-words">
+                          {message.content}
+                        </p>
+                        <p
+                          className={`text-xs mt-1 ${
+                            message.role === "user"
+                              ? "text-primary-foreground/70"
+                              : "text-muted-foreground"
+                          }`}
+                        >
+                          {formatTime(message.timestamp)}
+                        </p>
+                      </div>
                     </div>
 
                     {message.role === "user" && (
