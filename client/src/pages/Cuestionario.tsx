@@ -1006,6 +1006,16 @@ export default function Cuestionario() {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Volver al perfil
             </Button>
+            
+            <Button
+              onClick={handleStartNewQuestionnaire}
+              variant="default"
+              size="sm"
+              data-testid="button-new-questionnaire-top"
+            >
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Repetir cuestionario
+            </Button>
           </div>
 
           {/* Success Header */}
@@ -1122,19 +1132,8 @@ export default function Cuestionario() {
                 </div>
               )}
 
-              {/* Botones de acción */}
-              <div className="pt-6 border-t space-y-3">
-                <Button
-                  onClick={handleStartNewQuestionnaire}
-                  variant="outline"
-                  className="w-full"
-                  size="lg"
-                  data-testid="button-new-questionnaire"
-                >
-                  <RotateCcw className="h-5 w-5 mr-2" />
-                  Hacer cuestionario nuevamente
-                </Button>
-                
+              {/* Botón de acción */}
+              <div className="pt-6 border-t">
                 <Button
                   onClick={() => navigate("/historial-cuestionarios")}
                   variant="outline"
@@ -1146,7 +1145,7 @@ export default function Cuestionario() {
                   Ver historial completo
                 </Button>
                 
-                <p className="text-xs text-gray-600 dark:text-gray-400 text-center mt-2">
+                <p className="text-xs text-gray-600 dark:text-gray-400 text-center mt-4">
                   Tus resultados anteriores se guardan automáticamente en el historial
                 </p>
               </div>
