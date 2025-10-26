@@ -8,8 +8,7 @@ import {
   Sparkles, 
   Calendar,
   ArrowRight,
-  Home,
-  ArrowLeft
+  Home
 } from "lucide-react";
 
 export default function QuestionnaireResults() {
@@ -65,21 +64,8 @@ export default function QuestionnaireResults() {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-3xl mx-auto p-6 space-y-6">
-        {/* Back Button */}
-        <div className="flex justify-start">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/cuestionario")}
-            data-testid="button-back"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver
-          </Button>
-        </div>
-
         {/* Success Header */}
-        <div className="text-center space-y-4 pt-4">
+        <div className="text-center space-y-4 pt-8">
           <div className="flex justify-center">
             <div className="rounded-full bg-green-100 dark:bg-green-900 p-4">
               <CheckCircle2 className="h-16 w-16 text-green-600 dark:text-green-400" data-testid="icon-success" />
