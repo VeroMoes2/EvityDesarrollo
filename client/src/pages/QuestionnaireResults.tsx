@@ -121,10 +121,10 @@ export default function QuestionnaireResults() {
             )}
 
             {/* Section-Specific Interpretations */}
-            {questionnaire.sectionInterpretations && Object.keys(questionnaire.sectionInterpretations).length > 0 && (
+            {questionnaire.sectionInterpretations && typeof questionnaire.sectionInterpretations === 'object' && Object.keys(questionnaire.sectionInterpretations).length > 0 && (
               <div className="pt-4 border-t">
                 <h3 className="text-lg font-semibold mb-4 text-center">Recomendaciones Personalizadas</h3>
-                {Object.entries(questionnaire.sectionInterpretations).map(([section, interpretation]) => (
+                {Object.entries(questionnaire.sectionInterpretations as Record<string, string>).map(([section, interpretation]) => (
                   <div key={section} className="mb-4 last:mb-0">
                     <div className="bg-primary/5 dark:bg-primary/10 rounded-lg p-4 border border-primary/20">
                       <h4 className="text-sm font-semibold text-primary mb-2" data-testid={`section-title-${section.toLowerCase().replace(/\s+/g, '-')}`}>
