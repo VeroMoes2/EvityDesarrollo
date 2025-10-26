@@ -593,16 +593,21 @@ function generateSectionInterpretations(sectionAverages: Record<string, number>)
     
     if (sectionInterpretation) {
       // Determinar qué rango aplica
-      if (average >= 1 && average < 2) {
+      if (average < 2) {
         interpretations[section] = sectionInterpretation["1-2"];
       } else if (average >= 2 && average < 5) {
         // Para Actividad física, el rango es 3-4 en lugar de 2-4
-        if (section === "Actividad física y sedentarismo" && average >= 3) {
-          interpretations[section] = sectionInterpretation["3-4"];
+        if (section === "Actividad física y sedentarismo") {
+          if (average >= 3) {
+            interpretations[section] = sectionInterpretation["3-4"];
+          } else {
+            // Promedio entre 2 y 2.99 para Actividad física => usar rango bajo
+            interpretations[section] = sectionInterpretation["1-2"];
+          }
         } else if (section === "Dieta y nutrición") {
           interpretations[section] = sectionInterpretation["2-4"];
         }
-      } else if (average === 5) {
+      } else if (average >= 5) {
         interpretations[section] = sectionInterpretation["5"];
       }
     }
