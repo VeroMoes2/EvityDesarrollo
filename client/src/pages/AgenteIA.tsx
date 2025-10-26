@@ -169,7 +169,7 @@ export default function AgenteIA() {
           </div>
         </div>
 
-        <Card className="h-[calc(100vh-280px)] flex flex-col">
+        <Card className="flex flex-col">
           <CardHeader className="pb-4">
             <CardTitle className="text-lg">Conversación</CardTitle>
             <CardDescription>
@@ -179,8 +179,8 @@ export default function AgenteIA() {
           
           <Separator />
 
-          <CardContent className="flex-1 flex flex-col p-0">
-            <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
+          <CardContent className="flex flex-col p-0">
+            <ScrollArea ref={scrollAreaRef} className="h-[calc(100vh-400px)] p-4">
               <div className="space-y-4">
                 {messages.map((message) => (
                   <div
