@@ -540,13 +540,13 @@ Mi recomendación es empezar poco a poco: da prioridad a alimentos reales y natu
 
 Recuerda, cada cambio cuenta, no tienes que hacerlo todo de golpe, lo importante es avanzar un paso a la vez hacia una alimentación más consciente.`,
     
-    "3-4": `Vas por buen camino. Conforme avanzamos en la vida, nuestro cuerpo necesita menos calorías, pero más nutrientes de calidad. Por eso, te recomiendo fortalecer tus elecciones alimentarias con alimentos ricos en fibra y micronutrientes: panes y cereales integrales, frijoles, nueces, semillas sin sal, verduras coloridas y frutas frescas.
+    "2.1-4": `Vas por buen camino. Conforme avanzamos en la vida, nuestro cuerpo necesita menos calorías, pero más nutrientes de calidad. Por eso, te recomiendo fortalecer tus elecciones alimentarias con alimentos ricos en fibra y micronutrientes: panes y cereales integrales, frijoles, nueces, semillas sin sal, verduras coloridas y frutas frescas.
 
 Además, sigue cuidando tu estilo de vida con actividad física regular, descanso reparador y manejo del estrés. Estos hábitos son grandes aliados para prevenir enfermedades metabólicas y cardiovasculares.
 
 Estás en una buena etapa: solo afina los detalles para que tu bienestar siga mejorando.`,
     
-    "5": `¡Excelente trabajo! Estás manteniendo una dieta equilibrada, variada y consciente, enfocada en cubrir tus necesidades energéticas sin excederte. Eso te permite mantener un peso saludable y una buena vitalidad.
+    "4.1-5": `¡Excelente trabajo! Estás manteniendo una dieta equilibrada, variada y consciente, enfocada en cubrir tus necesidades energéticas sin excederte. Eso te permite mantener un peso saludable y una buena vitalidad.
 
 Sigue priorizando frutas, verduras, pescado, leguminosas, frutos secos y aceite de oliva como base de tu alimentación.
 
@@ -564,7 +564,7 @@ El objetivo mínimo es alcanzar 150 a 300 minutos semanales de actividad aeróbi
 
 Recuerda: el movimiento es medicina. No se trata de hacerlo perfecto, sino de empezar a moverte con constancia.`,
     
-    "3-4": `¡Vas por un excelente camino! Ya has integrado actividad física en tu rutina, y eso se nota. Ahora el siguiente paso es mantener la constancia y aumentar progresivamente la intensidad o la duración. Los adultos pueden obtener beneficios adicionales si superan los 300 minutos semanales de actividad aeróbica moderada o 150 minutos de intensidad vigorosa, o bien una combinación de ambas.
+    "2.1-4": `¡Vas por un excelente camino! Ya has integrado actividad física en tu rutina, y eso se nota. Ahora el siguiente paso es mantener la constancia y aumentar progresivamente la intensidad o la duración. Los adultos pueden obtener beneficios adicionales si superan los 300 minutos semanales de actividad aeróbica moderada o 150 minutos de intensidad vigorosa, o bien una combinación de ambas.
 
 Numerosos estudios confirman que quienes se mantienen activos tienen menor riesgo de mortalidad por cualquier causa, enfermedades cardiovasculares y metabólicas.
 
@@ -572,7 +572,7 @@ Un punto importante: actividad física y sedentarismo no son lo mismo. Puedes ha
 
 Combinar movimiento regular y menos tiempo sedentario te ayudará a mantener una vida más vital, plena y saludable.`,
     
-    "5": `¡Muy buen trabajo! Tus niveles de actividad física son un reflejo de disciplina y autocuidado. Está ampliamente comprobado que toda forma de movimiento, sin importar la intensidad reduce el riesgo de mortalidad, enfermedades cardiovasculares, hipertensión, diabetes tipo 2 y ciertos tipos de cáncer.
+    "4.1-5": `¡Muy buen trabajo! Tus niveles de actividad física son un reflejo de disciplina y autocuidado. Está ampliamente comprobado que toda forma de movimiento, sin importar la intensidad reduce el riesgo de mortalidad, enfermedades cardiovasculares, hipertensión, diabetes tipo 2 y ciertos tipos de cáncer.
 
 Además, mantenerse activo mejora la salud mental, la función cognitiva y la calidad del sueño, y ayuda a controlar el peso corporal y prevenir el aumento de grasa con los años.
 
@@ -592,16 +592,15 @@ function generateSectionInterpretations(sectionAverages: Record<string, number>)
     const sectionInterpretation = SECTION_INTERPRETATIONS[section];
     
     if (sectionInterpretation) {
-      // Determinar qué rango aplica según el PDF:
-      // Para <2 puntos, Para 3-4 puntos, Para 5 puntos
+      // Determinar qué rango aplica según el PDF actualizado:
+      // Para <2 puntos, Para 2.1-4 puntos, Para 4.1-5 puntos
       if (average < 2) {
         interpretations[section] = sectionInterpretation["<2"];
-      } else if (average >= 3 && average < 5) {
-        interpretations[section] = sectionInterpretation["3-4"];
-      } else if (average >= 5) {
-        interpretations[section] = sectionInterpretation["5"];
+      } else if (average >= 2 && average <= 4) {
+        interpretations[section] = sectionInterpretation["2.1-4"];
+      } else if (average > 4 && average <= 5) {
+        interpretations[section] = sectionInterpretation["4.1-5"];
       }
-      // Nota: Si average está entre 2 y 2.99, no se asigna interpretación (según PDF)
     }
   }
   
