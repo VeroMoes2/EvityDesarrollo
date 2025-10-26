@@ -615,7 +615,11 @@ export default function Cuestionario() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [isSaving, setIsSaving] = useState(false);
-  const [showQuestionnaire, setShowQuestionnaire] = useState(false);
+  
+  // Detectar si viene el parámetro ?new=true para inicializar showQuestionnaire
+  const urlParams = new URLSearchParams(window.location.search);
+  const isNewQuestionnaire = urlParams.get('new') === 'true';
+  const [showQuestionnaire, setShowQuestionnaire] = useState(isNewQuestionnaire);
   
   // Mutación para eliminar el cuestionario en progreso actual
   const deleteQuestionnaireMutation = useMutation({
