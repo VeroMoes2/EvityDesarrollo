@@ -3,21 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState, useEffect } from "react";
-import { Calculator, TrendingUp, Heart, MessageCircle, Sparkles, History, Calendar as CalendarIcon } from "lucide-react";
+import { useState } from "react";
+import { Calculator, TrendingUp, Heart, MessageCircle, Sparkles } from "lucide-react";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
 import { useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-
-interface CalculationHistory {
-  date: string;
-  score: number;
-  interpretation: string;
-  age?: number;
-  ageInterpretation?: string;
-}
 
 export default function CalculatorSection() {
   const { data: confluenceData, isLoading, error } = useConfluenceData();
@@ -34,37 +24,8 @@ export default function CalculatorSection() {
   });
   const [result, setResult] = useState<{ score: number; interpretation: string; ageInterpretation: string } | null>(null);
   const [showResult, setShowResult] = useState(false);
-  const [calculationHistory, setCalculationHistory] = useState<CalculationHistory[]>([]);
   
   const companyName = confluenceData?.companyName || "Evity";
-
-  // Load calculation history from localStorage on mount
-  useEffect(() => {
-    const storedHistory = localStorage.getItem('longevityCalculationHistory');
-    if (storedHistory) {
-      try {
-        const history = JSON.parse(storedHistory) as CalculationHistory[];
-        setCalculationHistory(history);
-      } catch (error) {
-        console.error('Error loading calculation history:', error);
-      }
-    }
-  }, []);
-
-  // Save calculation to history
-  const saveToHistory = (score: number, interpretation: string, age: number, ageInterpretation: string) => {
-    const newCalculation: CalculationHistory = {
-      date: new Date().toISOString(),
-      score,
-      interpretation,
-      age,
-      ageInterpretation,
-    };
-    
-    const updatedHistory = [newCalculation, ...calculationHistory].slice(0, 10); // Keep only last 10
-    setCalculationHistory(updatedHistory);
-    localStorage.setItem('longevityCalculationHistory', JSON.stringify(updatedHistory));
-  };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -168,9 +129,6 @@ export default function CalculatorSection() {
     const ageInterpretation = getAgeInterpretation(age);
     setResult({ score: finalScore, interpretation, ageInterpretation });
     setShowResult(true);
-    
-    // Save to history
-    saveToHistory(finalScore, interpretation, age, ageInterpretation);
   };
 
   const isAgeValid = () => {
@@ -401,43 +359,6 @@ export default function CalculatorSection() {
                         ¡Da el siguiente paso y únete a la comunidad de Evity para aumentar tus puntos de longevidad!
                       </p>
                     </div>
-
-                    {/* Calculation History */}
-                    {calculationHistory.length > 1 && (
-                      <div className="border-t pt-4">
-                        <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                          <History className="h-4 w-4 text-primary" />
-                          Historial de Cálculos
-                        </h4>
-                        <div className="space-y-2 max-h-60 overflow-y-auto">
-                          {calculationHistory.slice(1).map((calc, index) => (
-                            <div 
-                              key={index} 
-                              className="flex items-center justify-between p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
-                              data-testid={`history-item-${index}`}
-                            >
-                              <div className="flex items-center gap-3 flex-1">
-                                <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                                <div className="flex-1">
-                                  <p className="text-sm font-medium text-foreground">
-                                    {format(new Date(calc.date), "d 'de' MMMM 'de' yyyy", { locale: es })}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {format(new Date(calc.date), "h:mm a", { locale: es })}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="text-right">
-                                <div className={`text-2xl font-bold ${getScoreColor(calc.score)}`}>
-                                  {calc.score}
-                                </div>
-                                <p className="text-xs text-muted-foreground">puntos</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
 
                     <div className="space-y-3">
                       <Button 
