@@ -180,7 +180,7 @@ export default function Profile() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">{t('profile.loadingProfile')}</p>
+          <p className="mt-4 text-gray-700 dark:text-gray-400">{t('profile.loadingProfile')}</p>
         </div>
       </div>
     );
@@ -364,7 +364,7 @@ export default function Profile() {
                                       data-testid="input-phone-number-profile"
                                       autoComplete="tel"
                                     />
-                                    <Phone className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
+                                    <Phone className="absolute right-3 top-3 h-4 w-4 text-gray-500 dark:text-gray-400" />
                                   </div>
                                 </FormControl>
                                 <FormMessage />
@@ -407,13 +407,13 @@ export default function Profile() {
                     <p className="font-semibold text-lg" data-testid="text-username">
                       {(user as any)?.firstName} {(user as any)?.lastName}
                     </p>
-                    <div className="flex items-center text-gray-400 mt-1">
+                    <div className="flex items-center text-gray-700 dark:text-gray-400 mt-1">
                       <Mail className="h-4 w-4 mr-1" />
                       <span className="text-sm" data-testid="text-email">{(user as any)?.email}</span>
                     </div>
                     {/* LS-110: Display phone number if available */}
                     {(user as any)?.phoneNumber && (
-                      <div className="flex items-center text-gray-400 mt-1">
+                      <div className="flex items-center text-gray-700 dark:text-gray-400 mt-1">
                         <Phone className="h-4 w-4 mr-1" />
                         <span className="text-sm" data-testid="text-phone-number">{(user as any)?.phoneNumber}</span>
                       </div>
@@ -424,21 +424,21 @@ export default function Profile() {
                 <Separator />
                 
                 <div className="space-y-3">
-                  <div className="flex items-center text-gray-400">
+                  <div className="flex items-center text-gray-700 dark:text-gray-400">
                     <Calendar className="h-4 w-4 mr-2" />
                     <span className="text-sm">
                       {t('userProfile.memberSince')} {new Date((user as any)?.createdAt).toLocaleDateString('es-ES')}
                     </span>
                   </div>
                   
-                  <div className="flex items-center text-gray-400">
+                  <div className="flex items-center text-gray-700 dark:text-gray-400">
                     <Shield className="h-4 w-4 mr-2" />
                     <span className="text-sm" data-testid="verification-status">
                       {(user as any)?.isEmailVerified === "true" ? "Perfil verificado" : t('userProfile.emailPending')}
                     </span>
                   </div>
                   
-                  <div className="flex items-center text-gray-400">
+                  <div className="flex items-center text-gray-700 dark:text-gray-400">
                     <Activity className="h-4 w-4 mr-2" />
                     <span className="text-sm">{documents.length} {documents.length === 1 ? t('userProfile.documento') : t('userProfile.documentsLoaded')}</span>
                   </div>
@@ -478,7 +478,7 @@ export default function Profile() {
                       <div className="p-4 bg-primary/10 dark:bg-primary/20 border border-primary/20 rounded-lg space-y-3">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-sm font-medium text-muted-foreground">
+                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                               Mis puntos de longevidad
                             </p>
                             <p className="text-3xl font-bold text-primary mt-1" data-testid="text-longevity-points">
@@ -489,7 +489,7 @@ export default function Profile() {
                         </div>
                         {(questionnaireData.questionnaire as any).healthStatus && (
                           <div className="pt-2 border-t border-primary/20">
-                            <p className="text-sm text-muted-foreground capitalize" data-testid="text-health-status">
+                            <p className="text-sm text-gray-700 dark:text-gray-300 capitalize" data-testid="text-health-status">
                               {(questionnaireData.questionnaire as any).healthStatus}
                             </p>
                           </div>
@@ -646,7 +646,7 @@ export default function Profile() {
                   
                   {(searchTerm || selectedFileType !== "all") && (
                     <div className="mt-4 flex items-center justify-between">
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-700 dark:text-gray-400">
                         Mostrando {filteredDocuments.length} de {documents.length} documentos
                       </p>
                       <Button 
@@ -689,11 +689,11 @@ export default function Profile() {
                   {documentsLoading ? (
                     <div className="text-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                      <p className="mt-2 text-gray-600">Cargando documentos...</p>
+                      <p className="mt-2 text-gray-700 dark:text-gray-400">Cargando documentos...</p>
                     </div>
                   ) : allDocuments.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500" data-testid="empty-state-documents">
-                      <FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                    <div className="text-center py-8 text-gray-700 dark:text-gray-400" data-testid="empty-state-documents">
+                      <FileText className="h-12 w-12 mx-auto mb-4 text-gray-400 dark:text-gray-600" />
                       <p className="font-medium mb-2">No tienes estudios o laboratorios cargados</p>
                       <p className="text-sm mb-4">Sube tus primeros documentos médicos para comenzar tu análisis personalizado</p>
                       <Button 
@@ -712,7 +712,7 @@ export default function Profile() {
                             <FileText className={`h-5 w-5 ${doc.fileType === 'study' ? 'text-blue-600' : 'text-green-600'}`} />
                             <div>
                               <p className="font-medium">{doc.originalName}</p>
-                              <div className="flex items-center space-x-2 text-sm text-gray-500">
+                              <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                                 <span>Subido el {new Date(doc.uploadedAt).toLocaleDateString('es-ES')}</span>
                                 <span>•</span>
                                 <Badge variant="outline" className="text-xs">
