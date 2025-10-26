@@ -538,21 +538,22 @@ export default function Profile() {
                       </div>
                     )}
                     
-                    <div className="space-y-2">
-                      <Link href="/cuestionario">
-                        <Button variant="outline" className="w-full" data-testid="button-view-questionnaire">
-                          <Eye className="h-4 w-4 mr-2" />
-                          Ver mis resultados
-                        </Button>
-                      </Link>
-                      
+                    <Link href="/cuestionario">
+                      <Button variant="outline" className="w-full" data-testid="button-view-questionnaire">
+                        <Eye className="h-4 w-4 mr-2" />
+                        Ver mis resultados
+                      </Button>
+                    </Link>
+                    
+                    {/* Only show Repeat button if there's NO questionnaire in progress */}
+                    {!(questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists && 'questionnaire' in questionnaireData && questionnaireData.questionnaire && (questionnaireData.questionnaire as any).isCompleted === "false") && (
                       <Link href="/cuestionario?new=true">
                         <Button variant="default" className="w-full" data-testid="button-repeat-questionnaire">
                           <RotateCcw className="h-4 w-4 mr-2" />
                           Repetir cuestionario
                         </Button>
                       </Link>
-                    </div>
+                    )}
                   </>
                 )}
 
