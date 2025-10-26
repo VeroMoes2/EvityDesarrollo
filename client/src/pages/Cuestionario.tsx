@@ -982,14 +982,24 @@ export default function Cuestionario() {
     const resultAnswers = latestResult.answers as Record<string, any>;
     const completedDate = new Date(latestResult.completedAt);
     
+    const getStatusColor = (points: string) => {
+      const numPoints = parseInt(points) / 2;
+      if (numPoints >= 40) return "text-green-600 dark:text-green-400";
+      if (numPoints >= 30) return "text-yellow-600 dark:text-yellow-400";
+      return "text-orange-600 dark:text-orange-400";
+    };
+
+    const getStatusBgColor = (points: string) => {
+      const numPoints = parseInt(points) / 2;
+      if (numPoints >= 40) return "bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800";
+      if (numPoints >= 30) return "bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-800";
+      return "bg-orange-50 dark:bg-orange-950 border-orange-200 dark:border-orange-800";
+    };
+
     return (
       <div className="min-h-screen bg-background">
         <div className="max-w-4xl mx-auto p-6 space-y-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-6 w-6 text-primary" />
-              <h1 className="text-2xl font-bold">Tu último cuestionario</h1>
-            </div>
             <Button
               variant="ghost"
               size="sm"
@@ -1001,24 +1011,70 @@ export default function Cuestionario() {
             </Button>
           </div>
 
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Resultados del cuestionario</CardTitle>
-                  <CardDescription className="flex items-center gap-2 mt-2">
-                    <Calendar className="h-4 w-4" />
-                    Completado el {completedDate.toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })}
-                  </CardDescription>
+          {/* Success Header */}
+          <div className="text-center space-y-4">
+            <div className="flex justify-center">
+              <div className="rounded-full bg-green-100 dark:bg-green-900 p-4">
+                <CheckCircle2 className="h-16 w-16 text-green-600 dark:text-green-400" />
+              </div>
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                ¡Cuestionario completado!
+              </h1>
+              <p className="text-lg text-muted-foreground">
+                Has concluido exitosamente tu evaluación de salud
+              </p>
+            </div>
+          </div>
+
+          {/* Results Card */}
+          <Card className={`border-2 ${getStatusBgColor(latestResult.longevityPoints)}`}>
+            <CardHeader className="text-center pb-4">
+              <CardTitle className="text-2xl">Tus resultados</CardTitle>
+              <CardDescription>
+                Basado en tus respuestas, aquí está tu perfil de longevidad
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Longevity Points */}
+              <div className="text-center space-y-3">
+                <div className="flex items-center justify-center gap-2">
+                  <Sparkles className={`h-8 w-8 ${getStatusColor(latestResult.longevityPoints)}`} />
+                  <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                    Puntos de Longevidad
+                  </h2>
                 </div>
-                <div className="text-center">
-                  <div className="text-4xl font-bold text-primary">{latestResult.longevityPoints}</div>
-                  <div className="text-sm text-muted-foreground">Puntos de longevidad</div>
-                  <div className="text-xs mt-1 px-3 py-1 bg-primary/10 text-primary rounded-full">
-                    {latestResult.healthStatus}
+                <div className={`text-6xl font-bold ${getStatusColor(latestResult.longevityPoints)}`}>
+                  {latestResult.longevityPoints}
+                </div>
+                <p className="text-sm text-muted-foreground">de 100 puntos posibles</p>
+              </div>
+
+              {/* Health Status Legend */}
+              {latestResult.healthStatus && (
+                <div className="pt-4 border-t">
+                  <div className="bg-background/50 rounded-lg p-4">
+                    <p className="text-sm font-medium text-muted-foreground mb-2 text-center">
+                      Estado de Salud
+                    </p>
+                    <p className={`text-center text-base font-medium capitalize ${getStatusColor(latestResult.longevityPoints)}`}>
+                      {latestResult.healthStatus}
+                    </p>
                   </div>
                 </div>
-              </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Completion Date Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Resultados del cuestionario</CardTitle>
+              <CardDescription className="flex items-center gap-2 mt-2">
+                <Calendar className="h-4 w-4" />
+                Completado el {completedDate.toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })}
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Mostrar resumen de respuestas */}
