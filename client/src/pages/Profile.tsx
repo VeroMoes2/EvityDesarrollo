@@ -209,6 +209,26 @@ export default function Profile() {
   // LS-128: Single unified document section
   const allDocuments = filteredDocuments;
 
+  // Extract questionnaire state checks to avoid TypeScript inference issues
+  const hasQuestionnaireInProgress = Boolean(
+    questionnaireData && 
+    typeof questionnaireData === 'object' && 
+    'exists' in questionnaireData && 
+    questionnaireData.exists && 
+    'questionnaire' in questionnaireData && 
+    questionnaireData.questionnaire && 
+    (questionnaireData.questionnaire as any).isCompleted === "false"
+  );
+
+  const hasCompletedQuestionnaire = Boolean(
+    latestResultData && 
+    typeof latestResultData === 'object' && 
+    'result' in latestResultData && 
+    latestResultData.result
+  );
+
+  const shouldShowStartButton = !hasQuestionnaireInProgress && !hasCompletedQuestionnaire;
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
@@ -465,7 +485,7 @@ export default function Profile() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Questionnaire In Progress Section */}
-                {questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists && 'questionnaire' in questionnaireData && questionnaireData.questionnaire && (questionnaireData.questionnaire as any).isCompleted === "false" && (
+                {hasQuestionnaireInProgress && (
                   <>
                     <div className="p-4 bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 border border-amber-200 dark:border-amber-800 rounded-lg space-y-3">
                       <div className="flex items-center space-x-3">
@@ -475,7 +495,7 @@ export default function Profile() {
                             En progreso
                           </p>
                           <p className="text-sm text-amber-700 dark:text-amber-300">
-                            {Object.keys((questionnaireData.questionnaire as any).answers || {}).length} de 29 preguntas respondidas
+                            {Object.keys(((questionnaireData as any).questionnaire?.answers || {})).length} de 29 preguntas respondidas
                           </p>
                         </div>
                       </div>
@@ -484,7 +504,7 @@ export default function Profile() {
                       <div className="w-full bg-amber-200 dark:bg-amber-800 rounded-full h-2.5">
                         <div 
                           className="bg-amber-600 dark:bg-amber-400 h-2.5 rounded-full transition-all duration-300" 
-                          style={{ width: `${(Object.keys((questionnaireData.questionnaire as any).answers || {}).length / 29) * 100}%` }}
+                          style={{ width: `${(Object.keys(((questionnaireData as any).questionnaire?.answers || {})).length / 29) * 100}%` }}
                         />
                       </div>
                     </div>
@@ -499,7 +519,7 @@ export default function Profile() {
                 )}
 
                 {/* Completed Questionnaire Results Section */}
-                {latestResultData && typeof latestResultData === 'object' && 'result' in latestResultData && latestResultData.result && (
+                {hasCompletedQuestionnaire && (
                   <>
                     <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
                       <div className="flex items-center space-x-3">
@@ -509,13 +529,13 @@ export default function Profile() {
                             Cuestionario completado
                           </p>
                           <p className="text-sm text-green-700 dark:text-green-300">
-                            Completado el {new Date((latestResultData.result as any).completedAt).toLocaleDateString('es-ES')}
+                            Completado el {new Date(((latestResultData as any).result?.completedAt)).toLocaleDateString('es-ES')}
                           </p>
                         </div>
                       </div>
                     </div>
                     
-                    {(latestResultData.result as any).longevityPoints && (
+                    {(latestResultData as any).result?.longevityPoints && (
                       <div className="p-4 bg-primary/10 dark:bg-primary/20 border border-primary/20 rounded-lg space-y-3">
                         <div className="flex items-center justify-between">
                           <div>
@@ -523,15 +543,15 @@ export default function Profile() {
                               Mis puntos de longevidad
                             </p>
                             <p className="text-3xl font-bold text-primary mt-1" data-testid="text-longevity-points">
-                              {(latestResultData.result as any).longevityPoints}
+                              {(latestResultData as any).result?.longevityPoints}
                             </p>
                           </div>
                           <Sparkles className="h-8 w-8 text-primary" />
                         </div>
-                        {(latestResultData.result as any).healthStatus && (
+                        {(latestResultData as any).result?.healthStatus && (
                           <div className="pt-2 border-t border-primary/20">
                             <p className="text-sm text-gray-700 dark:text-gray-300 capitalize" data-testid="text-health-status">
-                              {(latestResultData.result as any).healthStatus}
+                              {(latestResultData as any).result?.healthStatus}
                             </p>
                           </div>
                         )}
@@ -546,7 +566,7 @@ export default function Profile() {
                     </Link>
                     
                     {/* Only show Repeat button if there's NO questionnaire in progress */}
-                    {!(questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists && 'questionnaire' in questionnaireData && questionnaireData.questionnaire && (questionnaireData.questionnaire as any).isCompleted === "false") && (
+                    {!hasQuestionnaireInProgress && (
                       <Link href="/cuestionario?new=true">
                         <Button variant="default" className="w-full" data-testid="button-repeat-questionnaire">
                           <RotateCcw className="h-4 w-4 mr-2" />
@@ -558,7 +578,7 @@ export default function Profile() {
                 )}
 
                 {/* Start New Questionnaire Section - Only if no progress and no results */}
-                {!questionnaireData?.exists && !latestResultData?.result && (
+                {shouldShowStartButton && (
                   <>
                     <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
                       <div className="flex items-center space-x-3">
