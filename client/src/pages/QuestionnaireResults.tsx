@@ -9,12 +9,17 @@ import {
   Calendar,
   ArrowRight,
   Home,
-  ArrowLeft
+  ArrowLeft,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
+import { useState } from "react";
+import { QUESTIONS } from "./Cuestionario";
 
 export default function QuestionnaireResults() {
   const { isAuthenticated } = useAuth();
   const [, navigate] = useLocation();
+  const [showAnswers, setShowAnswers] = useState(false);
 
   const { data: resultsData, isLoading } = useQuery({
     queryKey: ["/api/questionnaire-results/latest"],
@@ -47,6 +52,7 @@ export default function QuestionnaireResults() {
   const longevityPoints = result.longevityPoints || "0";
   const healthStatus = result.healthStatus || "";
   const sectionInterpretations = result.sectionInterpretations || {};
+  const answers = result.answers || {};
 
   const getStatusColor = (points: string) => {
     const numPoints = parseInt(points) / 2; // Convert back to base points
@@ -132,6 +138,51 @@ export default function QuestionnaireResults() {
               </div>
             )}
           </CardContent>
+        </Card>
+
+        {/* Mostrar respuestas */}
+        <Card className={`border-2 ${getStatusBgColor(longevityPoints)}`}>
+          <CardHeader 
+            className="cursor-pointer hover-elevate"
+            onClick={() => setShowAnswers(!showAnswers)}
+            data-testid="button-toggle-answers"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-xl">Mis respuestas</CardTitle>
+                <CardDescription>
+                  {showAnswers ? "Ocultar" : "Ver"} todas tus respuestas del cuestionario
+                </CardDescription>
+              </div>
+              {showAnswers ? (
+                <ChevronUp className="h-6 w-6 text-muted-foreground" />
+              ) : (
+                <ChevronDown className="h-6 w-6 text-muted-foreground" />
+              )}
+            </div>
+          </CardHeader>
+          {showAnswers && (
+            <CardContent className="space-y-4">
+              {QUESTIONS.map((question, index) => {
+                let answerText = "";
+                if (question.type === "weight-height") {
+                  const weight = answers[`${question.id}_weight`];
+                  const height = answers[`${question.id}_height`];
+                  answerText = weight && height ? `Peso: ${weight} kg, Estatura: ${height} cm` : "No respondida";
+                } else {
+                  answerText = answers[question.id] || "No respondida";
+                }
+                
+                return (
+                  <div key={question.id} className="border-l-2 border-primary/30 pl-4 py-2">
+                    <div className="text-xs text-muted-foreground mb-1">{question.section}</div>
+                    <div className="text-sm font-medium mb-1">{question.question}</div>
+                    <div className="text-sm text-primary font-semibold">{answerText}</div>
+                  </div>
+                );
+              })}
+            </CardContent>
+          )}
         </Card>
 
         {/* Enfoque en tus resultados - Section Interpretations */}
