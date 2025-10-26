@@ -81,6 +81,12 @@ export default function Profile() {
     queryKey: ["/api/questionnaire"],
     enabled: isAuthenticated,
   });
+  
+  // Fetch latest completed questionnaire result
+  const { data: latestResultData } = useQuery({
+    queryKey: ["/api/questionnaire-results/latest"],
+    enabled: isAuthenticated,
+  });
 
   // Handle documents query error
   if (documentsError && isUnauthorizedError(documentsError)) {
@@ -458,7 +464,7 @@ export default function Profile() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists && 'questionnaire' in questionnaireData && questionnaireData.questionnaire && (questionnaireData.questionnaire as any).isCompleted === "true" ? (
+                {latestResultData && typeof latestResultData === 'object' && 'result' in latestResultData && latestResultData.result ? (
                   <>
                     <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
                       <div className="flex items-center space-x-3">
@@ -468,13 +474,13 @@ export default function Profile() {
                             Cuestionario completado
                           </p>
                           <p className="text-sm text-green-700 dark:text-green-300">
-                            Completado el {new Date((questionnaireData.questionnaire as any).completedAt).toLocaleDateString('es-ES')}
+                            Completado el {new Date((latestResultData.result as any).completedAt).toLocaleDateString('es-ES')}
                           </p>
                         </div>
                       </div>
                     </div>
                     
-                    {(questionnaireData.questionnaire as any).longevityPoints && (
+                    {(latestResultData.result as any).longevityPoints && (
                       <div className="p-4 bg-primary/10 dark:bg-primary/20 border border-primary/20 rounded-lg space-y-3">
                         <div className="flex items-center justify-between">
                           <div>
@@ -482,15 +488,15 @@ export default function Profile() {
                               Mis puntos de longevidad
                             </p>
                             <p className="text-3xl font-bold text-primary mt-1" data-testid="text-longevity-points">
-                              {(questionnaireData.questionnaire as any).longevityPoints}
+                              {(latestResultData.result as any).longevityPoints}
                             </p>
                           </div>
                           <Sparkles className="h-8 w-8 text-primary" />
                         </div>
-                        {(questionnaireData.questionnaire as any).healthStatus && (
+                        {(latestResultData.result as any).healthStatus && (
                           <div className="pt-2 border-t border-primary/20">
                             <p className="text-sm text-gray-700 dark:text-gray-300 capitalize" data-testid="text-health-status">
-                              {(questionnaireData.questionnaire as any).healthStatus}
+                              {(latestResultData.result as any).healthStatus}
                             </p>
                           </div>
                         )}
