@@ -204,9 +204,9 @@ export default function Profile() {
   const allDocuments = filteredDocuments;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b">
+      <div className="bg-white dark:bg-gray-800 border-b">
         <div className="container mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -221,7 +221,7 @@ export default function Profile() {
                   <span>{t('profile.backHome')}</span>
                 </Button>
               </Link>
-              <h1 className="text-2xl font-bold text-gray-900">{t('profile.myProfile')}</h1>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('profile.myProfile')}</h1>
             </div>
             <Button 
               variant="default" 
