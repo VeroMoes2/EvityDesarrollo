@@ -1046,7 +1046,18 @@ export default function Cuestionario() {
               {/* Botones de acción */}
               <div className="pt-6 border-t space-y-3">
                 <Button
+                  onClick={() => navigate("/cuestionario-resultados")}
+                  className="w-full"
+                  size="lg"
+                  data-testid="button-view-focus-results"
+                >
+                  <Sparkles className="h-5 w-5 mr-2" />
+                  Ver enfoque en tus resultados
+                </Button>
+                
+                <Button
                   onClick={handleStartNewQuestionnaire}
+                  variant="outline"
                   className="w-full"
                   size="lg"
                   data-testid="button-new-questionnaire"
