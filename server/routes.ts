@@ -1275,6 +1275,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete('/api/questionnaire', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      await storage.deleteQuestionnaire(userId);
+      res.json({ success: true, message: "Cuestionario eliminado" });
+    } catch (error) {
+      console.error("Error deleting questionnaire:", error);
+      res.status(500).json({ message: "Error al eliminar el cuestionario" });
+    }
+  });
+
   app.put('/api/questionnaire', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;

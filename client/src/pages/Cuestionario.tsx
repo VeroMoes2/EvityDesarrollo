@@ -617,13 +617,25 @@ export default function Cuestionario() {
   const [isSaving, setIsSaving] = useState(false);
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
   
+  // Mutación para eliminar el cuestionario en progreso actual
+  const deleteQuestionnaireMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest("DELETE", "/api/questionnaire");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/questionnaire"] });
+      setShowQuestionnaire(true);
+      setAnswers({});
+      setCurrentQuestionIndex(0);
+    },
+  });
+  
   // Detectar si viene el parámetro ?new=true para empezar un nuevo cuestionario
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('new') === 'true') {
-      setShowQuestionnaire(true);
-      setAnswers({});
-      setCurrentQuestionIndex(0);
+      // Eliminar cuestionario anterior y empezar uno nuevo
+      deleteQuestionnaireMutation.mutate();
       // Limpiar el parámetro de la URL
       window.history.replaceState({}, '', '/cuestionario');
     }

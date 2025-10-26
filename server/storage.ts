@@ -123,6 +123,7 @@ export interface IStorage {
   createQuestionnaire(data: InsertQuestionnaire): Promise<MedicalQuestionnaire>;
   updateQuestionnaire(userId: string, data: UpdateQuestionnaire): Promise<MedicalQuestionnaire>;
   markQuestionnaireComplete(userId: string): Promise<void>;
+  deleteQuestionnaire(userId: string): Promise<void>;
 
   // Questionnaire Results operations
   saveQuestionnaireResult(data: InsertQuestionnaireResult): Promise<QuestionnaireResult>;
@@ -764,6 +765,12 @@ export class DatabaseStorage implements IStorage {
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId));
+  }
+
+  async deleteQuestionnaire(userId: string): Promise<void> {
+    await db
+      .delete(medicalQuestionnaire)
+      .where(eq(medicalQuestionnaire.userId, userId));
   }
 
   async saveQuestionnaireResult(data: InsertQuestionnaireResult): Promise<QuestionnaireResult> {
