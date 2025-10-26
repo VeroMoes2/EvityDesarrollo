@@ -138,7 +138,7 @@ export default function QuestionnaireResults() {
                   <h3 className="text-lg font-semibold text-primary">{section}</h3>
                   <div className="bg-muted/50 rounded-lg p-4">
                     <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-                      {interpretation}
+                      {interpretation as string}
                     </p>
                   </div>
                 </div>

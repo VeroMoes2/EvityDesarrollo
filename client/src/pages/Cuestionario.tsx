@@ -492,7 +492,7 @@ function calculateSectionAverages(answers: Record<string, any>): Record<string, 
   const sectionAverages: Record<string, number> = {};
   
   // Agrupar preguntas por sección
-  const sections = new Set(QUESTIONS.map(q => q.section));
+  const sections = Array.from(new Set(QUESTIONS.map(q => q.section)));
   
   for (const section of sections) {
     const sectionQuestions = QUESTIONS.filter(q => q.section === section);
@@ -646,7 +646,12 @@ export default function Cuestionario() {
   }, [questionnaireData]);
 
   const saveProgressMutation = useMutation({
-    mutationFn: async (data: { answers: Record<string, any>; currentQuestion: string; isCompleted?: string; longevityPoints?: string; healthStatus?: string }) => {
+    mutationFn: async (data: { answers: Record<string, any>; currentQuestion: string; isCompleted?: string; longevityPoints?: string; healthStatus?: string; sectionInterpretations?: Record<string, string> }) => {
+      // Si está completado, asegurar que se calculen las interpretaciones
+      if (data.isCompleted === "true" && !data.sectionInterpretations) {
+        const sectionAverages = calculateSectionAverages(data.answers);
+        data.sectionInterpretations = generateSectionInterpretations(sectionAverages);
+      }
       return await apiRequest("POST", "/api/questionnaire", data);
     },
     onSuccess: () => {
@@ -655,7 +660,12 @@ export default function Cuestionario() {
   });
 
   const updateProgressMutation = useMutation({
-    mutationFn: async (data: { answers: Record<string, any>; currentQuestion: string; isCompleted?: string; longevityPoints?: string; healthStatus?: string }) => {
+    mutationFn: async (data: { answers: Record<string, any>; currentQuestion: string; isCompleted?: string; longevityPoints?: string; healthStatus?: string; sectionInterpretations?: Record<string, string> }) => {
+      // Si está completado, asegurar que se calculen las interpretaciones
+      if (data.isCompleted === "true" && !data.sectionInterpretations) {
+        const sectionAverages = calculateSectionAverages(data.answers);
+        data.sectionInterpretations = generateSectionInterpretations(sectionAverages);
+      }
       return await apiRequest("PUT", "/api/questionnaire", data);
     },
     onSuccess: () => {
