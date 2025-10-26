@@ -534,13 +534,13 @@ function calculateSectionAverages(answers: Record<string, any>): Record<string, 
 // Interpretaciones por sección basadas en promedios
 const SECTION_INTERPRETATIONS: Record<string, Record<string, string>> = {
   "Dieta y nutrición": {
-    "1-2": `Tu alimentación actual parece estar muy cargada de azúcares simples, grasas animales y alimentos procesados, y es baja en fibra y nutrientes esenciales. Este tipo de dieta puede aumentar el riesgo de diabetes, enfermedades del corazón, obesidad y otros problemas que conocemos como "enfermedades de la civilización".
+    "<2": `Tu alimentación actual parece estar muy cargada de azúcares simples, grasas animales y alimentos procesados, y es baja en fibra y nutrientes esenciales. Este tipo de dieta puede aumentar el riesgo de diabetes, enfermedades del corazón, obesidad y otros problemas que conocemos como "enfermedades de la civilización".
 
 Mi recomendación es empezar poco a poco: da prioridad a alimentos reales y naturales, basándote en la Pirámide de la Alimentación Saludable. Incluye más frutas, verduras, leguminosas, pescado, frutos secos y aceite de oliva.
 
 Recuerda, cada cambio cuenta, no tienes que hacerlo todo de golpe, lo importante es avanzar un paso a la vez hacia una alimentación más consciente.`,
     
-    "2-4": `Vas por buen camino. Conforme avanzamos en la vida, nuestro cuerpo necesita menos calorías, pero más nutrientes de calidad. Por eso, te recomiendo fortalecer tus elecciones alimentarias con alimentos ricos en fibra y micronutrientes: panes y cereales integrales, frijoles, nueces, semillas sin sal, verduras coloridas y frutas frescas.
+    "3-4": `Vas por buen camino. Conforme avanzamos en la vida, nuestro cuerpo necesita menos calorías, pero más nutrientes de calidad. Por eso, te recomiendo fortalecer tus elecciones alimentarias con alimentos ricos en fibra y micronutrientes: panes y cereales integrales, frijoles, nueces, semillas sin sal, verduras coloridas y frutas frescas.
 
 Además, sigue cuidando tu estilo de vida con actividad física regular, descanso reparador y manejo del estrés. Estos hábitos son grandes aliados para prevenir enfermedades metabólicas y cardiovasculares.
 
@@ -556,7 +556,7 @@ Vas por un camino excelente, continúa así y escucha siempre las señales de tu
   },
   
   "Actividad física y sedentarismo": {
-    "1-2": `Sabemos que la actividad física es clave para un envejecimiento saludable. Cuando el cuerpo no se mueve lo suficiente, aumenta el riesgo de enfermedades crónicas, sobrepeso, obesidad y problemas metabólicos. Además, se ha demostrado que el sedentarismo, es decir, pasar muchas horas sentado, frente a pantallas o sin movimiento es un factor de riesgo independiente, distinto a la falta de ejercicio, que también afecta tu salud y longevidad.
+    "<2": `Sabemos que la actividad física es clave para un envejecimiento saludable. Cuando el cuerpo no se mueve lo suficiente, aumenta el riesgo de enfermedades crónicas, sobrepeso, obesidad y problemas metabólicos. Además, se ha demostrado que el sedentarismo, es decir, pasar muchas horas sentado, frente a pantallas o sin movimiento es un factor de riesgo independiente, distinto a la falta de ejercicio, que también afecta tu salud y longevidad.
 
 Mi recomendación es comenzar con pequeños pasos sostenibles. Intenta moverte más a lo largo del día: camina al menos 10 minutos después de cada comida, estírate cada hora si trabajas sentado y busca cualquier oportunidad para mantenerte activo.
 
@@ -592,24 +592,16 @@ function generateSectionInterpretations(sectionAverages: Record<string, number>)
     const sectionInterpretation = SECTION_INTERPRETATIONS[section];
     
     if (sectionInterpretation) {
-      // Determinar qué rango aplica
+      // Determinar qué rango aplica según el PDF:
+      // Para <2 puntos, Para 3-4 puntos, Para 5 puntos
       if (average < 2) {
-        interpretations[section] = sectionInterpretation["1-2"];
-      } else if (average >= 2 && average < 5) {
-        // Para Actividad física, el rango es 3-4 en lugar de 2-4
-        if (section === "Actividad física y sedentarismo") {
-          if (average >= 3) {
-            interpretations[section] = sectionInterpretation["3-4"];
-          } else {
-            // Promedio entre 2 y 2.99 para Actividad física => usar rango bajo
-            interpretations[section] = sectionInterpretation["1-2"];
-          }
-        } else if (section === "Dieta y nutrición") {
-          interpretations[section] = sectionInterpretation["2-4"];
-        }
+        interpretations[section] = sectionInterpretation["<2"];
+      } else if (average >= 3 && average < 5) {
+        interpretations[section] = sectionInterpretation["3-4"];
       } else if (average >= 5) {
         interpretations[section] = sectionInterpretation["5"];
       }
+      // Nota: Si average está entre 2 y 2.99, no se asigna interpretación (según PDF)
     }
   }
   
