@@ -25,6 +25,7 @@ import ResetPassword from "@/pages/ResetPassword";
 import VerifyEmail from "@/pages/VerifyEmail";
 import Cuestionario from "@/pages/Cuestionario";
 import QuestionnaireResults from "@/pages/QuestionnaireResults";
+import HistorialCuestionarios from "@/pages/HistorialCuestionarios";
 import ScheduleAppointment from "@/pages/ScheduleAppointment";
 import AgenteIA from "@/pages/AgenteIA";
 import NotFound from "@/pages/not-found";
@@ -74,6 +75,7 @@ function Router() {
           <Route path="/perfil" component={Profile} />
           <Route path="/cuestionario" component={Cuestionario} />
           <Route path="/cuestionario-resultados" component={QuestionnaireResults} />
+          <Route path="/historial-cuestionarios" component={HistorialCuestionarios} />
           <Route path="/agendar-cita" component={ScheduleAppointment} />
           <Route path="/historial-clinico" component={Cuestionario} />
           <Route path="/mis-archivos" component={MisArchivos} />

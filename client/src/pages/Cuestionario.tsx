@@ -905,8 +905,8 @@ export default function Cuestionario() {
                 })}
               </div>
 
-              {/* Botón para hacer cuestionario nuevamente */}
-              <div className="pt-6 border-t">
+              {/* Botones de acción */}
+              <div className="pt-6 border-t space-y-3">
                 <Button
                   onClick={handleStartNewQuestionnaire}
                   className="w-full"
@@ -916,8 +916,20 @@ export default function Cuestionario() {
                   <RotateCcw className="h-5 w-5 mr-2" />
                   Hacer cuestionario nuevamente
                 </Button>
-                <p className="text-xs text-muted-foreground text-center mt-2">
-                  Tus resultados anteriores se guardarán en el historial
+                
+                <Button
+                  onClick={() => navigate("/historial-cuestionarios")}
+                  variant="outline"
+                  className="w-full"
+                  size="lg"
+                  data-testid="button-view-history"
+                >
+                  <Calendar className="h-5 w-5 mr-2" />
+                  Ver historial completo
+                </Button>
+                
+                <p className="text-xs text-gray-600 dark:text-gray-400 text-center mt-2">
+                  Tus resultados anteriores se guardan automáticamente en el historial
                 </p>
               </div>
             </CardContent>
