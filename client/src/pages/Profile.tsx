@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Upload, FileText, Trash2, User, Mail, Calendar, ArrowLeft, Shield, Activity, Download, Eye, Search, Edit, Phone, ClipboardCheck, CheckCircle2, Bot, Sparkles } from "lucide-react";
+import { Upload, FileText, Trash2, User, Mail, Calendar, ArrowLeft, Shield, Activity, Download, Eye, Search, Edit, Phone, ClipboardCheck, CheckCircle2, Bot, Sparkles, RotateCcw } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updateUserProfileSchema, type UpdateUserProfile, normalizeGender } from "@shared/schema";
@@ -497,12 +497,21 @@ export default function Profile() {
                       </div>
                     )}
                     
-                    <Link href="/cuestionario">
-                      <Button variant="outline" className="w-full" data-testid="button-view-questionnaire">
-                        <Eye className="h-4 w-4 mr-2" />
-                        Ver respuestas
-                      </Button>
-                    </Link>
+                    <div className="space-y-2">
+                      <Link href="/cuestionario">
+                        <Button variant="outline" className="w-full" data-testid="button-view-questionnaire">
+                          <Eye className="h-4 w-4 mr-2" />
+                          Ver respuestas
+                        </Button>
+                      </Link>
+                      
+                      <Link href="/cuestionario?new=true">
+                        <Button variant="default" className="w-full" data-testid="button-repeat-questionnaire">
+                          <RotateCcw className="h-4 w-4 mr-2" />
+                          Repetir cuestionario
+                        </Button>
+                      </Link>
+                    </div>
                   </>
                 ) : questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists && 'questionnaire' in questionnaireData && questionnaireData.questionnaire && (questionnaireData.questionnaire as any).isCompleted === "false" ? (
                   <>

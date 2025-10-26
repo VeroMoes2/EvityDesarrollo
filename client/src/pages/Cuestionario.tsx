@@ -616,6 +616,18 @@ export default function Cuestionario() {
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [isSaving, setIsSaving] = useState(false);
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
+  
+  // Detectar si viene el parámetro ?new=true para empezar un nuevo cuestionario
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('new') === 'true') {
+      setShowQuestionnaire(true);
+      setAnswers({});
+      setCurrentQuestionIndex(0);
+      // Limpiar el parámetro de la URL
+      window.history.replaceState({}, '', '/cuestionario');
+    }
+  }, []);
 
   // Verificar si ya existe un resultado completado
   const { data: latestResultData, isLoading: isLoadingLatestResult } = useQuery({
@@ -1005,16 +1017,6 @@ export default function Cuestionario() {
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Volver al perfil
-            </Button>
-            
-            <Button
-              onClick={handleStartNewQuestionnaire}
-              variant="default"
-              size="sm"
-              data-testid="button-new-questionnaire-top"
-            >
-              <RotateCcw className="h-4 w-4 mr-2" />
-              Repetir cuestionario
             </Button>
           </div>
 
