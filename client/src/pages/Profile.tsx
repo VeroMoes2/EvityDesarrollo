@@ -464,7 +464,42 @@ export default function Profile() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {latestResultData && typeof latestResultData === 'object' && 'result' in latestResultData && latestResultData.result ? (
+                {/* Questionnaire In Progress Section */}
+                {questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists && 'questionnaire' in questionnaireData && questionnaireData.questionnaire && (questionnaireData.questionnaire as any).isCompleted === "false" && (
+                  <>
+                    <div className="p-4 bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 border border-amber-200 dark:border-amber-800 rounded-lg space-y-3">
+                      <div className="flex items-center space-x-3">
+                        <Activity className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                        <div className="flex-1">
+                          <p className="font-semibold text-amber-900 dark:text-amber-100">
+                            En progreso
+                          </p>
+                          <p className="text-sm text-amber-700 dark:text-amber-300">
+                            {Object.keys((questionnaireData.questionnaire as any).answers || {}).length} de 29 preguntas respondidas
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Progress Bar */}
+                      <div className="w-full bg-amber-200 dark:bg-amber-800 rounded-full h-2.5">
+                        <div 
+                          className="bg-amber-600 dark:bg-amber-400 h-2.5 rounded-full transition-all duration-300" 
+                          style={{ width: `${(Object.keys((questionnaireData.questionnaire as any).answers || {}).length / 29) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                    
+                    <Link href="/cuestionario?continue=true">
+                      <Button className="w-full" data-testid="button-continue-questionnaire">
+                        <FileText className="h-4 w-4 mr-2" />
+                        Continuar cuestionario
+                      </Button>
+                    </Link>
+                  </>
+                )}
+
+                {/* Completed Questionnaire Results Section */}
+                {latestResultData && typeof latestResultData === 'object' && 'result' in latestResultData && latestResultData.result && (
                   <>
                     <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
                       <div className="flex items-center space-x-3">
@@ -503,45 +538,27 @@ export default function Profile() {
                       </div>
                     )}
                     
-                    <div className="space-y-2">
-                      <Link href="/cuestionario">
-                        <Button variant="outline" className="w-full" data-testid="button-view-questionnaire">
-                          <Eye className="h-4 w-4 mr-2" />
-                          Ver respuestas
-                        </Button>
-                      </Link>
-                      
+                    <Link href="/cuestionario">
+                      <Button variant="outline" className="w-full" data-testid="button-view-questionnaire">
+                        <Eye className="h-4 w-4 mr-2" />
+                        Ver mis resultados
+                      </Button>
+                    </Link>
+                    
+                    {/* Only show Repeat button if there's NO questionnaire in progress */}
+                    {!(questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists && 'questionnaire' in questionnaireData && questionnaireData.questionnaire && (questionnaireData.questionnaire as any).isCompleted === "false") && (
                       <Link href="/cuestionario?new=true">
                         <Button variant="default" className="w-full" data-testid="button-repeat-questionnaire">
                           <RotateCcw className="h-4 w-4 mr-2" />
                           Repetir cuestionario
                         </Button>
                       </Link>
-                    </div>
+                    )}
                   </>
-                ) : questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists && 'questionnaire' in questionnaireData && questionnaireData.questionnaire && (questionnaireData.questionnaire as any).isCompleted === "false" ? (
-                  <>
-                    <div className="flex items-center justify-between p-3 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <Activity className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-                        <div>
-                          <p className="font-medium text-amber-900 dark:text-amber-100">
-                            {t('userProfile.inProgress')}
-                          </p>
-                          <p className="text-sm text-amber-700 dark:text-amber-300">
-                            {Object.keys((questionnaireData.questionnaire as any).answers || {}).length} de 29 preguntas respondidas
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <Link href="/cuestionario">
-                      <Button className="w-full" data-testid="button-continue-questionnaire">
-                        <FileText className="h-4 w-4 mr-2" />
-                        {t('userProfile.continueQuestionnaire')}
-                      </Button>
-                    </Link>
-                  </>
-                ) : (
+                )}
+
+                {/* Start New Questionnaire Section - Only if no progress and no results */}
+                {!questionnaireData?.exists && !latestResultData?.result && (
                   <>
                     <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
                       <div className="flex items-center space-x-3">
