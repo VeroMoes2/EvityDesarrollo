@@ -142,23 +142,15 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
       const response = await uploadWithCsrf('/api/profile/medical-documents/upload', formData);
 
       if (response.ok) {
-        setFiles(prev => prev.map((f, i) => 
-          i === fileIndex ? { ...f, uploading: false, progress: 100, success: true } : f
-        ));
-        onUploadSuccess();
-        
         // LS-107: Show success notification with filename
         notifications.success.documentUploaded(uploadFile.file.name);
         
-        // Remove successful uploads after 2 seconds using stable file properties
-        setTimeout(() => {
-          setFiles(prev => prev.filter(f => 
-            !(f.file.name === uploadFile.file.name && 
-              f.file.size === uploadFile.file.size && 
-              f.file.lastModified === uploadFile.file.lastModified && 
-              f.success)
-          ));
-        }, 2000);
+        // Invalidate queries to show uploaded document in main list
+        onUploadSuccess();
+        
+        // Remove file from upload list immediately to prevent duplicates
+        // The file will now appear only in the main documents list from backend
+        setFiles(prev => prev.filter((f, i) => i !== fileIndex));
       } else {
         const errorData = await response.json();
         throw new Error(errorData.message || t('fileUpload.uploadError'));
