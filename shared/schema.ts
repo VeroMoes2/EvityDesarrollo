@@ -74,6 +74,7 @@ export const medicalQuestionnaire = pgTable("medical_questionnaire", {
   isCompleted: varchar("is_completed").default("false"),
   longevityPoints: varchar("longevity_points"), // Calculated longevity score
   healthStatus: varchar("health_status"), // Health status legend
+  sectionInterpretations: jsonb("section_interpretations"), // Section-specific focus areas
   startedAt: timestamp("started_at").defaultNow(),
   completedAt: timestamp("completed_at"),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -86,6 +87,7 @@ export const questionnaireResults = pgTable("questionnaire_results", {
   answers: jsonb("answers").notNull(),
   longevityPoints: varchar("longevity_points").notNull(), // Final calculated score
   healthStatus: varchar("health_status").notNull(), // Health status legend
+  sectionInterpretations: jsonb("section_interpretations"), // Section-specific focus areas
   completedAt: timestamp("completed_at").defaultNow().notNull(),
 });
 
@@ -254,6 +256,7 @@ export const updateQuestionnaireSchema = z.object({
   isCompleted: z.enum(["true", "false"]).optional(),
   longevityPoints: z.string().optional(),
   healthStatus: z.string().optional(),
+  sectionInterpretations: z.record(z.string(), z.string()).optional(),
 });
 
 export const insertQuestionnaireResultSchema = createInsertSchema(questionnaireResults).omit({
