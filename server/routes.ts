@@ -1301,6 +1301,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               answers: refreshed.answers || {},
               longevityPoints: refreshed.longevityPoints,
               healthStatus: refreshed.healthStatus,
+              sectionInterpretations: refreshed.sectionInterpretations,
             });
           }
         }

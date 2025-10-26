@@ -487,6 +487,75 @@ function calculateLongevityPoints(totalPoints: number): number {
   return Math.round(Math.max(0, Math.min(100, normalized)));
 }
 
+// Calculate average score for each section
+function calculateSectionAverages(answers: Record<string, any>): Record<string, number> {
+  const sections = [
+    { name: "Actividad física y sedentarismo", start: 1, end: 3 },
+    { name: "Dieta y nutrición", start: 4, end: 6 },
+    { name: "Peso e índice de masa corporal", start: 7, end: 8 },
+    { name: "Tabaquismo", start: 9, end: 11 },
+    { name: "Alcohol", start: 12, end: 14 },
+    { name: "Sueño y descanso", start: 15, end: 17 },
+    { name: "Salud mental y estrés", start: 18, end: 20 },
+    { name: "Enfermedades crónicas y tratamientos", start: 21, end: 23 },
+    { name: "Apoyo social y propósito", start: 24, end: 26 },
+    { name: "Cognición y funcionalidad", start: 27, end: 29 },
+  ];
+
+  const averages: Record<string, number> = {};
+
+  for (const section of sections) {
+    let sectionPoints = 0;
+    let sectionCount = 0;
+
+    for (let i = section.start; i <= section.end; i++) {
+      const questionId = i.toString();
+      
+      if (questionId === "7") {
+        const weight = parseFloat(answers["7_weight"]);
+        const height = parseFloat(answers["7_height"]) / 100;
+        if (!isNaN(weight) && !isNaN(height) && height > 0) {
+          const bmi = calculateBMI(weight, height);
+          const bmiPoints = getBMIPoints(bmi);
+          sectionPoints += bmiPoints;
+          sectionCount++;
+        }
+      } else {
+        const answer = answers[questionId];
+        if (answer) {
+          const question = QUESTIONS.find(q => q.id === questionId);
+          const option = question?.options?.find(opt => opt.text === answer);
+          if (option) {
+            sectionPoints += option.points;
+            sectionCount++;
+          }
+        }
+      }
+    }
+
+    if (sectionCount > 0) {
+      averages[section.name] = sectionPoints / sectionCount;
+    }
+  }
+
+  return averages;
+}
+
+// Generate section-specific interpretations based on average scores
+function getSectionInterpretations(averages: Record<string, number>): Record<string, string> {
+  const interpretations: Record<string, string> = {};
+
+  // Dieta y nutrición interpretations
+  const dietAverage = averages["Dieta y nutrición"];
+  if (dietAverage !== undefined) {
+    if (dietAverage >= 1 && dietAverage < 2) {
+      interpretations["Dieta y nutrición"] = "A medida que avanzamos por las distintas etapas de la vida, nuestro cuerpo cambia y también lo hacen sus necesidades. Con el paso del tiempo, necesitamos menos calorías, pero más nutrientes de calidad. Por eso, es fundamental priorizar alimentos reales, frescos y ricos en nutrientes.\n\nTe recomiendo incluir en tu alimentación diaria fuentes naturales de fibra, como panes y cereales integrales, frijoles, lentejas, nueces, semillas sin sal y vegetales de colores intensos —por ejemplo, judías verdes, espinacas, zanahorias o pimientos—. No olvides las frutas frescas, que aportan vitaminas, antioxidantes y energía limpia.\n\nAdemás de la alimentación, mantener un estilo de vida equilibrado —que incluya movimiento regular, descanso reparador y manejo del estrés— puede ayudarte a prevenir enfermedades metabólicas, como la diabetes tipo 2, las enfermedades cardiovasculares y algunos tipos de cáncer.\n\nRecuerda: no se trata de comer menos, sino de nutrir mejor. Tu cuerpo te lo agradecerá con más energía, vitalidad y bienestar general.";
+    }
+  }
+
+  return interpretations;
+}
+
 export default function Cuestionario() {
   const { user, isAuthenticated } = useAuth();
   const [, navigate] = useLocation();
@@ -763,12 +832,17 @@ export default function Cuestionario() {
     try {
       const { totalPoints, longevityPoints, healthStatus } = calculateTotalPoints();
       
+      // Calculate section averages and interpretations
+      const sectionAverages = calculateSectionAverages(answers);
+      const sectionInterpretations = getSectionInterpretations(sectionAverages);
+      
       const data = {
         answers,
         currentQuestion: QUESTIONS[QUESTIONS.length - 1].id,
         isCompleted: "true",
         longevityPoints: longevityPoints.toString(),
         healthStatus,
+        sectionInterpretations,
       };
 
       if (questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists) {

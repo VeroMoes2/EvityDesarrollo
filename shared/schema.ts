@@ -256,6 +256,7 @@ export const updateQuestionnaireSchema = z.object({
   isCompleted: z.enum(["true", "false"]).optional(),
   longevityPoints: z.string().optional(),
   healthStatus: z.string().optional(),
+  sectionInterpretations: z.record(z.string(), z.string()).optional(),
 });
 
 export const insertQuestionnaireResultSchema = createInsertSchema(questionnaireResults).omit({
