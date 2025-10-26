@@ -998,6 +998,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User's own questionnaire results (latest)
+  app.get('/api/questionnaire-results/latest', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const results = await storage.getUserQuestionnaireResults(userId);
+      
+      if (results.length === 0) {
+        return res.json({ result: null });
+      }
+      
+      // Return the most recent result (already ordered by completedAt DESC)
+      res.json({ result: results[0] });
+    } catch (error) {
+      console.error("Error fetching latest questionnaire result:", error);
+      res.status(500).json({ message: "Error al obtener resultados del cuestionario" });
+    }
+  });
+
+  // User's questionnaire history
+  app.get('/api/questionnaire-results/history', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const results = await storage.getUserQuestionnaireResults(userId);
+      res.json({ results });
+    } catch (error) {
+      console.error("Error fetching questionnaire history:", error);
+      res.status(500).json({ message: "Error al obtener historial de cuestionarios" });
+    }
+  });
+
   app.get('/api/admin/questionnaire-results', isAdmin, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;

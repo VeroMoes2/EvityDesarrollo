@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import type { QuestionnaireResult } from "@shared/schema";
 import { 
   ClipboardCheck, 
   ArrowLeft, 
@@ -16,7 +17,9 @@ import {
   Save, 
   CheckCircle2,
   Pause,
-  Calculator
+  Calculator,
+  RotateCcw,
+  Calendar
 } from "lucide-react";
 import {
   Select,
@@ -491,10 +494,17 @@ export default function Cuestionario() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [isSaving, setIsSaving] = useState(false);
+  const [showQuestionnaire, setShowQuestionnaire] = useState(false);
+
+  // Verificar si ya existe un resultado completado
+  const { data: latestResultData, isLoading: isLoadingLatestResult } = useQuery({
+    queryKey: ["/api/questionnaire-results/latest"],
+    enabled: isAuthenticated,
+  });
 
   const { data: questionnaireData, isLoading: isLoadingQuestionnaire } = useQuery({
     queryKey: ["/api/questionnaire"],
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && showQuestionnaire,
   });
 
   useEffect(() => {
@@ -772,6 +782,9 @@ export default function Cuestionario() {
         description: `Has obtenido ${longevityPoints} puntos de longevidad.`,
       });
 
+      // Invalidar la query del resultado más reciente
+      queryClient.invalidateQueries({ queryKey: ["/api/questionnaire-results/latest"] });
+
       setTimeout(() => {
         navigate("/cuestionario-resultados");
       }, 1500);
@@ -784,6 +797,13 @@ export default function Cuestionario() {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  // Función para reiniciar el cuestionario
+  const handleStartNewQuestionnaire = () => {
+    setShowQuestionnaire(true);
+    setAnswers({});
+    setCurrentQuestionIndex(0);
   };
 
   if (!isAuthenticated) {
@@ -806,12 +826,102 @@ export default function Cuestionario() {
     );
   }
 
-  if (isLoadingQuestionnaire) {
+  if (isLoadingLatestResult || (showQuestionnaire && isLoadingQuestionnaire)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-muted-foreground">Cargando cuestionario...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Si ya existe un resultado y no estamos mostrando el cuestionario, mostrar el resumen
+  const latestResult = (latestResultData && typeof latestResultData === 'object' && 'result' in latestResultData ? latestResultData.result : null) as QuestionnaireResult | null;
+  if (latestResult && !showQuestionnaire) {
+    const resultAnswers = latestResult.answers as Record<string, any>;
+    const completedDate = new Date(latestResult.completedAt);
+    
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="max-w-4xl mx-auto p-6 space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-6 w-6 text-primary" />
+              <h1 className="text-2xl font-bold">Tu último cuestionario</h1>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/perfil")}
+              data-testid="button-back-profile"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Volver al perfil
+            </Button>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Resultados del cuestionario</CardTitle>
+                  <CardDescription className="flex items-center gap-2 mt-2">
+                    <Calendar className="h-4 w-4" />
+                    Completado el {completedDate.toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })}
+                  </CardDescription>
+                </div>
+                <div className="text-center">
+                  <div className="text-4xl font-bold text-primary">{latestResult.longevityPoints}</div>
+                  <div className="text-sm text-muted-foreground">Puntos de longevidad</div>
+                  <div className="text-xs mt-1 px-3 py-1 bg-primary/10 text-primary rounded-full">
+                    {latestResult.healthStatus}
+                  </div>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Mostrar resumen de respuestas */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg">Tus respuestas:</h3>
+                {QUESTIONS.map((question, index) => {
+                  let answerText = "";
+                  if (question.type === "weight-height") {
+                    const weight = resultAnswers[`${question.id}_weight`];
+                    const height = resultAnswers[`${question.id}_height`];
+                    answerText = weight && height ? `Peso: ${weight} kg, Estatura: ${height} cm` : "No respondida";
+                  } else {
+                    answerText = resultAnswers[question.id] || "No respondida";
+                  }
+                  
+                  return (
+                    <div key={question.id} className="border-l-2 border-primary/20 pl-4 py-2">
+                      <div className="text-sm text-muted-foreground mb-1">{question.section}</div>
+                      <div className="font-medium mb-1">{question.question}</div>
+                      <div className="text-sm text-primary">{answerText}</div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Botón para hacer cuestionario nuevamente */}
+              <div className="pt-6 border-t">
+                <Button
+                  onClick={handleStartNewQuestionnaire}
+                  className="w-full"
+                  size="lg"
+                  data-testid="button-new-questionnaire"
+                >
+                  <RotateCcw className="h-5 w-5 mr-2" />
+                  Hacer cuestionario nuevamente
+                </Button>
+                <p className="text-xs text-muted-foreground text-center mt-2">
+                  Tus resultados anteriores se guardarán en el historial
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
