@@ -70,7 +70,7 @@ function Router() {
       ) : (
         // When authenticated, show protected routes and redirect auth pages to profile
         <>
-          <Route path="/" component={Home} />
+          <Route path="/" component={Landing} />
           <Route path="/profile" component={Profile} />
           <Route path="/perfil" component={Profile} />
           <Route path="/cuestionario" component={Cuestionario} />
