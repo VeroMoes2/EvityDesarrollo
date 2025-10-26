@@ -15,6 +15,8 @@ interface CalculationHistory {
   date: string;
   score: number;
   interpretation: string;
+  age?: number;
+  ageInterpretation?: string;
 }
 
 export default function CalculatorSection() {
@@ -22,6 +24,7 @@ export default function CalculatorSection() {
   const [, navigate] = useLocation();
   const { t, language } = useLanguage();
   const [formData, setFormData] = useState({
+    age: "",
     exercise: "",
     diet: "",
     weight: "",
@@ -29,7 +32,7 @@ export default function CalculatorSection() {
     smokingDrinking: "",
     sleepWellbeing: ""
   });
-  const [result, setResult] = useState<{ score: number; interpretation: string } | null>(null);
+  const [result, setResult] = useState<{ score: number; interpretation: string; ageInterpretation: string } | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [calculationHistory, setCalculationHistory] = useState<CalculationHistory[]>([]);
   
@@ -49,11 +52,13 @@ export default function CalculatorSection() {
   }, []);
 
   // Save calculation to history
-  const saveToHistory = (score: number, interpretation: string) => {
+  const saveToHistory = (score: number, interpretation: string, age: number, ageInterpretation: string) => {
     const newCalculation: CalculationHistory = {
       date: new Date().toISOString(),
       score,
       interpretation,
+      age,
+      ageInterpretation,
     };
     
     const updatedHistory = [newCalculation, ...calculationHistory].slice(0, 10); // Keep only last 10
@@ -89,6 +94,16 @@ export default function CalculatorSection() {
       return "Estilo de vida predominantemente sedentario o dieta poco saludable. Posible sobrepeso, consumo frecuente de alcohol o alteración del sueño.";
     } else {
       return "Acumulación de múltiples factores de riesgo (obesidad, tabaco, sedentarismo, dieta procesada, insomnio o depresión). Perfil biológico asociado a envejecimiento acelerado.";
+    }
+  };
+
+  const getAgeInterpretation = (age: number): string => {
+    if (age < 40) {
+      return "El puntaje refleja prevención futura: tus hábitos actuales están construyendo las bases para una longevidad saludable. Es el momento ideal para establecer rutinas protectoras que te beneficiarán en las próximas décadas.";
+    } else if (age >= 40 && age <= 59) {
+      return "El puntaje refleja riesgo actual y potencial de reversibilidad: estás en una etapa crucial donde los cambios positivos en tu estilo de vida pueden reducir significativamente el riesgo de enfermedades crónicas y mejorar tu calidad de vida futura.";
+    } else {
+      return "El puntaje refleja resiliencia funcional y envejecimiento biológico: tus hábitos actuales influyen directamente en tu capacidad funcional y vitalidad. Mantener o mejorar estos comportamientos es fundamental para preservar tu independencia y bienestar.";
     }
   };
 
@@ -149,14 +164,22 @@ export default function CalculatorSection() {
     // Formula: ((totalScore - 5) / 20) × 100
     const finalScore = Math.round(((totalScore - 5) / 20) * 100);
     const interpretation = getInterpretation(finalScore);
-    setResult({ score: finalScore, interpretation });
+    const age = parseInt(formData.age);
+    const ageInterpretation = getAgeInterpretation(age);
+    setResult({ score: finalScore, interpretation, ageInterpretation });
     setShowResult(true);
     
     // Save to history
-    saveToHistory(finalScore, interpretation);
+    saveToHistory(finalScore, interpretation, age, ageInterpretation);
   };
 
-  const isFormComplete = formData.exercise && formData.diet && formData.weight && formData.height && formData.smokingDrinking && formData.sleepWellbeing;
+  const isAgeValid = () => {
+    if (!formData.age) return false;
+    const age = parseInt(formData.age);
+    return !isNaN(age) && age >= 18 && age <= 120;
+  };
+
+  const isFormComplete = isAgeValid() && formData.exercise && formData.diet && formData.weight && formData.height && formData.smokingDrinking && formData.sleepWellbeing;
 
   const getScoreColor = (score: number) => {
     if (score >= 84) return "text-green-600 dark:text-green-400";
@@ -197,9 +220,33 @@ export default function CalculatorSection() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
+                {/* Question 0: Age */}
+                <div className="space-y-2">
+                  <Label htmlFor="age">1. ¿Cuál es tu edad?</Label>
+                  <Input
+                    id="age"
+                    type="number"
+                    placeholder="Ejemplo: 35"
+                    value={formData.age}
+                    onChange={(e) => handleInputChange("age", e.target.value)}
+                    min="18"
+                    max="120"
+                    data-testid="input-age"
+                    className={formData.age && !isAgeValid() ? "border-red-500 dark:border-red-700" : ""}
+                  />
+                  {formData.age && !isAgeValid() && (
+                    <p className="text-xs text-red-600 dark:text-red-400">
+                      La edad debe estar entre 18 y 120 años
+                    </p>
+                  )}
+                  {(!formData.age || isAgeValid()) && (
+                    <p className="text-xs text-muted-foreground">Esta información nos ayuda a personalizar tu interpretación</p>
+                  )}
+                </div>
+
                 {/* Question 1: Exercise */}
                 <div className="space-y-2">
-                  <Label htmlFor="exercise">1. ¿Cuántos días por semana realiza al menos 30 minutos de actividad moderada o vigorosa?</Label>
+                  <Label htmlFor="exercise">2. ¿Cuántos días por semana realiza al menos 30 minutos de actividad moderada o vigorosa?</Label>
                   <Select value={formData.exercise} onValueChange={(value) => handleInputChange("exercise", value)}>
                     <SelectTrigger data-testid="select-exercise">
                       <SelectValue placeholder={t('miniCalc.selectOption')} />
@@ -216,7 +263,7 @@ export default function CalculatorSection() {
 
                 {/* Question 2: Diet */}
                 <div className="space-y-2">
-                  <Label htmlFor="diet">2. ¿Su dieta habitual incluye frutas, verduras, legumbres, pescado y evita ultraprocesados y bebidas azucaradas?</Label>
+                  <Label htmlFor="diet">3. ¿Su dieta habitual incluye frutas, verduras, legumbres, pescado y evita ultraprocesados y bebidas azucaradas?</Label>
                   <Select value={formData.diet} onValueChange={(value) => handleInputChange("diet", value)}>
                     <SelectTrigger data-testid="select-diet">
                       <SelectValue placeholder={t('miniCalc.selectOption')} />
@@ -233,7 +280,7 @@ export default function CalculatorSection() {
 
                 {/* Question 3: Weight and Height */}
                 <div className="space-y-2">
-                  <Label>3. ¿Cuál es su peso y estatura actual?</Label>
+                  <Label>4. ¿Cuál es su peso y estatura actual?</Label>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="weight">{t('miniCalc.weight')}</Label>
@@ -262,7 +309,7 @@ export default function CalculatorSection() {
 
                 {/* Question 4: Smoking and Drinking */}
                 <div className="space-y-2">
-                  <Label htmlFor="smoking-drinking">4. ¿Fuma o bebe con frecuencia?</Label>
+                  <Label htmlFor="smoking-drinking">5. ¿Fuma o bebe con frecuencia?</Label>
                   <Select value={formData.smokingDrinking} onValueChange={(value) => handleInputChange("smokingDrinking", value)}>
                     <SelectTrigger data-testid="select-smoking-drinking">
                       <SelectValue placeholder={t('miniCalc.selectOption')} />
@@ -279,7 +326,7 @@ export default function CalculatorSection() {
 
                 {/* Question 5: Sleep and Wellbeing */}
                 <div className="space-y-2">
-                  <Label htmlFor="sleep">5. ¿Cómo describiría su sueño y su bienestar emocional general?</Label>
+                  <Label htmlFor="sleep">6. ¿Cómo describiría su sueño y su bienestar emocional general?</Label>
                   <Select value={formData.sleepWellbeing} onValueChange={(value) => handleInputChange("sleepWellbeing", value)}>
                     <SelectTrigger data-testid="select-sleep">
                       <SelectValue placeholder={t('miniCalc.selectOption')} />
@@ -332,10 +379,20 @@ export default function CalculatorSection() {
                     <div className="bg-muted/50 p-4 rounded-lg">
                       <h4 className="font-semibold text-foreground mb-2 flex items-center gap-2">
                         <Heart className="h-4 w-4 text-primary" />
-                        Interpretación
+                        Interpretación de tu estilo de vida
                       </h4>
                       <p className="text-sm text-muted-foreground" data-testid="result-interpretation">
                         {result.interpretation}
+                      </p>
+                    </div>
+
+                    <div className="bg-primary/10 dark:bg-primary/20 p-4 rounded-lg border border-primary/30">
+                      <h4 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                        <TrendingUp className="h-4 w-4 text-primary" />
+                        Qué significa tu puntuación a tu edad
+                      </h4>
+                      <p className="text-sm text-foreground" data-testid="result-age-interpretation">
+                        {result.ageInterpretation}
                       </p>
                     </div>
 
@@ -399,6 +456,7 @@ export default function CalculatorSection() {
                         onClick={() => {
                           setShowResult(false);
                           setFormData({
+                            age: "",
                             exercise: "",
                             diet: "",
                             weight: "",
