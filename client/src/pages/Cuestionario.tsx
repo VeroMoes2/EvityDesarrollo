@@ -1044,18 +1044,33 @@ export default function Cuestionario() {
                 })}
               </div>
 
+              {/* Enfoque en tus resultados - Section Interpretations */}
+              {latestResult.sectionInterpretations && Object.keys(latestResult.sectionInterpretations).length > 0 && (
+                <div className="pt-6 border-t space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-primary" />
+                    <h3 className="text-xl font-semibold">Enfoque en tus resultados</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Recomendaciones personalizadas basadas en tu evaluación
+                  </p>
+                  <div className="space-y-4">
+                    {Object.entries(latestResult.sectionInterpretations).map(([section, interpretation]) => (
+                      <div key={section} className="space-y-2">
+                        <h4 className="font-semibold text-primary">{section}</h4>
+                        <div className="bg-muted/50 rounded-lg p-4">
+                          <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                            {interpretation as string}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Botones de acción */}
               <div className="pt-6 border-t space-y-3">
-                <Button
-                  onClick={() => navigate("/cuestionario-resultados")}
-                  className="w-full"
-                  size="lg"
-                  data-testid="button-view-focus-results"
-                >
-                  <Sparkles className="h-5 w-5 mr-2" />
-                  Ver enfoque en tus resultados
-                </Button>
-                
                 <Button
                   onClick={handleStartNewQuestionnaire}
                   variant="outline"
