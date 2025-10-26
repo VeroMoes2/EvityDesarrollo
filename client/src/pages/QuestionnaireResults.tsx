@@ -119,6 +119,25 @@ export default function QuestionnaireResults() {
                 </div>
               </div>
             )}
+
+            {/* Section-Specific Interpretations */}
+            {questionnaire.sectionInterpretations && Object.keys(questionnaire.sectionInterpretations).length > 0 && (
+              <div className="pt-4 border-t">
+                <h3 className="text-lg font-semibold mb-4 text-center">Recomendaciones Personalizadas</h3>
+                {Object.entries(questionnaire.sectionInterpretations).map(([section, interpretation]) => (
+                  <div key={section} className="mb-4 last:mb-0">
+                    <div className="bg-primary/5 dark:bg-primary/10 rounded-lg p-4 border border-primary/20">
+                      <h4 className="text-sm font-semibold text-primary mb-2" data-testid={`section-title-${section.toLowerCase().replace(/\s+/g, '-')}`}>
+                        {section}
+                      </h4>
+                      <div className="text-sm text-foreground whitespace-pre-line leading-relaxed" data-testid={`section-interpretation-${section.toLowerCase().replace(/\s+/g, '-')}`}>
+                        {interpretation}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
