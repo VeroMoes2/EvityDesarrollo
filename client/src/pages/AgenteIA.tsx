@@ -196,13 +196,14 @@ export default function AgenteIA() {
                     )}
                     
                     <div
-                      className={`max-w-[85%] rounded-lg px-4 py-3 ${
+                      className={`max-w-[85%] min-w-0 rounded-lg px-4 py-3 ${
                         message.role === "user"
                           ? "bg-primary text-primary-foreground"
                           : "bg-muted"
                       }`}
+                      style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
                     >
-                      <p className="text-sm whitespace-pre-wrap break-words">
+                      <p className="text-sm whitespace-pre-wrap">
                         {message.content}
                       </p>
                       <p
