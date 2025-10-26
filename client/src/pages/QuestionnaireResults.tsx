@@ -15,8 +15,8 @@ export default function QuestionnaireResults() {
   const { isAuthenticated } = useAuth();
   const [, navigate] = useLocation();
 
-  const { data: questionnaireData, isLoading } = useQuery({
-    queryKey: ["/api/questionnaire"],
+  const { data: resultsData, isLoading } = useQuery({
+    queryKey: ["/api/questionnaire-results/latest"],
     enabled: isAuthenticated,
   });
 
@@ -36,19 +36,16 @@ export default function QuestionnaireResults() {
     );
   }
 
-  const questionnaire = (questionnaireData as any)?.questionnaire;
+  const result = (resultsData as any)?.result;
   
-  // Check if questionnaire is completed (handles both boolean and string values)
-  const isCompleted = questionnaire?.isCompleted === "true" || questionnaire?.isCompleted === true;
-  
-  if (!questionnaire || !isCompleted) {
+  if (!result) {
     navigate("/cuestionario");
     return null;
   }
 
-  const longevityPoints = questionnaire.longevityPoints || "0";
-  const healthStatus = questionnaire.healthStatus || "";
-  const sectionInterpretations = questionnaire.sectionInterpretations || {};
+  const longevityPoints = result.longevityPoints || "0";
+  const healthStatus = result.healthStatus || "";
+  const sectionInterpretations = result.sectionInterpretations || {};
 
   const getStatusColor = (points: string) => {
     const numPoints = parseInt(points) / 2; // Convert back to base points
