@@ -12,7 +12,8 @@ import {
   User, 
   Sparkles,
   MessageSquare,
-  Loader2
+  Loader2,
+  ArrowLeft
 } from "lucide-react";
 import { useLocation } from "wouter";
 
@@ -136,6 +137,16 @@ export default function AgenteIA() {
     <div className="min-h-screen bg-background">
       <div className="container max-w-5xl mx-auto py-8 px-4">
         <div className="mb-6">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/perfil')}
+            className="mb-4"
+            data-testid="button-back-to-profile"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Volver a Mi Perfil
+          </Button>
+          
           <div className="flex items-center gap-3 mb-2">
             <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10">
               <Bot className="h-6 w-6 text-primary" />
