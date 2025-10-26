@@ -50,7 +50,7 @@ function Router() {
       {!isAuthenticated ? (
         // When not authenticated, show public pages and auth pages
         <>
-          <Route path="/" component={Landing} />
+          <Route path="/" component={Home} />
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
           <Route path="/forgot-password" component={ForgotPassword} />
@@ -70,7 +70,7 @@ function Router() {
       ) : (
         // When authenticated, show protected routes and redirect auth pages to profile
         <>
-          <Route path="/" component={Landing} />
+          <Route path="/" component={Home} />
           <Route path="/profile" component={Profile} />
           <Route path="/perfil" component={Profile} />
           <Route path="/cuestionario" component={Cuestionario} />
