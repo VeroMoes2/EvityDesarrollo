@@ -616,11 +616,10 @@ export default function Cuestionario() {
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [isSaving, setIsSaving] = useState(false);
   
-  // Detectar parámetros de URL
+  // Detectar si viene el parámetro ?new=true para inicializar showQuestionnaire
   const urlParams = new URLSearchParams(window.location.search);
   const isNewQuestionnaire = urlParams.get('new') === 'true';
-  const isContinueQuestionnaire = urlParams.get('continue') === 'true';
-  const [showQuestionnaire, setShowQuestionnaire] = useState(isNewQuestionnaire || isContinueQuestionnaire);
+  const [showQuestionnaire, setShowQuestionnaire] = useState(isNewQuestionnaire);
   
   // Mutación para eliminar el cuestionario en progreso actual
   const deleteQuestionnaireMutation = useMutation({
@@ -635,15 +634,13 @@ export default function Cuestionario() {
     },
   });
   
-  // Detectar parámetros de URL y limpiarlos después de procesarlos
+  // Detectar si viene el parámetro ?new=true para empezar un nuevo cuestionario
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('new') === 'true') {
       // Eliminar cuestionario anterior y empezar uno nuevo
       deleteQuestionnaireMutation.mutate();
-    }
-    // Limpiar parámetros de la URL (tanto ?new=true como ?continue=true)
-    if (urlParams.get('new') === 'true' || urlParams.get('continue') === 'true') {
+      // Limpiar el parámetro de la URL
       window.history.replaceState({}, '', '/cuestionario');
     }
   }, []);
