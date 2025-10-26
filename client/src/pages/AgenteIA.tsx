@@ -185,13 +185,13 @@ export default function AgenteIA() {
                     )}
                     
                     <div
-                      className={`max-w-[80%] rounded-lg px-4 py-3 overflow-hidden ${
+                      className={`max-w-[85%] rounded-lg px-4 py-3 ${
                         message.role === "user"
                           ? "bg-primary text-primary-foreground"
                           : "bg-muted"
                       }`}
                     >
-                      <p className="text-sm whitespace-pre-wrap break-words overflow-wrap-anywhere">
+                      <p className="text-sm whitespace-pre-wrap break-words">
                         {message.content}
                       </p>
                       <p
