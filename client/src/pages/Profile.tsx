@@ -464,7 +464,29 @@ export default function Profile() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {latestResultData && typeof latestResultData === 'object' && 'result' in latestResultData && latestResultData.result ? (
+                {questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists && 'questionnaire' in questionnaireData && questionnaireData.questionnaire && (questionnaireData.questionnaire as any).isCompleted === "false" ? (
+                  <>
+                    <div className="flex items-center justify-between p-3 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <Activity className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                        <div>
+                          <p className="font-medium text-amber-900 dark:text-amber-100">
+                            {t('userProfile.inProgress')}
+                          </p>
+                          <p className="text-sm text-amber-700 dark:text-amber-300">
+                            {Object.keys((questionnaireData.questionnaire as any).answers || {}).length} de 29 preguntas respondidas
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <Link href="/cuestionario">
+                      <Button className="w-full" data-testid="button-continue-questionnaire">
+                        <FileText className="h-4 w-4 mr-2" />
+                        {t('userProfile.continueQuestionnaire')}
+                      </Button>
+                    </Link>
+                  </>
+                ) : latestResultData && typeof latestResultData === 'object' && 'result' in latestResultData && latestResultData.result ? (
                   <>
                     <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
                       <div className="flex items-center space-x-3">
@@ -518,28 +540,6 @@ export default function Profile() {
                         </Button>
                       </Link>
                     </div>
-                  </>
-                ) : questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists && 'questionnaire' in questionnaireData && questionnaireData.questionnaire && (questionnaireData.questionnaire as any).isCompleted === "false" ? (
-                  <>
-                    <div className="flex items-center justify-between p-3 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <Activity className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-                        <div>
-                          <p className="font-medium text-amber-900 dark:text-amber-100">
-                            {t('userProfile.inProgress')}
-                          </p>
-                          <p className="text-sm text-amber-700 dark:text-amber-300">
-                            {Object.keys((questionnaireData.questionnaire as any).answers || {}).length} de 29 preguntas respondidas
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <Link href="/cuestionario">
-                      <Button className="w-full" data-testid="button-continue-questionnaire">
-                        <FileText className="h-4 w-4 mr-2" />
-                        {t('userProfile.continueQuestionnaire')}
-                      </Button>
-                    </Link>
                   </>
                 ) : (
                   <>
