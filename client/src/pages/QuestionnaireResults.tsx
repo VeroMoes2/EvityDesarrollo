@@ -48,6 +48,7 @@ export default function QuestionnaireResults() {
 
   const longevityPoints = questionnaire.longevityPoints || "0";
   const healthStatus = questionnaire.healthStatus || "";
+  const sectionInterpretations = questionnaire.sectionInterpretations || {};
 
   const getStatusColor = (points: string) => {
     const numPoints = parseInt(points) / 2; // Convert back to base points
@@ -121,6 +122,30 @@ export default function QuestionnaireResults() {
             )}
           </CardContent>
         </Card>
+
+        {/* Enfoque en tus resultados - Section Interpretations */}
+        {Object.keys(sectionInterpretations).length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">Enfoque en tus resultados</CardTitle>
+              <CardDescription>
+                Recomendaciones personalizadas basadas en tu evaluación
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {Object.entries(sectionInterpretations).map(([section, interpretation]) => (
+                <div key={section} className="space-y-3">
+                  <h3 className="text-lg font-semibold text-primary">{section}</h3>
+                  <div className="bg-muted/50 rounded-lg p-4">
+                    <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                      {interpretation}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Motivational Call to Action */}
         <Card className="bg-primary border-0 shadow-lg">
