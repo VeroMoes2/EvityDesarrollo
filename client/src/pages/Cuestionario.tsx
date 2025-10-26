@@ -19,7 +19,8 @@ import {
   Pause,
   Calculator,
   RotateCcw,
-  Calendar
+  Calendar,
+  Sparkles
 } from "lucide-react";
 import {
   Select,
