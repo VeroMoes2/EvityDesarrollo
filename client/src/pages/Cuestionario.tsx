@@ -1045,7 +1045,7 @@ export default function Cuestionario() {
               </div>
 
               {/* Enfoque en tus resultados - Section Interpretations */}
-              {latestResult.sectionInterpretations && Object.keys(latestResult.sectionInterpretations).length > 0 && (
+              {latestResult.sectionInterpretations && typeof latestResult.sectionInterpretations === 'object' && Object.keys(latestResult.sectionInterpretations).length > 0 && (
                 <div className="pt-6 border-t space-y-4">
                   <div className="flex items-center gap-2">
                     <Sparkles className="h-5 w-5 text-primary" />
@@ -1055,12 +1055,12 @@ export default function Cuestionario() {
                     Recomendaciones personalizadas basadas en tu evaluación
                   </p>
                   <div className="space-y-4">
-                    {Object.entries(latestResult.sectionInterpretations).map(([section, interpretation]) => (
+                    {Object.entries(latestResult.sectionInterpretations as Record<string, string>).map(([section, interpretation]) => (
                       <div key={section} className="space-y-2">
                         <h4 className="font-semibold text-primary">{section}</h4>
                         <div className="bg-muted/50 rounded-lg p-4">
                           <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-                            {interpretation as string}
+                            {interpretation}
                           </p>
                         </div>
                       </div>
