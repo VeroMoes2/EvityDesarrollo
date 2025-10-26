@@ -106,7 +106,7 @@ export default function Header() {
             </Button>
 
             {/* LS-96-8: User Profile Menu - Desktop */}
-            {isAuthenticated && user ? (
+            {isAuthenticated && user && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="hidden md:flex items-center space-x-2 p-2" data-testid="button-user-menu">
@@ -149,24 +149,6 @@ export default function Header() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            ) : (
-              <>
-                <Button 
-                  variant="ghost"
-                  onClick={() => navigate('/login')}
-                  className="hidden md:inline-flex"
-                  data-testid="button-login-header"
-                >
-                  {t('landing.login')}
-                </Button>
-                <Button 
-                  onClick={() => navigate('/register')}
-                  className="hidden md:inline-flex"
-                  data-testid="button-register-header"
-                >
-                  {t('landing.register')}
-                </Button>
-              </>
             )}
 
             {/* Mobile menu button */}
@@ -226,7 +208,7 @@ export default function Header() {
               </Button>
               
               {/* LS-96-8: User Profile Navigation - Mobile */}
-              {isAuthenticated && user ? (
+              {isAuthenticated && user && (
                 <>
                   <div className="border-t border-border pt-4 mt-4">
                     <div className="flex items-center space-x-3 mb-3 px-1">
@@ -275,32 +257,6 @@ export default function Header() {
                     >
                       <LogOut className="mr-2 h-4 w-4" />
                       {t('nav.logout')}
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="border-t border-border pt-4 mt-4 space-y-2">
-                    <Button 
-                      variant="outline" 
-                      className="w-full"
-                      data-testid="button-mobile-login"
-                      onClick={() => {
-                        navigate('/login');
-                        setIsMenuOpen(false);
-                      }}
-                    >
-                      {t('landing.login')}
-                    </Button>
-                    <Button 
-                      className="w-full"
-                      data-testid="button-mobile-register"
-                      onClick={() => {
-                        navigate('/register');
-                        setIsMenuOpen(false);
-                      }}
-                    >
-                      {t('landing.register')}
                     </Button>
                   </div>
                 </>
