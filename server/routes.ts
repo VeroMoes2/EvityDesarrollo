@@ -1312,6 +1312,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               answers: refreshed.answers || {},
               longevityPoints: refreshed.longevityPoints,
               healthStatus: refreshed.healthStatus,
+              sectionScores: refreshed.sectionScores || {},
               sectionInterpretations: refreshed.sectionInterpretations || {},
             });
           }
