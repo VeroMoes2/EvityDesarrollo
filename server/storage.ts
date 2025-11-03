@@ -802,6 +802,8 @@ export class DatabaseStorage implements IStorage {
         answers: questionnaireResults.answers,
         longevityPoints: questionnaireResults.longevityPoints,
         healthStatus: questionnaireResults.healthStatus,
+        sectionScores: questionnaireResults.sectionScores,
+        sectionInterpretations: questionnaireResults.sectionInterpretations,
         completedAt: questionnaireResults.completedAt,
         userEmail: users.email,
         userName: sql<string>`CONCAT(${users.firstName}, ' ', ${users.lastName})`,
