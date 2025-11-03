@@ -1102,6 +1102,36 @@ export default function Cuestionario() {
             </CardContent>
           </Card>
 
+          {/* Notificación sobre nueva funcionalidad */}
+          {(!latestResult.sectionScores || Object.keys(latestResult.sectionScores).length === 0) && (
+            <Card className="border-2 border-primary bg-primary/5">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 p-2 bg-primary rounded-full">
+                    <Sparkles className="h-6 w-6 text-primary-foreground" />
+                  </div>
+                  <div className="flex-1 space-y-3">
+                    <h3 className="font-semibold text-lg text-foreground">
+                      ¡Nueva funcionalidad disponible!
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Ahora puedes ver tus <strong>scores detallados por cada sección</strong> de salud (actividad física, dieta, sueño, etc.) con barras de progreso y recomendaciones personalizadas.
+                    </p>
+                    <Button
+                      onClick={handleStartNewQuestionnaire}
+                      size="lg"
+                      className="w-full"
+                      data-testid="button-new-questionnaire-featured"
+                    >
+                      <Sparkles className="h-5 w-5 mr-2" />
+                      Hacer cuestionario nuevo para ver scores detallados
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Completion Date Card */}
           <Card>
             <CardHeader>
