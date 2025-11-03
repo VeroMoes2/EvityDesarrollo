@@ -928,12 +928,20 @@ export default function Cuestionario() {
       const sectionAverages = calculateSectionAverages(answers);
       const sectionInterpretations = generateSectionInterpretations(sectionAverages);
       
+      // Calcular scores por sección (convertir promedios a escala 0-100)
+      const sectionScores: Record<string, number> = {};
+      for (const [section, average] of Object.entries(sectionAverages)) {
+        // Convertir promedio (1-5) a puntos (0-100)
+        sectionScores[section] = Math.round((average / 5) * 100);
+      }
+      
       const data = {
         answers,
         currentQuestion: QUESTIONS[QUESTIONS.length - 1].id,
         isCompleted: "true",
         longevityPoints: longevityPoints.toString(),
         healthStatus,
+        sectionScores,
         sectionInterpretations,
       };
 

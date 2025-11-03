@@ -738,6 +738,7 @@ export class DatabaseStorage implements IStorage {
     if (data.isCompleted !== undefined) updateData.isCompleted = data.isCompleted;
     if (data.longevityPoints !== undefined) updateData.longevityPoints = data.longevityPoints;
     if (data.healthStatus !== undefined) updateData.healthStatus = data.healthStatus;
+    if (data.sectionScores !== undefined) updateData.sectionScores = data.sectionScores;
     if (data.sectionInterpretations !== undefined) updateData.sectionInterpretations = data.sectionInterpretations;
     
     const [questionnaire] = await db
