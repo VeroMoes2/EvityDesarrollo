@@ -545,7 +545,7 @@ export default function Profile() {
                           <Sparkles className="h-5 w-5 text-primary" />
                           <h3 className="font-semibold text-base">Scores por Sección</h3>
                         </div>
-                        <div className="space-y-3">
+                        <div className="space-y-2">
                           {Object.entries((latestResultData.result as any).sectionScores).map(([section, score]: [string, any]) => {
                             const numScore = Number(score);
                             const getSectionColor = (s: number) => {
@@ -553,28 +553,15 @@ export default function Profile() {
                               if (s >= 60) return "text-yellow-600 dark:text-yellow-400";
                               return "text-orange-600 dark:text-orange-400";
                             };
-                            const getBarColor = (s: number) => {
-                              if (s >= 80) return "bg-green-600";
-                              if (s >= 60) return "bg-yellow-600";
-                              return "bg-orange-600";
-                            };
                             
                             return (
-                              <div key={section} className="space-y-1">
-                                <div className="flex justify-between items-center">
-                                  <p className="text-xs font-medium text-muted-foreground">
-                                    {section}
-                                  </p>
-                                  <span className={`text-sm font-bold ${getSectionColor(numScore)}`}>
-                                    {score}
-                                  </span>
-                                </div>
-                                <div className="w-full bg-muted rounded-full h-1.5">
-                                  <div 
-                                    className={`h-1.5 rounded-full transition-all ${getBarColor(numScore)}`}
-                                    style={{ width: `${score}%` }}
-                                  />
-                                </div>
+                              <div key={section} className="flex justify-between items-center">
+                                <p className="text-xs font-medium text-muted-foreground">
+                                  {section}
+                                </p>
+                                <span className={`text-sm font-bold ${getSectionColor(numScore)}`}>
+                                  {score}
+                                </span>
                               </div>
                             );
                           })}
