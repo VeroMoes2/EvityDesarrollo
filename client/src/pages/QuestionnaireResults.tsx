@@ -46,6 +46,7 @@ export default function QuestionnaireResults() {
 
   const longevityPoints = result.longevityPoints || "0";
   const healthStatus = result.healthStatus || "";
+  const sectionScores = result.sectionScores || {};
   const sectionInterpretations = result.sectionInterpretations || {};
 
   const getStatusColor = (points: string) => {
@@ -60,6 +61,18 @@ export default function QuestionnaireResults() {
     if (numPoints >= 40) return "bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800";
     if (numPoints >= 30) return "bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-800";
     return "bg-orange-50 dark:bg-orange-950 border-orange-200 dark:border-orange-800";
+  };
+
+  const getSectionColor = (score: number) => {
+    if (score >= 80) return "text-green-600 dark:text-green-400";
+    if (score >= 60) return "text-yellow-600 dark:text-yellow-400";
+    return "text-orange-600 dark:text-orange-400";
+  };
+
+  const getSectionBgColor = (score: number) => {
+    if (score >= 80) return "bg-green-100 dark:bg-green-900/30";
+    if (score >= 60) return "bg-yellow-100 dark:bg-yellow-900/30";
+    return "bg-orange-100 dark:bg-orange-900/30";
   };
 
   return (
@@ -133,6 +146,51 @@ export default function QuestionnaireResults() {
             )}
           </CardContent>
         </Card>
+
+        {/* Section Scores - Scores por sección */}
+        {Object.keys(sectionScores).length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">Scores por Sección</CardTitle>
+              <CardDescription>
+                Desglose de tus puntuaciones en cada área evaluada
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2">
+                {Object.entries(sectionScores).map(([section, score]) => (
+                  <div 
+                    key={section} 
+                    className={`rounded-lg p-4 ${getSectionBgColor(score as number)}`}
+                    data-testid={`section-score-${section.toLowerCase().replace(/\s+/g, '-')}`}
+                  >
+                    <div className="flex justify-between items-center mb-2">
+                      <h3 className="font-semibold text-sm text-foreground">
+                        {section}
+                      </h3>
+                      <span 
+                        className={`text-2xl font-bold ${getSectionColor(score as number)}`}
+                        data-testid={`score-${section.toLowerCase().replace(/\s+/g, '-')}`}
+                      >
+                        {score}
+                      </span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full transition-all ${
+                          (score as number) >= 80 ? 'bg-green-600' : 
+                          (score as number) >= 60 ? 'bg-yellow-600' : 
+                          'bg-orange-600'
+                        }`}
+                        style={{ width: `${score}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Enfoque en tus resultados - Section Interpretations */}
         {Object.keys(sectionInterpretations).length > 0 && (

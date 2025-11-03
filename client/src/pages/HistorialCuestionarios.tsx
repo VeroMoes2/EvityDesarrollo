@@ -172,7 +172,38 @@ export default function HistorialCuestionarios() {
                       </Button>
 
                       {isExpanded && (
-                        <div className="mt-4 pt-4 border-t space-y-3">
+                        <div className="mt-4 pt-4 border-t space-y-4">
+                          {/* Section Scores */}
+                          {result.sectionScores && Object.keys(result.sectionScores).length > 0 && (
+                            <div className="space-y-3">
+                              <h4 className="font-semibold text-sm text-gray-700 dark:text-gray-300">Scores por sección:</h4>
+                              <div className="grid gap-2 grid-cols-2">
+                                {Object.entries(result.sectionScores as Record<string, number>).map(([section, score]) => (
+                                  <div key={section} className="p-2 bg-gray-50 dark:bg-gray-800 rounded text-sm">
+                                    <div className="flex justify-between items-center mb-1">
+                                      <span className="font-medium text-gray-700 dark:text-gray-300 text-xs">{section}</span>
+                                      <span className={`font-bold ${
+                                        score >= 80 ? 'text-green-600 dark:text-green-400' :
+                                        score >= 60 ? 'text-yellow-600 dark:text-yellow-400' :
+                                        'text-orange-600 dark:text-orange-400'
+                                      }`}>{score}</span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                      <div 
+                                        className={`h-1.5 rounded-full ${
+                                          score >= 80 ? 'bg-green-600' :
+                                          score >= 60 ? 'bg-yellow-600' :
+                                          'bg-orange-600'
+                                        }`}
+                                        style={{ width: `${score}%` }}
+                                      />
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
                           <h4 className="font-semibold text-sm text-gray-700 dark:text-gray-300">Respuestas del cuestionario:</h4>
                           <div className="space-y-2 max-h-96 overflow-y-auto">
                             {Object.entries(answers).map(([key, value]) => {
