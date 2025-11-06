@@ -139,11 +139,11 @@ export default function About() {
             </CardHeader>
             <CardContent className="text-center">
               <a 
-                href="mailto:contacto@evity.com"
+                href="mailto:contacto@evity.mx"
                 className="text-primary hover:underline text-lg font-medium"
                 data-testid="link-contact-email"
               >
-                contacto@evity.com
+                contacto@evity.mx
               </a>
             </CardContent>
           </Card>
