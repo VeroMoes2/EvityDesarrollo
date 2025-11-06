@@ -45,6 +45,31 @@ const upload = multer({
   }
 });
 
+// Configure multer specifically for profile image uploads
+const profileImageUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit for profile images
+  },
+  fileFilter: (req, file, cb) => {
+    // Only allow image types for profile images
+    const allowedImageTypes = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/gif',
+      'image/webp'
+    ];
+    
+    if (allowedImageTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      // Return structured error for consistent JSON handling
+      cb(new Error(`MULTER_INVALID_TYPE:${file.mimetype}`));
+    }
+  }
+});
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // LS-108: Apply security headers to all routes
   app.use(securityHeaders);
@@ -266,11 +291,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Profile image upload endpoint
   app.post('/api/profile/upload-image', isAuthenticated, uploadRateLimit, (req: any, res: any, next: any) => {
-    upload.single('image')(req, res, (err: any) => {
+    profileImageUpload.single('image')(req, res, (err: any) => {
       if (err) {
         if (err.code === 'LIMIT_FILE_SIZE') {
           return res.status(400).json({
             message: "La imagen excede el límite de 5MB",
+            type: "VALIDATION_ERROR"
+          });
+        }
+        // Handle invalid file type errors from multer
+        if (err.message && err.message.startsWith('MULTER_INVALID_TYPE:')) {
+          return res.status(400).json({
+            message: "Solo se permiten imágenes (JPEG, PNG, GIF, WebP)",
             type: "VALIDATION_ERROR"
           });
         }
@@ -290,7 +322,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No se recibió ninguna imagen" });
       }
 
-      // Validate file type (only images)
+      // Defense in depth: Validate file type again (multer already filtered)
       const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
       if (!allowedImageTypes.includes(file.mimetype)) {
         return res.status(400).json({ 
@@ -299,7 +331,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Validate file size (max 5MB)
+      // Defense in depth: Validate file size again (multer already limited)
       const maxSize = 5 * 1024 * 1024; // 5MB
       if (file.size > maxSize) {
         return res.status(400).json({ 
