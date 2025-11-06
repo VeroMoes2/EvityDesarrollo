@@ -385,7 +385,7 @@ const translations = {
     'blog.exercise': 'Ejercicio',
     
     // Mini Calculator
-    'miniCalc.title': 'Longevity Mini Score',
+    'miniCalc.title': 'Mi calculadora Evity',
     'miniCalc.subtitle': 'Descubre tu puntuación de longevidad basada en tu estilo de vida actual y obtén recomendaciones personalizadas para mejorarla',
     'miniCalc.completeForm': 'Completa el cuestionario',
     'miniCalc.selectOption': 'Selecciona una opción',
@@ -829,7 +829,7 @@ const translations = {
     'blog.post3.date': 'Dec 10, 2024',
     
     // Mini Calculator
-    'miniCalc.title': 'Longevity Mini Score',
+    'miniCalc.title': 'My Evity Calculator',
     'miniCalc.subtitle': 'Discover your longevity score based on your current lifestyle and get personalized recommendations to improve it',
     'miniCalc.completeForm': 'Complete the questionnaire',
     'miniCalc.selectOption': 'Select an option',
