@@ -214,6 +214,7 @@ export const updateUserProfileSchema = z.object({
       return age >= 18 && age <= 120;
     }, "Debes ser mayor de 18 años"),
   phoneNumber: phoneNumberSchema, // LS-110: Phone number update validation
+  profileImageUrl: z.string().url("Debe ser una URL válida").optional(),
 });
 
 export const loginUserSchema = z.object({
