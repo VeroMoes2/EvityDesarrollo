@@ -264,6 +264,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Profile image upload endpoint
+  app.post('/api/profile/upload-image', isAuthenticated, uploadRateLimit, (req: any, res: any, next: any) => {
+    upload.single('image')(req, res, (err: any) => {
+      if (err) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(400).json({
+            message: "La imagen excede el límite de 5MB",
+            type: "VALIDATION_ERROR"
+          });
+        }
+        return res.status(400).json({
+          message: "Error al subir la imagen",
+          type: "UPLOAD_ERROR"
+        });
+      }
+      next();
+    });
+  }, csrfProtection, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const file = req.file;
+
+      if (!file) {
+        return res.status(400).json({ message: "No se recibió ninguna imagen" });
+      }
+
+      // Validate file type (only images)
+      const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedImageTypes.includes(file.mimetype)) {
+        return res.status(400).json({ 
+          message: "Solo se permiten imágenes (JPEG, PNG, GIF, WebP)",
+          type: "VALIDATION_ERROR"
+        });
+      }
+
+      // Validate file size (max 5MB)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        return res.status(400).json({ 
+          message: "La imagen no puede superar los 5MB",
+          type: "VALIDATION_ERROR"
+        });
+      }
+
+      // Convert image to base64 data URL
+      const base64Image = file.buffer.toString('base64');
+      const dataUrl = `data:${file.mimetype};base64,${base64Image}`;
+
+      // Update user profile with image URL
+      const updatedUser = await storage.updateUserProfile(userId, {
+        profileImageUrl: dataUrl
+      });
+
+      console.log(`AUDIT: Profile image uploaded - User: ${userId}, Size: ${file.size}`);
+
+      const { password, passwordResetToken, passwordResetExpires, emailVerificationToken, emailVerificationExpires, ...userResponse } = updatedUser;
+
+      res.json({ 
+        message: "Imagen de perfil actualizada exitosamente",
+        profileImageUrl: dataUrl,
+        user: userResponse
+      });
+    } catch (error) {
+      console.error("Error uploading profile image:", error);
+      res.status(500).json({ message: "Error al subir la imagen de perfil" });
+    }
+  });
+
   // File upload endpoint with enhanced security validations and multer error handling
   // LS-108: Explicit CSRF protection after multer processes FormData
   app.post('/api/profile/medical-documents/upload', isAuthenticated, uploadRateLimit, (req: any, res: any, next: any) => {
