@@ -33,6 +33,7 @@ export default function Profile() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFileType, setSelectedFileType] = useState("all");
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   // LS-101: Form for profile editing
   const form = useForm<UpdateUserProfile>({
@@ -148,6 +149,76 @@ export default function Profile() {
       }
     },
   });
+
+  // Profile image upload mutation
+  const uploadImageMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      const response = await fetch('/api/profile/upload-image', {
+        method: 'POST',
+        headers: csrfToken ? { 'X-CSRF-Token': csrfToken } : {},
+        body: formData,
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Error al subir la imagen');
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      setIsUploadingImage(false);
+      toast({
+        title: "Imagen actualizada",
+        description: "Tu foto de perfil se ha actualizado exitosamente",
+      });
+    },
+    onError: (error: any) => {
+      setIsUploadingImage(false);
+      toast({
+        title: "Error",
+        description: error.message || "No se pudo subir la imagen",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Handle image file selection
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Tipo de archivo inválido",
+        description: "Solo se permiten imágenes (JPEG, PNG, GIF, WebP)",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (5MB)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast({
+        title: "Archivo muy grande",
+        description: "La imagen no puede superar los 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploadingImage(true);
+    uploadImageMutation.mutate(file);
+  };
 
   // LS-101: Handle form submission
   const onSubmit = (data: UpdateUserProfile) => {
@@ -403,12 +474,36 @@ export default function Profile() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center space-x-4">
-                  <Avatar className="h-16 w-16">
-                    <AvatarImage src={(user as any)?.profileImageUrl} alt="Foto de perfil" />
-                    <AvatarFallback>
-                      {(user as any)?.firstName?.[0]}{(user as any)?.lastName?.[0]}
-                    </AvatarFallback>
-                  </Avatar>
+                  <div className="relative">
+                    <Avatar className="h-16 w-16">
+                      <AvatarImage src={(user as any)?.profileImageUrl} alt="Foto de perfil" />
+                      <AvatarFallback>
+                        {(user as any)?.firstName?.[0]}{(user as any)?.lastName?.[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <input
+                      type="file"
+                      id="profile-image-upload"
+                      accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      data-testid="input-profile-image"
+                    />
+                    <Button
+                      size="icon"
+                      variant="secondary"
+                      className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full"
+                      onClick={() => document.getElementById('profile-image-upload')?.click()}
+                      disabled={isUploadingImage}
+                      data-testid="button-change-photo"
+                    >
+                      {isUploadingImage ? (
+                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary" />
+                      ) : (
+                        <Edit className="h-3 w-3" />
+                      )}
+                    </Button>
+                  </div>
                   <div>
                     <p className="font-semibold text-lg" data-testid="text-username">
                       {(user as any)?.firstName} {(user as any)?.lastName}
