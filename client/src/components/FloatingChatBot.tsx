@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   Bot, 
   Send, 
@@ -224,9 +225,12 @@ export default function FloatingChatBot() {
                       </span>
                     </div>
                     {message.role === "user" && (
-                      <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center flex-shrink-0">
-                        <User className="h-5 w-5 text-accent-foreground" />
-                      </div>
+                      <Avatar className="h-8 w-8 flex-shrink-0">
+                        <AvatarImage src={user?.profileImage || undefined} alt={user?.fullName || 'Usuario'} />
+                        <AvatarFallback>
+                          <User className="h-5 w-5" />
+                        </AvatarFallback>
+                      </Avatar>
                     )}
                   </div>
                 ))}
