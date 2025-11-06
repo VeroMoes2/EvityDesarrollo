@@ -38,6 +38,7 @@ export interface IStorage {
     isEmailVerified?: string; 
     emailVerificationToken?: string | null; 
     emailVerificationExpires?: Date | null; 
+    profileImageUrl?: string;
   }): Promise<User>;
   setPasswordResetToken(userId: string, token: string, expires: Date): Promise<void>;
   clearPasswordResetToken(userId: string): Promise<void>;
@@ -236,6 +237,7 @@ export class DatabaseStorage implements IStorage {
     isEmailVerified?: string;
     emailVerificationToken?: string | null;
     emailVerificationExpires?: Date | null;
+    profileImageUrl?: string;
   }): Promise<User> {
     const updateData: any = {
       updatedAt: new Date(),
@@ -249,6 +251,7 @@ export class DatabaseStorage implements IStorage {
     if (profileData.isEmailVerified !== undefined) updateData.isEmailVerified = profileData.isEmailVerified;
     if (profileData.emailVerificationToken !== undefined) updateData.emailVerificationToken = profileData.emailVerificationToken;
     if (profileData.emailVerificationExpires !== undefined) updateData.emailVerificationExpires = profileData.emailVerificationExpires;
+    if (profileData.profileImageUrl !== undefined) updateData.profileImageUrl = profileData.profileImageUrl;
 
     const [updatedUser] = await db
       .update(users)
@@ -456,6 +459,7 @@ export class DatabaseStorage implements IStorage {
         firstName: users.firstName,
         lastName: users.lastName,
         gender: users.gender,
+        dateOfBirth: users.dateOfBirth,
         phoneNumber: users.phoneNumber,
         password: users.password,
         profileImageUrl: users.profileImageUrl,
