@@ -1219,7 +1219,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Send email to Evity team
       const mailOptions = {
         from: `"${nombre}" <${process.env.SMTP_USER}>`, // sender address
-        to: 'evitycontacto@gmail.com', // Evity contact email
+        to: 'contacto@evity.mx', // Evity contact email
         replyTo: email, // reply to user's email
         subject: `Contacto Evity: ${asunto}`,
         html: `
