@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { NavigationProvider } from "@/contexts/NavigationContext";
+import FloatingChatBot from "@/components/FloatingChatBot";
 import Landing from "@/pages/Landing";
 import Home from "@/pages/Home";
 import Profile from "@/pages/Profile";
@@ -110,6 +111,7 @@ function App() {
         <NavigationProvider>
           <TooltipProvider>
             <Toaster />
+            <FloatingChatBot />
             <Router />
           </TooltipProvider>
         </NavigationProvider>
