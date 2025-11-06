@@ -214,7 +214,7 @@ export default function Contacto() {
                       </div>
                       <div>
                         <h3 className="font-medium">{t('contact.emailAddress')}</h3>
-                        <p className="text-muted-foreground">evitycontacto@gmail.com</p>
+                        <p className="text-muted-foreground">contacto@evity.mx</p>
                       </div>
                     </div>
 
