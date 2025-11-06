@@ -153,13 +153,31 @@ export default function Profile() {
   // Profile image upload mutation
   const uploadImageMutation = useMutation({
     mutationFn: async (file: File) => {
+      // Get CSRF token first
+      const csrfResponse = await fetch('/api/csrf-token', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+
+      if (!csrfResponse.ok) {
+        throw new Error('No se pudo obtener el token de seguridad');
+      }
+
+      const { csrfToken } = await csrfResponse.json();
+
+      // Prepare form data
       const formData = new FormData();
       formData.append('image', file);
 
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      // Upload image with CSRF token
       const response = await fetch('/api/profile/upload-image', {
         method: 'POST',
-        headers: csrfToken ? { 'X-CSRF-Token': csrfToken } : {},
+        headers: {
+          'X-CSRF-Token': csrfToken,
+        },
         body: formData,
         credentials: 'include',
       });
