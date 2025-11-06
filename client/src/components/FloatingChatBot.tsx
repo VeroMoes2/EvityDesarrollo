@@ -226,7 +226,7 @@ export default function FloatingChatBot() {
                     </div>
                     {message.role === "user" && (
                       <Avatar className="h-8 w-8 flex-shrink-0">
-                        <AvatarImage src={user?.profileImage || undefined} alt={user?.fullName || 'Usuario'} />
+                        <AvatarImage src={user?.profileImageUrl || undefined} alt={user?.fullName || 'Usuario'} />
                         <AvatarFallback>
                           <User className="h-5 w-5" />
                         </AvatarFallback>
