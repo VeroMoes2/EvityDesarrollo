@@ -686,8 +686,12 @@ export default function Cuestionario() {
       }
       return await apiRequest("POST", "/api/questionnaire", data);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/questionnaire"] });
+      // Si se completó, también invalidar los resultados
+      if (variables.isCompleted === "true") {
+        queryClient.invalidateQueries({ queryKey: ["/api/questionnaire-results/latest"] });
+      }
     },
   });
 
@@ -700,8 +704,12 @@ export default function Cuestionario() {
       }
       return await apiRequest("PUT", "/api/questionnaire", data);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/questionnaire"] });
+      // Si se completó, también invalidar los resultados
+      if (variables.isCompleted === "true") {
+        queryClient.invalidateQueries({ queryKey: ["/api/questionnaire-results/latest"] });
+      }
     },
   });
 
@@ -961,17 +969,17 @@ export default function Cuestionario() {
         await saveProgressMutation.mutateAsync(data);
       }
 
+      // Invalidar TODAS las queries relacionadas al cuestionario para que se refresquen
+      await queryClient.invalidateQueries({ queryKey: ["/api/questionnaire-results/latest"] });
+      await queryClient.invalidateQueries({ queryKey: ["/api/questionnaire"] });
+
       toast({
         title: "¡Cuestionario completado!",
         description: `Has obtenido ${longevityPoints} puntos de longevidad.`,
       });
 
-      // Invalidar la query del resultado más reciente
-      queryClient.invalidateQueries({ queryKey: ["/api/questionnaire-results/latest"] });
-
-      setTimeout(() => {
-        navigate("/cuestionario-resultados");
-      }, 1500);
+      // Navegar directamente a los resultados sin delay
+      navigate("/cuestionario-resultados");
     } catch (error) {
       toast({
         title: "Error",
