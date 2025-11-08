@@ -79,14 +79,14 @@ export default function Profile() {
 
   // Fetch questionnaire status
   const { data: questionnaireData } = useQuery({
-    queryKey: ["/api/questionnaire"],
-    enabled: isAuthenticated,
+    queryKey: ["/api/questionnaire", user?.id],
+    enabled: isAuthenticated && !!user,
   });
   
   // Fetch latest completed questionnaire result
   const { data: latestResultData } = useQuery({
-    queryKey: ["/api/questionnaire-results/latest"],
-    enabled: isAuthenticated,
+    queryKey: ["/api/questionnaire-results/latest", user?.id],
+    enabled: isAuthenticated && !!user,
   });
 
   // Handle documents query error

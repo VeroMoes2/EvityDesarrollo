@@ -653,13 +653,13 @@ export default function Cuestionario() {
 
   // Verificar si ya existe un resultado completado
   const { data: latestResultData, isLoading: isLoadingLatestResult } = useQuery({
-    queryKey: ["/api/questionnaire-results/latest"],
-    enabled: isAuthenticated,
+    queryKey: ["/api/questionnaire-results/latest", user?.id],
+    enabled: isAuthenticated && !!user,
   });
 
   const { data: questionnaireData, isLoading: isLoadingQuestionnaire } = useQuery({
-    queryKey: ["/api/questionnaire"],
-    enabled: isAuthenticated && showQuestionnaire,
+    queryKey: ["/api/questionnaire", user?.id],
+    enabled: isAuthenticated && !!user && showQuestionnaire,
   });
 
   useEffect(() => {
