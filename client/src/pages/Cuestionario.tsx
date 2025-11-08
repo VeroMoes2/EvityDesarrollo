@@ -621,6 +621,9 @@ export default function Cuestionario() {
   const isContinueQuestionnaire = urlParams.get('continue') === 'true';
   const [showQuestionnaire, setShowQuestionnaire] = useState(isNewQuestionnaire || isContinueQuestionnaire);
   
+  // Flag local para indicar si es un cuestionario completamente nuevo (sin cuestionario previo en DB)
+  const [isNewQuestionnaireSession, setIsNewQuestionnaireSession] = useState(isNewQuestionnaire);
+  
   // Mutación para eliminar el cuestionario en progreso actual
   const deleteQuestionnaireMutation = useMutation({
     mutationFn: async () => {
@@ -631,6 +634,7 @@ export default function Cuestionario() {
       setShowQuestionnaire(true);
       setAnswers({});
       setCurrentQuestionIndex(0);
+      setIsNewQuestionnaireSession(true); // Marcar como nueva sesión
     },
   });
   
@@ -711,10 +715,12 @@ export default function Cuestionario() {
         isCompleted: "false",
       };
 
-      if (questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists) {
-        await updateProgressMutation.mutateAsync(data);
-      } else {
+      // Si es una sesión nueva, siempre usar POST (crear), sino PUT (actualizar)
+      if (isNewQuestionnaireSession) {
         await saveProgressMutation.mutateAsync(data);
+        setIsNewQuestionnaireSession(false); // Después del primer guardado, ya no es nueva sesión
+      } else {
+        await updateProgressMutation.mutateAsync(data);
       }
 
       if (showToast) {
@@ -785,10 +791,12 @@ export default function Cuestionario() {
           isCompleted: "false",
         };
 
-        if (questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists) {
-          await updateProgressMutation.mutateAsync(data);
-        } else {
+        // Si es una sesión nueva, siempre usar POST (crear), sino PUT (actualizar)
+        if (isNewQuestionnaireSession) {
           await saveProgressMutation.mutateAsync(data);
+          setIsNewQuestionnaireSession(false); // Después del primer guardado, ya no es nueva sesión
+        } else {
+          await updateProgressMutation.mutateAsync(data);
         }
       } catch (error) {
         setCurrentQuestionIndex(previousIndex);
@@ -818,10 +826,12 @@ export default function Cuestionario() {
           isCompleted: "false",
         };
 
-        if (questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists) {
-          await updateProgressMutation.mutateAsync(data);
-        } else {
+        // Si es una sesión nueva, siempre usar POST (crear), sino PUT (actualizar)
+        if (isNewQuestionnaireSession) {
           await saveProgressMutation.mutateAsync(data);
+          setIsNewQuestionnaireSession(false); // Después del primer guardado, ya no es nueva sesión
+        } else {
+          await updateProgressMutation.mutateAsync(data);
         }
       } catch (error) {
         setCurrentQuestionIndex(previousIndex);
