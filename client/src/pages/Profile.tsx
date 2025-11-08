@@ -78,15 +78,15 @@ export default function Profile() {
   });
 
   // Fetch questionnaire status
-  const { data: questionnaireData, isLoading: isLoadingQuestionnaire } = useQuery({
-    queryKey: user?.id ? ["/api/questionnaire", user.id] : ["/api/questionnaire"],
-    enabled: isAuthenticated,
+  const { data: questionnaireData } = useQuery({
+    queryKey: ["/api/questionnaire", user?.id],
+    enabled: isAuthenticated && !!user,
   });
   
   // Fetch latest completed questionnaire result
-  const { data: latestResultData, isLoading: isLoadingLatestResult } = useQuery({
-    queryKey: user?.id ? ["/api/questionnaire-results/latest", user.id] : ["/api/questionnaire-results/latest"],
-    enabled: isAuthenticated,
+  const { data: latestResultData } = useQuery({
+    queryKey: ["/api/questionnaire-results/latest", user?.id],
+    enabled: isAuthenticated && !!user,
   });
 
   // Handle documents query error
@@ -577,15 +577,8 @@ export default function Profile() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Loading State */}
-                {(isLoadingQuestionnaire || isLoadingLatestResult) && (
-                  <div className="flex items-center justify-center p-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                  </div>
-                )}
-
                 {/* Questionnaire In Progress Section */}
-                {!isLoadingQuestionnaire && !isLoadingLatestResult && questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists && 'questionnaire' in questionnaireData && questionnaireData.questionnaire && (questionnaireData.questionnaire as any).isCompleted === "false" && (
+                {questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists && 'questionnaire' in questionnaireData && questionnaireData.questionnaire && (questionnaireData.questionnaire as any).isCompleted === "false" && (
                   <>
                     <div className="p-4 bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 border border-amber-200 dark:border-amber-800 rounded-lg space-y-3">
                       <div className="flex items-center space-x-3">
@@ -619,7 +612,7 @@ export default function Profile() {
                 )}
 
                 {/* Completed Questionnaire Results Section */}
-                {!isLoadingQuestionnaire && !isLoadingLatestResult && latestResultData && typeof latestResultData === 'object' && 'result' in latestResultData && latestResultData.result && (
+                {latestResultData && typeof latestResultData === 'object' && 'result' in latestResultData && latestResultData.result && (
                   <>
                     <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
                       <div className="flex items-center space-x-3">
@@ -709,7 +702,7 @@ export default function Profile() {
                 )}
 
                 {/* Start New Questionnaire Section - Only if no progress and no results */}
-                {!isLoadingQuestionnaire && !isLoadingLatestResult && !questionnaireData?.exists && !latestResultData?.result && (
+                {!questionnaireData?.exists && !latestResultData?.result && (
                   <>
                     <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
                       <div className="flex items-center space-x-3">
