@@ -78,14 +78,14 @@ export default function Profile() {
   });
 
   // Fetch questionnaire status
-  const { data: questionnaireData, isLoading: isLoadingQuestionnaire } = useQuery({
-    queryKey: user?.id ? ["/api/questionnaire", user.id] : ["/api/questionnaire"],
+  const { data: questionnaireData } = useQuery({
+    queryKey: ["/api/questionnaire"],
     enabled: isAuthenticated,
   });
   
   // Fetch latest completed questionnaire result
-  const { data: latestResultData, isLoading: isLoadingLatestResult } = useQuery({
-    queryKey: user?.id ? ["/api/questionnaire-results/latest", user.id] : ["/api/questionnaire-results/latest"],
+  const { data: latestResultData } = useQuery({
+    queryKey: ["/api/questionnaire-results/latest"],
     enabled: isAuthenticated,
   });
 
@@ -577,25 +577,8 @@ export default function Profile() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Debug logging */}
-                {console.log('Profile Questionnaire Debug:', {
-                  isLoadingQuestionnaire,
-                  isLoadingLatestResult,
-                  questionnaireData,
-                  latestResultData,
-                  hasQuestionnaireData: !!questionnaireData,
-                  hasLatestResult: !!latestResultData
-                })}
-                
-                {/* Loading State */}
-                {(isLoadingQuestionnaire || isLoadingLatestResult) && (
-                  <div className="flex items-center justify-center p-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                  </div>
-                )}
-
                 {/* Questionnaire In Progress Section */}
-                {!isLoadingQuestionnaire && !isLoadingLatestResult && questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists && 'questionnaire' in questionnaireData && questionnaireData.questionnaire && (questionnaireData.questionnaire as any).isCompleted === "false" && (
+                {questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists && 'questionnaire' in questionnaireData && questionnaireData.questionnaire && (questionnaireData.questionnaire as any).isCompleted === "false" && (
                   <>
                     <div className="p-4 bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 border border-amber-200 dark:border-amber-800 rounded-lg space-y-3">
                       <div className="flex items-center space-x-3">
@@ -629,7 +612,7 @@ export default function Profile() {
                 )}
 
                 {/* Completed Questionnaire Results Section */}
-                {!isLoadingQuestionnaire && !isLoadingLatestResult && latestResultData && typeof latestResultData === 'object' && 'result' in latestResultData && latestResultData.result && (
+                {latestResultData && typeof latestResultData === 'object' && 'result' in latestResultData && latestResultData.result && (
                   <>
                     <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
                       <div className="flex items-center space-x-3">
@@ -668,28 +651,28 @@ export default function Profile() {
                       </div>
                     )}
 
-                    {/* Section Scores - Formato simple */}
+                    {/* Section Scores */}
                     {(latestResultData.result as any).sectionScores && Object.keys((latestResultData.result as any).sectionScores).length > 0 && (
-                      <div className="p-4 bg-card border border-border rounded-lg space-y-3">
-                        <div className="flex items-center gap-2">
+                      <div className="p-4 bg-background border border-border rounded-lg space-y-3">
+                        <div className="flex items-center gap-2 mb-3">
                           <Sparkles className="h-5 w-5 text-primary" />
                           <h3 className="font-semibold text-base">Scores por Sección</h3>
                         </div>
                         <div className="space-y-2">
                           {Object.entries((latestResultData.result as any).sectionScores).map(([section, score]: [string, any]) => {
                             const numScore = Number(score);
-                            const getScoreColor = (s: number) => {
+                            const getSectionColor = (s: number) => {
                               if (s >= 80) return "text-green-600 dark:text-green-400";
                               if (s >= 60) return "text-yellow-600 dark:text-yellow-400";
                               return "text-orange-600 dark:text-orange-400";
                             };
                             
                             return (
-                              <div key={section} className="flex justify-between items-center py-1">
-                                <p className="text-sm text-foreground">
+                              <div key={section} className="flex justify-between items-center">
+                                <p className="text-xs font-medium text-muted-foreground">
                                   {section}
                                 </p>
-                                <span className={`text-lg font-bold ${getScoreColor(numScore)}`} data-testid={`score-${section.toLowerCase().replace(/\s+/g, '-')}`}>
+                                <span className={`text-sm font-bold ${getSectionColor(numScore)}`}>
                                   {score}
                                 </span>
                               </div>
@@ -719,7 +702,7 @@ export default function Profile() {
                 )}
 
                 {/* Start New Questionnaire Section - Only if no progress and no results */}
-                {!isLoadingQuestionnaire && !isLoadingLatestResult && !questionnaireData?.exists && !latestResultData?.result && (
+                {!questionnaireData?.exists && !latestResultData?.result && (
                   <>
                     <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
                       <div className="flex items-center space-x-3">

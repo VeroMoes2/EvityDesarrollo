@@ -621,9 +621,6 @@ export default function Cuestionario() {
   const isContinueQuestionnaire = urlParams.get('continue') === 'true';
   const [showQuestionnaire, setShowQuestionnaire] = useState(isNewQuestionnaire || isContinueQuestionnaire);
   
-  // Flag local para indicar si es un cuestionario completamente nuevo (sin cuestionario previo en DB)
-  const [isNewQuestionnaireSession, setIsNewQuestionnaireSession] = useState(isNewQuestionnaire);
-  
   // Mutación para eliminar el cuestionario en progreso actual
   const deleteQuestionnaireMutation = useMutation({
     mutationFn: async () => {
@@ -634,7 +631,6 @@ export default function Cuestionario() {
       setShowQuestionnaire(true);
       setAnswers({});
       setCurrentQuestionIndex(0);
-      setIsNewQuestionnaireSession(true); // Marcar como nueva sesión
     },
   });
   
@@ -653,12 +649,12 @@ export default function Cuestionario() {
 
   // Verificar si ya existe un resultado completado
   const { data: latestResultData, isLoading: isLoadingLatestResult } = useQuery({
-    queryKey: user?.id ? ["/api/questionnaire-results/latest", user.id] : ["/api/questionnaire-results/latest"],
+    queryKey: ["/api/questionnaire-results/latest"],
     enabled: isAuthenticated,
   });
 
   const { data: questionnaireData, isLoading: isLoadingQuestionnaire } = useQuery({
-    queryKey: user?.id ? ["/api/questionnaire", user.id] : ["/api/questionnaire"],
+    queryKey: ["/api/questionnaire"],
     enabled: isAuthenticated && showQuestionnaire,
   });
 
@@ -686,12 +682,8 @@ export default function Cuestionario() {
       }
       return await apiRequest("POST", "/api/questionnaire", data);
     },
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/questionnaire"] });
-      // Si se completó, también invalidar los resultados
-      if (variables.isCompleted === "true") {
-        queryClient.invalidateQueries({ queryKey: ["/api/questionnaire-results/latest"] });
-      }
     },
   });
 
@@ -704,12 +696,8 @@ export default function Cuestionario() {
       }
       return await apiRequest("PUT", "/api/questionnaire", data);
     },
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/questionnaire"] });
-      // Si se completó, también invalidar los resultados
-      if (variables.isCompleted === "true") {
-        queryClient.invalidateQueries({ queryKey: ["/api/questionnaire-results/latest"] });
-      }
     },
   });
 
@@ -723,12 +711,10 @@ export default function Cuestionario() {
         isCompleted: "false",
       };
 
-      // Si es una sesión nueva, siempre usar POST (crear), sino PUT (actualizar)
-      if (isNewQuestionnaireSession) {
-        await saveProgressMutation.mutateAsync(data);
-        setIsNewQuestionnaireSession(false); // Después del primer guardado, ya no es nueva sesión
-      } else {
+      if (questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists) {
         await updateProgressMutation.mutateAsync(data);
+      } else {
+        await saveProgressMutation.mutateAsync(data);
       }
 
       if (showToast) {
@@ -799,12 +785,10 @@ export default function Cuestionario() {
           isCompleted: "false",
         };
 
-        // Si es una sesión nueva, siempre usar POST (crear), sino PUT (actualizar)
-        if (isNewQuestionnaireSession) {
-          await saveProgressMutation.mutateAsync(data);
-          setIsNewQuestionnaireSession(false); // Después del primer guardado, ya no es nueva sesión
-        } else {
+        if (questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists) {
           await updateProgressMutation.mutateAsync(data);
+        } else {
+          await saveProgressMutation.mutateAsync(data);
         }
       } catch (error) {
         setCurrentQuestionIndex(previousIndex);
@@ -834,12 +818,10 @@ export default function Cuestionario() {
           isCompleted: "false",
         };
 
-        // Si es una sesión nueva, siempre usar POST (crear), sino PUT (actualizar)
-        if (isNewQuestionnaireSession) {
-          await saveProgressMutation.mutateAsync(data);
-          setIsNewQuestionnaireSession(false); // Después del primer guardado, ya no es nueva sesión
-        } else {
+        if (questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists) {
           await updateProgressMutation.mutateAsync(data);
+        } else {
+          await saveProgressMutation.mutateAsync(data);
         }
       } catch (error) {
         setCurrentQuestionIndex(previousIndex);
@@ -969,17 +951,17 @@ export default function Cuestionario() {
         await saveProgressMutation.mutateAsync(data);
       }
 
-      // Invalidar TODAS las queries relacionadas al cuestionario para que se refresquen
-      await queryClient.invalidateQueries({ queryKey: ["/api/questionnaire-results/latest"] });
-      await queryClient.invalidateQueries({ queryKey: ["/api/questionnaire"] });
-
       toast({
         title: "¡Cuestionario completado!",
         description: `Has obtenido ${longevityPoints} puntos de longevidad.`,
       });
 
-      // Navegar directamente a los resultados sin delay
-      navigate("/cuestionario-resultados");
+      // Invalidar la query del resultado más reciente
+      queryClient.invalidateQueries({ queryKey: ["/api/questionnaire-results/latest"] });
+
+      setTimeout(() => {
+        navigate("/cuestionario-resultados");
+      }, 1500);
     } catch (error) {
       toast({
         title: "Error",
