@@ -658,75 +658,33 @@ export default function Profile() {
                       </div>
                     )}
 
-                    {/* Section Scores - Desglose detallado */}
+                    {/* Section Scores - Formato simple */}
                     {(latestResultData.result as any).sectionScores && Object.keys((latestResultData.result as any).sectionScores).length > 0 && (
-                      <div className="p-5 bg-gradient-to-br from-background to-muted/30 border border-border rounded-lg space-y-4">
-                        <div className="flex items-center gap-2 pb-2 border-b border-border">
-                          <Activity className="h-5 w-5 text-primary" />
-                          <h3 className="font-semibold text-lg">Desglose por Sección</h3>
+                      <div className="p-4 bg-card border border-border rounded-lg space-y-3">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="h-5 w-5 text-primary" />
+                          <h3 className="font-semibold text-base">Scores por Sección</h3>
                         </div>
-                        <div className="grid grid-cols-1 gap-3">
+                        <div className="space-y-2">
                           {Object.entries((latestResultData.result as any).sectionScores).map(([section, score]: [string, any]) => {
                             const numScore = Number(score);
-                            const getSectionColor = (s: number) => {
-                              if (s >= 80) return {
-                                bg: "bg-green-50 dark:bg-green-950/30",
-                                border: "border-green-200 dark:border-green-800",
-                                text: "text-green-700 dark:text-green-400",
-                                badge: "bg-green-100 dark:bg-green-900"
-                              };
-                              if (s >= 60) return {
-                                bg: "bg-yellow-50 dark:bg-yellow-950/30",
-                                border: "border-yellow-200 dark:border-yellow-800",
-                                text: "text-yellow-700 dark:text-yellow-400",
-                                badge: "bg-yellow-100 dark:bg-yellow-900"
-                              };
-                              return {
-                                bg: "bg-orange-50 dark:bg-orange-950/30",
-                                border: "border-orange-200 dark:border-orange-800",
-                                text: "text-orange-700 dark:text-orange-400",
-                                badge: "bg-orange-100 dark:bg-orange-900"
-                              };
+                            const getScoreColor = (s: number) => {
+                              if (s >= 80) return "text-green-600 dark:text-green-400";
+                              if (s >= 60) return "text-yellow-600 dark:text-yellow-400";
+                              return "text-orange-600 dark:text-orange-400";
                             };
                             
-                            const colors = getSectionColor(numScore);
-                            
                             return (
-                              <div 
-                                key={section} 
-                                className={`flex items-center justify-between p-3 rounded-md border ${colors.bg} ${colors.border}`}
-                              >
-                                <p className="text-sm font-medium text-foreground flex-1">
+                              <div key={section} className="flex justify-between items-center py-1">
+                                <p className="text-sm text-foreground">
                                   {section}
                                 </p>
-                                <Badge 
-                                  className={`${colors.badge} ${colors.text} border-0 font-bold text-base px-3 py-1`}
-                                  data-testid={`badge-section-${section.toLowerCase().replace(/\s+/g, '-')}`}
-                                >
+                                <span className={`text-lg font-bold ${getScoreColor(numScore)}`} data-testid={`score-${section.toLowerCase().replace(/\s+/g, '-')}`}>
                                   {score}
-                                </Badge>
+                                </span>
                               </div>
                             );
                           })}
-                        </div>
-                        
-                        {/* Leyenda de colores */}
-                        <div className="pt-3 border-t border-border">
-                          <p className="text-xs font-medium text-muted-foreground mb-2">Leyenda:</p>
-                          <div className="flex flex-wrap gap-3 text-xs">
-                            <div className="flex items-center gap-1">
-                              <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                              <span className="text-muted-foreground">80-100: Excelente</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                              <span className="text-muted-foreground">60-79: Bueno</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-                              <span className="text-muted-foreground">&lt;60: Requiere atención</span>
-                            </div>
-                          </div>
                         </div>
                       </div>
                     )}
