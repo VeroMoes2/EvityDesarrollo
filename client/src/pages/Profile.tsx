@@ -577,6 +577,16 @@ export default function Profile() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Debug logging */}
+                {console.log('Profile Questionnaire Debug:', {
+                  isLoadingQuestionnaire,
+                  isLoadingLatestResult,
+                  questionnaireData,
+                  latestResultData,
+                  hasQuestionnaireData: !!questionnaireData,
+                  hasLatestResult: !!latestResultData
+                })}
+                
                 {/* Loading State */}
                 {(isLoadingQuestionnaire || isLoadingLatestResult) && (
                   <div className="flex items-center justify-center p-8">
