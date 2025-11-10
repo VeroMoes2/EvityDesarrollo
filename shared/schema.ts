@@ -69,13 +69,13 @@ export const medicalDocuments = pgTable("medical_documents", {
 export const medicalQuestionnaire = pgTable("medical_questionnaire", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  answers: jsonb("answers").notNull().default(sql`'{}'::jsonb`),
+  answers: jsonb("answers").$type<Record<string, string | number>>().notNull().default(sql`'{}'::jsonb`),
   currentQuestion: varchar("current_question").default("1"),
   isCompleted: varchar("is_completed").default("false"),
   longevityPoints: varchar("longevity_points"), // Calculated longevity score
   healthStatus: varchar("health_status"), // Health status legend
-  sectionScores: jsonb("section_scores"), // Section-specific scores (numeric)
-  sectionInterpretations: jsonb("section_interpretations"), // Section-specific focus areas
+  sectionScores: jsonb("section_scores").$type<Record<string, number>>(), // Section-specific scores (numeric)
+  sectionInterpretations: jsonb("section_interpretations").$type<Record<string, string>>(), // Section-specific focus areas
   startedAt: timestamp("started_at").defaultNow(),
   completedAt: timestamp("completed_at"),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -85,11 +85,11 @@ export const medicalQuestionnaire = pgTable("medical_questionnaire", {
 export const questionnaireResults = pgTable("questionnaire_results", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  answers: jsonb("answers").notNull(),
+  answers: jsonb("answers").$type<Record<string, string | number>>().notNull(),
   longevityPoints: varchar("longevity_points").notNull(), // Final calculated score
   healthStatus: varchar("health_status").notNull(), // Health status legend
-  sectionScores: jsonb("section_scores"), // Section-specific scores (numeric)
-  sectionInterpretations: jsonb("section_interpretations"), // Section-specific focus areas
+  sectionScores: jsonb("section_scores").$type<Record<string, number>>(), // Section-specific scores (numeric)
+  sectionInterpretations: jsonb("section_interpretations").$type<Record<string, string>>(), // Section-specific focus areas
   completedAt: timestamp("completed_at").defaultNow().notNull(),
 });
 

@@ -1014,7 +1014,7 @@ export default function Cuestionario() {
   // Si ya existe un resultado y no estamos mostrando el cuestionario, mostrar el resumen
   const latestResult = (latestResultData && typeof latestResultData === 'object' && 'result' in latestResultData ? latestResultData.result : null) as QuestionnaireResult | null;
   if (latestResult && !showQuestionnaire) {
-    const resultAnswers = latestResult.answers as Record<string, any>;
+    const resultAnswers: Record<string, string | number> = latestResult.answers as Record<string, string | number>;
     const completedDate = new Date(latestResult.completedAt);
     
     const getStatusColor = (points: string) => {
@@ -1145,24 +1145,27 @@ export default function Cuestionario() {
               {/* Mostrar resumen de respuestas */}
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg">Tus respuestas:</h3>
-                {QUESTIONS.map((question, index) => {
-                  let answerText = "";
-                  if (question.type === "weight-height") {
-                    const weight = resultAnswers[`${question.id}_weight`];
-                    const height = resultAnswers[`${question.id}_height`];
-                    answerText = weight && height ? `Peso: ${weight} kg, Estatura: ${height} cm` : "No respondida";
-                  } else {
-                    answerText = resultAnswers[question.id] || "No respondida";
-                  }
-                  
-                  return (
-                    <div key={question.id} className="border-l-2 border-primary/20 pl-4 py-2">
-                      <div className="text-sm text-muted-foreground mb-1">{question.section}</div>
-                      <div className="font-medium mb-1">{question.question}</div>
-                      <div className="text-sm text-primary">{answerText}</div>
-                    </div>
-                  );
-                })}
+                <>
+                  {QUESTIONS.map((question, index) => {
+                    let answerText: string = "";
+                    if (question.type === "weight-height") {
+                      const weight = resultAnswers[`${question.id}_weight`];
+                      const height = resultAnswers[`${question.id}_height`];
+                      answerText = weight && height ? `Peso: ${weight} kg, Estatura: ${height} cm` : "No respondida";
+                    } else {
+                      const answer = resultAnswers[question.id];
+                      answerText = answer ? String(answer) : "No respondida";
+                    }
+                    
+                    return (
+                      <div key={question.id} className="border-l-2 border-primary/20 pl-4 py-2">
+                        <div className="text-sm text-muted-foreground mb-1">{question.section}</div>
+                        <div className="font-medium mb-1">{question.question}</div>
+                        <div className="text-sm text-primary">{answerText}</div>
+                      </div>
+                    );
+                  })}
+                </>
               </div>
 
               {/* Enfoque en tus resultados - Section Interpretations */}

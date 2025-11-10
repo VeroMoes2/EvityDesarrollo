@@ -1409,11 +1409,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (refreshed.longevityPoints && refreshed.healthStatus) {
             await storage.saveQuestionnaireResult({
               userId: userId,
-              answers: refreshed.answers || {},
+              answers: refreshed.answers as Record<string, string | number>,
               longevityPoints: refreshed.longevityPoints,
               healthStatus: refreshed.healthStatus,
-              sectionScores: refreshed.sectionScores || {},
-              sectionInterpretations: refreshed.sectionInterpretations || {},
+              sectionScores: refreshed.sectionScores,
+              sectionInterpretations: refreshed.sectionInterpretations,
             });
           }
         }
@@ -1473,7 +1473,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await AuditLogger.log({
         userId: req.user.claims.sub,
         userEmail: req.user.claims.email || 'unknown',
-        action: 'ai_agent_query',
+        action: 'AI_AGENT_QUERY',
         resource: 'AI Agent',
         details: { question: question.substring(0, 100) },
         outcome: 'SUCCESS',
