@@ -25,6 +25,10 @@ export function getSession() {
     tableName: "sessions",
   });
   
+  // En Replit siempre estamos en HTTPS, incluso en desarrollo
+  const isReplit = process.env.REPL_ID !== undefined;
+  const isSecure = process.env.NODE_ENV === "production" || isReplit;
+  
   return session({
     secret: process.env.SESSION_SECRET!,
     store: sessionStore,
@@ -33,7 +37,7 @@ export function getSession() {
     rolling: true, // Reset expiration on each request
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isSecure, // true en Replit (HTTPS) o production
       sameSite: 'lax', // LS-108: CSRF protection
       maxAge: 30 * 60 * 1000, // LS-108: Fix cookie TTL - 30 minutes in milliseconds
     },
