@@ -1432,16 +1432,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Save the completed questionnaire result to history
           if (refreshed.longevityPoints !== undefined && refreshed.longevityPoints !== null && 
               refreshed.healthStatus !== undefined && refreshed.healthStatus !== null) {
-            console.log('[DEBUG] Saving questionnaire result to history');
-            await storage.saveQuestionnaireResult({
-              userId: userId,
-              answers: refreshed.answers as Record<string, string | number>,
-              longevityPoints: refreshed.longevityPoints,
-              healthStatus: refreshed.healthStatus,
-              sectionScores: refreshed.sectionScores,
-              sectionInterpretations: refreshed.sectionInterpretations,
-            });
-            console.log('[DEBUG] Questionnaire result saved successfully');
+            try {
+              console.log('[DEBUG] Saving questionnaire result to history');
+              console.log('[DEBUG] Data to save:', {
+                userId,
+                hasAnswers: !!refreshed.answers,
+                longevityPoints: refreshed.longevityPoints,
+                healthStatus: refreshed.healthStatus,
+                hasSectionScores: !!refreshed.sectionScores,
+                hasSectionInterpretations: !!refreshed.sectionInterpretations,
+              });
+              
+              await storage.saveQuestionnaireResult({
+                userId: userId,
+                answers: refreshed.answers as Record<string, string | number>,
+                longevityPoints: refreshed.longevityPoints,
+                healthStatus: refreshed.healthStatus,
+                sectionScores: refreshed.sectionScores,
+                sectionInterpretations: refreshed.sectionInterpretations,
+              });
+              
+              console.log('[DEBUG] Questionnaire result saved successfully');
+            } catch (saveError: any) {
+              console.error('[ERROR] Failed to save questionnaire result:', {
+                message: saveError.message,
+                stack: saveError.stack,
+                code: saveError.code,
+              });
+              // Don't throw - let the response continue
+            }
           } else {
             console.log('[DEBUG] NOT saving questionnaire result - missing data:', {
               longevityPoints: refreshed.longevityPoints,
