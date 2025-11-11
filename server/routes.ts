@@ -1430,10 +1430,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
           updated = refreshed;
           
           // Save the completed questionnaire result to history
-          if (refreshed.longevityPoints !== undefined && refreshed.longevityPoints !== null && 
-              refreshed.healthStatus !== undefined && refreshed.healthStatus !== null) {
+          // IMPORTANT: Accept both numbers and numeric strings since DB stores as varchar
+          const hasValidLongevityPoints = refreshed.longevityPoints !== undefined && 
+                                         refreshed.longevityPoints !== null &&
+                                         refreshed.longevityPoints !== '';
+          const hasValidHealthStatus = refreshed.healthStatus !== undefined && 
+                                      refreshed.healthStatus !== null &&
+                                      refreshed.healthStatus !== '';
+          
+          console.log('[DEBUG] Validation check before saving:', {
+            hasValidLongevityPoints,
+            hasValidHealthStatus,
+            longevityPointsValue: refreshed.longevityPoints,
+            longevityPointsType: typeof refreshed.longevityPoints,
+            healthStatusValue: refreshed.healthStatus,
+            healthStatusType: typeof refreshed.healthStatus,
+          });
+          
+          if (hasValidLongevityPoints && hasValidHealthStatus) {
             try {
-              console.log('[DEBUG] Saving questionnaire result to history');
+              console.log('[DEBUG] ✅ PROCEEDING TO SAVE questionnaire result to history');
               console.log('[DEBUG] Data to save:', {
                 userId,
                 hasAnswers: !!refreshed.answers,
@@ -1453,9 +1469,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 sectionInterpretations: refreshed.sectionInterpretations,
               });
               
-              console.log('[DEBUG] Questionnaire result saved successfully to questionnaire_results table');
+              console.log('[DEBUG] ✅ SUCCESS: Questionnaire result saved to questionnaire_results table');
             } catch (saveError: any) {
-              console.error('[ERROR] CRITICAL: Failed to save questionnaire result to history table:', {
+              console.error('[ERROR] ❌ CRITICAL: Failed to save questionnaire result to history table:', {
                 message: saveError.message,
                 stack: saveError.stack,
                 code: saveError.code,
@@ -1468,9 +1484,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
               // Don't throw - let the response continue even if history save fails
             }
           } else {
-            console.log('[DEBUG] NOT saving questionnaire result - missing data:', {
+            console.error('[ERROR] ❌ NOT saving questionnaire result - GUARD FAILED:', {
+              hasValidLongevityPoints,
+              hasValidHealthStatus,
               longevityPoints: refreshed.longevityPoints,
+              longevityPointsType: typeof refreshed.longevityPoints,
               healthStatus: refreshed.healthStatus,
+              healthStatusType: typeof refreshed.healthStatus,
             });
           }
         }
