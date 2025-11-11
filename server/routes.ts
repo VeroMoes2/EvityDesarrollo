@@ -1430,7 +1430,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           updated = refreshed;
           
           // Save the completed questionnaire result to history
-          if (refreshed.longevityPoints && refreshed.healthStatus) {
+          if (refreshed.longevityPoints !== undefined && refreshed.longevityPoints !== null && 
+              refreshed.healthStatus !== undefined && refreshed.healthStatus !== null) {
             console.log('[DEBUG] Saving questionnaire result to history');
             await storage.saveQuestionnaireResult({
               userId: userId,

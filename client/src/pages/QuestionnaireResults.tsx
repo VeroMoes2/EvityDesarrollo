@@ -190,7 +190,7 @@ export default function QuestionnaireResults() {
                         className={`text-2xl font-bold ${getSectionColor(score as number)}`}
                         data-testid={`score-${section.toLowerCase().replace(/\s+/g, '-')}`}
                       >
-                        {score}
+                        {String(score)}
                       </span>
                     </div>
                     <div className="w-full bg-muted rounded-full h-2">
