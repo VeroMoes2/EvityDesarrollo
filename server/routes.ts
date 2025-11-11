@@ -1397,16 +1397,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Cuestionario no encontrado" });
       }
 
+      console.log('[DEBUG] validatedData received:', {
+        isCompleted: validatedData.isCompleted,
+        hasLongevityPoints: !!validatedData.longevityPoints,
+        hasHealthStatus: !!validatedData.healthStatus,
+        hasSectionScores: !!validatedData.sectionScores,
+        hasSectionInterpretations: !!validatedData.sectionInterpretations,
+      });
+
       let updated = await storage.updateQuestionnaire(userId, validatedData);
+
+      console.log('[DEBUG] after updateQuestionnaire:', {
+        hasLongevityPoints: !!updated.longevityPoints,
+        hasHealthStatus: !!updated.healthStatus,
+        hasSectionScores: !!updated.sectionScores,
+        hasSectionInterpretations: !!updated.sectionInterpretations,
+      });
 
       if (validatedData.isCompleted === "true") {
         await storage.markQuestionnaireComplete(userId);
         const refreshed = await storage.getUserQuestionnaire(userId);
+        
+        console.log('[DEBUG] after markComplete and refresh:', {
+          hasRefreshed: !!refreshed,
+          hasLongevityPoints: !!refreshed?.longevityPoints,
+          hasHealthStatus: !!refreshed?.healthStatus,
+          hasSectionScores: !!refreshed?.sectionScores,
+          hasSectionInterpretations: !!refreshed?.sectionInterpretations,
+        });
+        
         if (refreshed) {
           updated = refreshed;
           
           // Save the completed questionnaire result to history
           if (refreshed.longevityPoints && refreshed.healthStatus) {
+            console.log('[DEBUG] Saving questionnaire result to history');
             await storage.saveQuestionnaireResult({
               userId: userId,
               answers: refreshed.answers as Record<string, string | number>,
@@ -1414,6 +1439,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
               healthStatus: refreshed.healthStatus,
               sectionScores: refreshed.sectionScores,
               sectionInterpretations: refreshed.sectionInterpretations,
+            });
+            console.log('[DEBUG] Questionnaire result saved successfully');
+          } else {
+            console.log('[DEBUG] NOT saving questionnaire result - missing data:', {
+              longevityPoints: refreshed.longevityPoints,
+              healthStatus: refreshed.healthStatus,
             });
           }
         }
