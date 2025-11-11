@@ -1353,6 +1353,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const refreshed = await storage.getUserQuestionnaire(userId);
           if (refreshed) {
             updated = refreshed;
+            
+            // Save the completed questionnaire result to history
+            // IMPORTANT: Accept both numbers and numeric strings since DB stores as varchar
+            const hasValidLongevityPoints = refreshed.longevityPoints !== undefined && 
+                                           refreshed.longevityPoints !== null &&
+                                           refreshed.longevityPoints !== '';
+            const hasValidHealthStatus = refreshed.healthStatus !== undefined && 
+                                        refreshed.healthStatus !== null &&
+                                        refreshed.healthStatus !== '';
+            
+            console.log('[POST] Validation check before saving:', {
+              hasValidLongevityPoints,
+              hasValidHealthStatus,
+              longevityPointsValue: refreshed.longevityPoints,
+              healthStatusValue: refreshed.healthStatus,
+            });
+            
+            if (hasValidLongevityPoints && hasValidHealthStatus) {
+              try {
+                console.log('[POST] ✅ SAVING questionnaire result to history');
+                
+                // CRITICAL FIX: Convert longevityPoints to string because DB column is varchar
+                await storage.saveQuestionnaireResult({
+                  userId: userId,
+                  answers: refreshed.answers as Record<string, string | number>,
+                  longevityPoints: String(refreshed.longevityPoints),
+                  healthStatus: String(refreshed.healthStatus),
+                  sectionScores: refreshed.sectionScores,
+                  sectionInterpretations: refreshed.sectionInterpretations,
+                });
+                
+                console.log('[POST] ✅ SUCCESS: Questionnaire saved to questionnaire_results table');
+              } catch (saveError: any) {
+                console.error('[POST] ❌ CRITICAL: Failed to save questionnaire result:', {
+                  message: saveError.message,
+                  userId,
+                  longevityPoints: refreshed.longevityPoints,
+                  healthStatus: refreshed.healthStatus,
+                });
+              }
+            } else {
+              console.error('[POST] ❌ GUARD FAILED - NOT saving:', {
+                hasValidLongevityPoints,
+                hasValidHealthStatus,
+                longevityPoints: refreshed.longevityPoints,
+                healthStatus: refreshed.healthStatus,
+              });
+            }
           }
         }
         
