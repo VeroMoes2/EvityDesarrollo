@@ -16,15 +16,24 @@ export default function QuestionnaireResults() {
   const { isAuthenticated } = useAuth();
   const [, navigate] = useLocation();
 
-  const { data: resultsData, isLoading } = useQuery({
+  // First try to get from questionnaire results history
+  const { data: resultsData, isLoading: isLoadingResults } = useQuery({
     queryKey: ["/api/questionnaire-results/latest"],
     enabled: isAuthenticated,
+  });
+
+  // Fallback: if no results in history, get the current completed questionnaire
+  const { data: questionnaireData, isLoading: isLoadingQuestionnaire } = useQuery({
+    queryKey: ["/api/questionnaire"],
+    enabled: isAuthenticated && !(resultsData as any)?.result,
   });
 
   if (!isAuthenticated) {
     navigate("/login");
     return null;
   }
+
+  const isLoading = isLoadingResults || isLoadingQuestionnaire;
 
   if (isLoading) {
     return (
@@ -37,7 +46,16 @@ export default function QuestionnaireResults() {
     );
   }
 
-  const result = (resultsData as any)?.result;
+  // Try to get result from history first, then from current questionnaire
+  let result = (resultsData as any)?.result;
+  
+  // Fallback to current completed questionnaire if no history
+  if (!result && questionnaireData) {
+    const questionnaire = (questionnaireData as any)?.questionnaire;
+    if (questionnaire?.isCompleted === "true") {
+      result = questionnaire;
+    }
+  }
   
   if (!result) {
     navigate("/cuestionario");
