@@ -6,6 +6,12 @@ Evity is a comprehensive longevity and wellness platform providing science-based
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (Nov 11, 2025)
+- **Fixed questionnaire completion bug**: Changed the guard condition in `routes.ts` from truthiness check (`if (refreshed.longevityPoints && refreshed.healthStatus)`) to explicit undefined/null check (`if (refreshed.longevityPoints !== undefined && refreshed.longevityPoints !== null && refreshed.healthStatus !== undefined && refreshed.healthStatus !== null)`). This fix ensures that results with empty string health_status or zero longevity_points are properly saved to the `questionnaire_results` table.
+- **Added error logging**: Added try-catch block with detailed logging around `saveQuestionnaireResult` to identify and debug any issues with saving questionnaire results.
+- **Fixed TypeScript errors in Profile.tsx**: Changed query types from `unknown` to `any` to resolve LSP diagnostics preventing page compilation.
+- **Questionnaire results now display correctly**: Section scores (all 10 health dimensions) are now visible on both the results page (`/cuestionario-resultados`) and the profile page.
+
 ## System Architecture
 
 ### Frontend

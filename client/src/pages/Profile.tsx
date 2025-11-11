@@ -78,13 +78,13 @@ export default function Profile() {
   });
 
   // Fetch questionnaire status
-  const { data: questionnaireData } = useQuery({
+  const { data: questionnaireData } = useQuery<any>({
     queryKey: ["/api/questionnaire"],
     enabled: isAuthenticated,
   });
   
   // Fetch latest completed questionnaire result
-  const { data: latestResultData } = useQuery({
+  const { data: latestResultData } = useQuery<any>({
     queryKey: ["/api/questionnaire-results/latest"],
     enabled: isAuthenticated,
   });
@@ -702,7 +702,8 @@ export default function Profile() {
                 )}
 
                 {/* Start New Questionnaire Section - Only if no progress and no results */}
-                {!questionnaireData?.exists && !latestResultData?.result && (
+                {!(questionnaireData && typeof questionnaireData === 'object' && 'exists' in questionnaireData && questionnaireData.exists) && 
+                 !(latestResultData && typeof latestResultData === 'object' && 'result' in latestResultData && latestResultData.result) && (
                   <>
                     <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
                       <div className="flex items-center space-x-3">
