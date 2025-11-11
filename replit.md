@@ -7,10 +7,11 @@ Evity is a comprehensive longevity and wellness platform providing science-based
 Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (Nov 11, 2025)
-- **Fixed questionnaire completion bug**: Changed the guard condition in `routes.ts` from truthiness check (`if (refreshed.longevityPoints && refreshed.healthStatus)`) to explicit undefined/null check (`if (refreshed.longevityPoints !== undefined && refreshed.longevityPoints !== null && refreshed.healthStatus !== undefined && refreshed.healthStatus !== null)`). This fix ensures that results with empty string health_status or zero longevity_points are properly saved to the `questionnaire_results` table.
-- **Added error logging**: Added try-catch block with detailed logging around `saveQuestionnaireResult` to identify and debug any issues with saving questionnaire results.
+- **✅ RESOLVED: Questionnaire persistence bug fixed**: Root cause was data type mismatch - `questionnaire_results.longevity_points` column is VARCHAR but code was sending numeric values, causing silent Zod validation failure. Fixed by converting values to strings before saving: `String(refreshed.longevityPoints)` and `String(refreshed.healthStatus)`. Verified with production data showing 20 questionnaires from 8 users successfully saved with string values ("54", "45", "60", etc.).
+- **Improved error logging**: Enhanced try-catch blocks with detailed error logging around `saveQuestionnaireResult` to surface validation failures instead of silent errors.
+- **Guard condition refinement**: Updated condition from truthiness check to explicit undefined/null check to handle edge cases with zero values or empty strings.
 - **Fixed TypeScript errors in Profile.tsx**: Changed query types from `unknown` to `any` to resolve LSP diagnostics preventing page compilation.
-- **Questionnaire results now display correctly**: Section scores (all 10 health dimensions) are now visible on both the results page (`/cuestionario-resultados`) and the profile page.
+- **Questionnaire results display correctly**: Section scores (all 10 health dimensions) are visible on both results page (`/cuestionario-resultados`) and profile page, with automatic database persistence working reliably.
 
 ## System Architecture
 

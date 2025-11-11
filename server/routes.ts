@@ -1443,23 +1443,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 hasSectionInterpretations: !!refreshed.sectionInterpretations,
               });
               
+              // CRITICAL FIX: Convert longevityPoints to string because DB column is varchar
               await storage.saveQuestionnaireResult({
                 userId: userId,
                 answers: refreshed.answers as Record<string, string | number>,
-                longevityPoints: refreshed.longevityPoints,
-                healthStatus: refreshed.healthStatus,
+                longevityPoints: String(refreshed.longevityPoints),
+                healthStatus: String(refreshed.healthStatus),
                 sectionScores: refreshed.sectionScores,
                 sectionInterpretations: refreshed.sectionInterpretations,
               });
               
-              console.log('[DEBUG] Questionnaire result saved successfully');
+              console.log('[DEBUG] Questionnaire result saved successfully to questionnaire_results table');
             } catch (saveError: any) {
-              console.error('[ERROR] Failed to save questionnaire result:', {
+              console.error('[ERROR] CRITICAL: Failed to save questionnaire result to history table:', {
                 message: saveError.message,
                 stack: saveError.stack,
                 code: saveError.code,
+                data: {
+                  userId,
+                  longevityPoints: refreshed.longevityPoints,
+                  healthStatus: refreshed.healthStatus,
+                }
               });
-              // Don't throw - let the response continue
+              // Don't throw - let the response continue even if history save fails
             }
           } else {
             console.log('[DEBUG] NOT saving questionnaire result - missing data:', {
