@@ -7,9 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
-import { Loader2, CheckCircle, Clock } from "lucide-react";
+import { Loader2, CheckCircle, Clock, AlertCircle } from "lucide-react";
 import { SiInstagram, SiTiktok } from "react-icons/si";
 
 const waitlistSchema = z.object({
@@ -25,7 +23,7 @@ interface WaitlistModalProps {
 
 export default function WaitlistModal({ open, onOpenChange }: WaitlistModalProps) {
   const [isSuccess, setIsSuccess] = useState(false);
-  const { toast } = useToast();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const form = useForm<WaitlistFormData>({
     resolver: zodResolver(waitlistSchema),
@@ -36,19 +34,30 @@ export default function WaitlistModal({ open, onOpenChange }: WaitlistModalProps
 
   const mutation = useMutation({
     mutationFn: async (data: WaitlistFormData) => {
-      const response = await apiRequest("POST", "/api/waitlist", data);
-      return response.json();
-    },
-    onSuccess: () => {
-      setIsSuccess(true);
-      form.reset();
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message || "No se pudo registrar. Intenta de nuevo.",
-        variant: "destructive",
+      const response = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
       });
+      const result = await response.json();
+      if (!response.ok) {
+        return { success: false, ...result };
+      }
+      return { success: true, ...result };
+    },
+    onSuccess: (data) => {
+      if (data.success) {
+        setIsSuccess(true);
+        setErrorMessage(null);
+        form.reset();
+      } else if (data.alreadyRegistered) {
+        setErrorMessage("Este correo ya está registrado en nuestra lista de espera. Te notificaremos pronto.");
+      } else {
+        setErrorMessage(data.error || "No se pudo registrar. Intenta de nuevo.");
+      }
+    },
+    onError: () => {
+      setErrorMessage("No se pudo registrar. Intenta de nuevo.");
     },
   });
 
@@ -58,6 +67,7 @@ export default function WaitlistModal({ open, onOpenChange }: WaitlistModalProps
 
   const handleClose = () => {
     setIsSuccess(false);
+    setErrorMessage(null);
     form.reset();
     onOpenChange(false);
   };
@@ -158,6 +168,12 @@ export default function WaitlistModal({ open, onOpenChange }: WaitlistModalProps
                     </FormItem>
                   )}
                 />
+                {errorMessage && (
+                  <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-800">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                    <p className="text-sm">{errorMessage}</p>
+                  </div>
+                )}
                 <Button 
                   type="submit" 
                   className="w-full" 
