@@ -149,6 +149,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Waitlist registration attempt:", { body: req.body });
       const validatedData = insertWaitlistSchema.parse(req.body);
       console.log("Validated data:", validatedData);
+      
+      // Check if email already exists
+      const existingEntry = await storage.getWaitlistEntryByEmail(validatedData.email);
+      if (existingEntry) {
+        console.log("Email already registered:", validatedData.email);
+        return res.status(409).json({ 
+          error: "Este correo ya está registrado en la lista de espera",
+          alreadyRegistered: true 
+        });
+      }
+      
       const entry = await storage.createWaitlistEntry(validatedData);
       console.log("Waitlist entry created successfully:", entry.id);
       res.status(201).json({ success: true, message: "Registro exitoso en la lista de espera", id: entry.id });

@@ -3,7 +3,6 @@ import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 import { Mail, ArrowRight, Loader2, CheckCircle, Clock } from "lucide-react";
 
 export default function WaitlistSection() {
@@ -13,19 +12,34 @@ export default function WaitlistSection() {
 
   const mutation = useMutation({
     mutationFn: async (email: string) => {
-      const response = await apiRequest("POST", "/api/waitlist", { email });
-      return response.json();
+      const response = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw { status: response.status, ...data };
+      }
+      return data;
     },
     onSuccess: () => {
       setIsSuccess(true);
       setEmail("");
     },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message || "No se pudo registrar. Intenta de nuevo.",
-        variant: "destructive",
-      });
+    onError: (error: any) => {
+      if (error.alreadyRegistered) {
+        toast({
+          title: "Correo ya registrado",
+          description: "Este correo ya está en nuestra lista de espera. Te notificaremos pronto.",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: error.error || "No se pudo registrar. Intenta de nuevo.",
+          variant: "destructive",
+        });
+      }
     },
   });
 

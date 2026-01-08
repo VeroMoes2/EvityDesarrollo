@@ -1009,6 +1009,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Waitlist operations
+  async getWaitlistEntryByEmail(email: string): Promise<Waitlist | null> {
+    const [result] = await db
+      .select()
+      .from(waitlist)
+      .where(sql`LOWER(${waitlist.email}) = LOWER(${email})`)
+      .limit(1);
+    return result || null;
+  }
+
   async createWaitlistEntry(data: InsertWaitlist): Promise<Waitlist> {
     const [result] = await db
       .insert(waitlist)
