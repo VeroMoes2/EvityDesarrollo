@@ -8,10 +8,12 @@ import { Mail, ArrowRight, Loader2, CheckCircle, Clock } from "lucide-react";
 export default function WaitlistSection() {
   const [email, setEmail] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
+  const [alreadyRegisteredMessage, setAlreadyRegisteredMessage] = useState<string | null>(null);
   const { toast } = useToast();
 
   const mutation = useMutation({
     mutationFn: async (email: string) => {
+      setAlreadyRegisteredMessage(null);
       const response = await fetch("/api/waitlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -28,10 +30,7 @@ export default function WaitlistSection() {
         setIsSuccess(true);
         setEmail("");
       } else if (data.alreadyRegistered) {
-        toast({
-          title: "Correo ya registrado",
-          description: "Este correo ya está en nuestra lista de espera. Te notificaremos pronto.",
-        });
+        setAlreadyRegisteredMessage("Correo ya registrado. Este correo ya está en nuestra lista de espera. Te notificaremos pronto.");
       } else {
         toast({
           title: "Error",
@@ -140,9 +139,15 @@ export default function WaitlistSection() {
             </Button>
           </form>
 
-          <p className="text-xs text-muted-foreground">
-            Respetamos tu privacidad. Sin spam, solo actualizaciones importantes.
-          </p>
+          {alreadyRegisteredMessage ? (
+            <p className="text-sm font-bold text-primary mb-4">
+              {alreadyRegisteredMessage}
+            </p>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Respetamos tu privacidad. Sin spam, solo actualizaciones importantes.
+            </p>
+          )}
           </>
         )}
       </div>
