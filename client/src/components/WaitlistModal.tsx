@@ -174,21 +174,32 @@ export default function WaitlistModal({ open, onOpenChange }: WaitlistModalProps
                     <p className="text-sm">{errorMessage}</p>
                   </div>
                 )}
-                <Button 
-                  type="submit" 
-                  className="w-full" 
-                  disabled={mutation.isPending}
-                  data-testid="button-waitlist-submit"
-                >
-                  {mutation.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Registrando...
-                    </>
-                  ) : (
-                    "Unirme a la lista"
-                  )}
-                </Button>
+                {errorMessage ? (
+                  <Button 
+                    type="button" 
+                    className="w-full" 
+                    onClick={handleClose}
+                    data-testid="button-waitlist-close-error"
+                  >
+                    Volver al inicio
+                  </Button>
+                ) : (
+                  <Button 
+                    type="submit" 
+                    className="w-full" 
+                    disabled={mutation.isPending}
+                    data-testid="button-waitlist-submit"
+                  >
+                    {mutation.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Registrando...
+                      </>
+                    ) : (
+                      "Unirme a la lista"
+                    )}
+                  </Button>
+                )}
               </form>
             </Form>
           </>
