@@ -20,19 +20,7 @@ export default function Footer() {
 
   const companyName = confluenceData?.companyName || "Evity";
   
-  // Build comprehensive company description using available content while respecting language selection
-  let companyDescription = t('footer.companyDescription');
-  
-  // For Spanish, use Confluence data when available (it's in Spanish)
-  // For English, use the translated fallback
-  if (language === 'es' && confluenceData?.mission) {
-    companyDescription = confluenceData.mission;
-    
-    // If we have both mission and vision in Spanish, combine them
-    if (confluenceData?.vision) {
-      companyDescription = `${confluenceData.mission} ${confluenceData.vision}`;
-    }
-  }
+  const companyDescription = "Transformamos la forma en que las personas envejecen, proporcionando herramientas científicas y personalizadas para vivir vidas más largas, saludables y plenas. Todo en una clínica con una plataforma innovadora que combina atención humanista y tecnología digital, con un enfoque en longevidad y salud integral.";
 
   return (
     <footer className="bg-card border-t border-card-border">
