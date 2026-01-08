@@ -44,7 +44,7 @@ export default function WaitlistSection() {
               <CheckCircle className="h-8 w-8 text-white" />
             </div>
             <h3 
-              className="text-2xl font-light text-foreground mb-3"
+              className="text-5xl sm:text-6xl lg:text-7xl font-light text-foreground mb-6 leading-[1.1] tracking-tight"
               style={{ fontFamily: "'Lovelace Light', serif" }}
             >
               ¡Gracias por unirte a Evity!
