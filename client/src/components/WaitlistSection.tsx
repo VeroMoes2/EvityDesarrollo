@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Mail, ArrowRight, Loader2, CheckCircle, Clock } from "lucide-react";
+import { Mail, ArrowRight, Loader2, CheckCircle } from "lucide-react";
 
 export default function WaitlistSection() {
   const [email, setEmail] = useState("");
@@ -49,29 +49,9 @@ export default function WaitlistSection() {
             >
               ¡Gracias por unirte a Evity!
             </h3>
-            <p className="text-muted-foreground mb-6 max-w-sm">
-              Tu registro en nuestra lista de espera ha sido confirmado exitosamente.
+            <p className="text-lg text-[#3D4F3E]/90 mb-8 max-w-2xl mx-auto leading-relaxed">
+              Tu registro en nuestra lista de espera ha sido confirmado exitosamente. Has asegurado tu lugar en la fila. Cuentas con acceso anticipado. Te notificaremos por email cuando puedas acceder.
             </p>
-            <div className="bg-card rounded-xl p-5 space-y-4 max-w-sm w-full">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                </div>
-                <div className="text-left">
-                  <p className="font-medium text-foreground text-sm">Registro completado</p>
-                  <p className="text-xs text-muted-foreground">Has asegurado tu lugar en la fila</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Clock className="h-4 w-4 text-primary" />
-                </div>
-                <div className="text-left">
-                  <p className="font-medium text-foreground text-sm">Cuentas con acceso anticipado</p>
-                  <p className="text-xs text-muted-foreground">Te notificaremos por email cuando puedas acceder</p>
-                </div>
-              </div>
-            </div>
           </div>
         ) : (
           <>
