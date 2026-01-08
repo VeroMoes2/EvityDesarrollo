@@ -455,7 +455,7 @@ const translations = {
     'footer.calculator': 'Calculadora',
     'footer.legal': 'Legal',
     'footer.privacy': 'Privacidad',
-    'footer.companyDescription': 'Tu plataforma de longevidad personalizada. Basado en ciencia, diseñado para ti.',
+    'footer.companyDescription': 'Transformamos la forma en que las personas envejecen, proporcionando herramientas científicas y personalizadas para vivir vidas más largas, saludables y plenas. Todo en una clínica con una plataforma innovadora que combina atención humanista y tecnología digital, con un enfoque en longevidad y salud integral.',
     'footer.madeWithLove': 'Hecho con amor para tu bienestar',
     'footer.quickLinks': 'Enlaces Rápidos',
     'footer.contact': 'Contacto',

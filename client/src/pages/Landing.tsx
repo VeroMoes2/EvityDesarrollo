@@ -215,7 +215,7 @@ export default function Landing() {
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-muted-foreground text-center">
-                  Transformar la forma en que las personas envejecen, proporcionando herramientas científicas y personalizadas para vivir vidas más largas, saludables y plenas.
+                  Transformamos la forma en que las personas envejecen, proporcionando herramientas científicas y personalizadas para vivir vidas más largas, saludables y plenas. Todo en una clínica con una plataforma innovadora que combina atención humanista y tecnología digital, con un enfoque en longevidad y salud integral.
                 </CardDescription>
               </CardContent>
             </Card>
