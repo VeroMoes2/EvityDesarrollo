@@ -8,7 +8,7 @@ import { Readable } from "stream";
 import OpenAI from "openai";
 import { storage } from "./storage";
 import { ConfluenceService } from "./confluenceService";
-import { setupAuth, isAuthenticated, isAdmin } from "./localAuth";
+import { setupAuth, isAuthenticated, isAdmin, sendWaitlistConfirmationEmail } from "./localAuth";
 import {
   uploadRateLimit,
   downloadRateLimit,
@@ -162,6 +162,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const entry = await storage.createWaitlistEntry(validatedData);
       console.log("Waitlist entry created successfully:", entry.id);
+      
+      // Send confirmation email (async, don't wait for it)
+      sendWaitlistConfirmationEmail(validatedData.email).catch((err) => {
+        console.error("Failed to send waitlist confirmation email:", err);
+      });
+      
       res.status(201).json({ success: true, message: "Registro exitoso en la lista de espera", id: entry.id });
     } catch (error: any) {
       console.error("Error creating waitlist entry:", error.message || error);

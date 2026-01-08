@@ -62,6 +62,41 @@ function getEmailTransporter() {
   });
 }
 
+// Send waitlist confirmation email
+export async function sendWaitlistConfirmationEmail(email: string): Promise<boolean> {
+  const transporter = getEmailTransporter();
+  if (!transporter) {
+    console.warn("Email transporter not configured for waitlist confirmation");
+    return false;
+  }
+
+  try {
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+      to: email,
+      subject: "¡Registro exitoso! Bienvenido(a) a la lista de espera",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <p>Hola,</p>
+          <p><strong>¡Tu registro fue exitoso!</strong> Ya formas parte de nuestra lista de espera y te notificaremos muy pronto con actualizaciones y acceso anticipado.</p>
+          <p>Mientras tanto, síguenos en redes sociales para conocer más sobre longevidad, salud integral y bienestar basado en ciencia.</p>
+          <p>
+            👉 <a href="https://www.instagram.com/evity.mx" style="color: #4CAF50;">Instagram</a><br>
+            👉 <a href="https://www.tiktok.com/@evity.mx" style="color: #4CAF50;">TikTok</a>
+          </p>
+          <p>Gracias por ser parte de Evity.</p>
+          <p>—<br>Equipo Evity</p>
+        </div>
+      `,
+    });
+    console.log(`Waitlist confirmation email sent to: ${email}`);
+    return true;
+  } catch (error) {
+    console.error("Error sending waitlist confirmation email:", error);
+    return false;
+  }
+}
+
 // Hash password using bcrypt
 export async function hashPassword(password: string): Promise<string> {
   const saltRounds = 12;
