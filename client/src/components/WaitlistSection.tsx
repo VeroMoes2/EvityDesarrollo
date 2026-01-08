@@ -19,30 +19,33 @@ export default function WaitlistSection() {
       });
       const data = await response.json();
       if (!response.ok) {
-        throw { status: response.status, ...data };
+        return { success: false, ...data };
       }
-      return data;
+      return { success: true, ...data };
     },
-    onSuccess: () => {
-      setIsSuccess(true);
-      setEmail("");
-    },
-    onError: (error: any) => {
-      if (error.alreadyRegistered) {
+    onSuccess: (data) => {
+      if (data.success) {
+        setIsSuccess(true);
+        setEmail("");
+      } else if (data.alreadyRegistered) {
         toast({
           title: "Correo ya registrado",
           description: "Este correo ya está en nuestra lista de espera. Te notificaremos pronto.",
         });
       } else {
-        const message = typeof error === 'object' && error.error 
-          ? error.error 
-          : "No se pudo registrar. Intenta de nuevo.";
         toast({
           title: "Error",
-          description: message,
+          description: data.error || "No se pudo registrar. Intenta de nuevo.",
           variant: "destructive",
         });
       }
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "No se pudo registrar. Intenta de nuevo.",
+        variant: "destructive",
+      });
     },
   });
 
