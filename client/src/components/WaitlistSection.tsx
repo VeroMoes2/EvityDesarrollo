@@ -38,24 +38,6 @@ export default function WaitlistSection() {
   return (
     <section className="py-20 bg-[#f5f5f0] dark:bg-[#1a1a1a]">
       <div className="max-w-2xl mx-auto px-6 text-center">
-        <div className="flex justify-center mb-6">
-          <div className="w-14 h-14 bg-primary/10 dark:bg-primary/20 rounded-xl flex items-center justify-center">
-            <Mail className="w-6 h-6 text-primary" />
-          </div>
-        </div>
-
-        <h2 
-          className="text-4xl md:text-5xl font-light text-foreground mb-4"
-          style={{ fontFamily: "'Lovelace Light', serif" }}
-        >
-          Únete a la Lista de Espera
-        </h2>
-
-        <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
-          ¡La espera casi termina! Únete para recibir acceso prioritario a{" "}
-          <span className="text-primary font-medium">Evity</span> tan pronto como esté disponible.
-        </p>
-
         {isSuccess ? (
           <div className="flex flex-col items-center">
             <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-6">
@@ -92,7 +74,26 @@ export default function WaitlistSection() {
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-4">
+          <>
+            <div className="flex justify-center mb-6">
+              <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center">
+                <Mail className="w-6 h-6 text-primary" />
+              </div>
+            </div>
+
+            <h2 
+              className="text-4xl md:text-5xl font-light text-foreground mb-4"
+              style={{ fontFamily: "'Lovelace Light', serif" }}
+            >
+              Únete a la Lista de Espera
+            </h2>
+
+            <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
+              ¡La espera casi termina! Únete para recibir acceso prioritario a{" "}
+              <span className="text-primary font-medium">Evity</span> tan pronto como esté disponible.
+            </p>
+
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-4">
             <Input
               type="email"
               placeholder="tu@correo.com"
@@ -118,12 +119,11 @@ export default function WaitlistSection() {
               )}
             </Button>
           </form>
-        )}
 
-        {!isSuccess && (
           <p className="text-xs text-muted-foreground">
             Respetamos tu privacidad. Sin spam, solo actualizaciones importantes.
           </p>
+          </>
         )}
       </div>
     </section>
