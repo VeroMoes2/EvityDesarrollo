@@ -34,9 +34,12 @@ export default function WaitlistSection() {
           description: "Este correo ya está en nuestra lista de espera. Te notificaremos pronto.",
         });
       } else {
+        const message = typeof error === 'object' && error.error 
+          ? error.error 
+          : "No se pudo registrar. Intenta de nuevo.";
         toast({
           title: "Error",
-          description: error.error || "No se pudo registrar. Intenta de nuevo.",
+          description: message,
           variant: "destructive",
         });
       }
