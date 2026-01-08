@@ -58,8 +58,8 @@ export default function WaitlistSection() {
                   <CheckCircle className="h-4 w-4 text-primary" />
                 </div>
                 <div className="text-left">
-                  <p className="font-medium text-[#3D4F3E] text-sm">Registro completado</p>
-                  <p className="text-xs text-[#3D4F3E]/90">Has asegurado tu lugar en la fila</p>
+                  <p className="font-medium text-[#3D4F3E] text-lg">Registro completado</p>
+                  <p className="text-lg text-[#3D4F3E]/90">Has asegurado tu lugar en la fila</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -67,8 +67,8 @@ export default function WaitlistSection() {
                   <Clock className="h-4 w-4 text-primary" />
                 </div>
                 <div className="text-left">
-                  <p className="font-medium text-[#3D4F3E] text-sm">Cuentas con acceso anticipado</p>
-                  <p className="text-xs text-[#3D4F3E]/90">Te notificaremos por email cuando puedas acceder</p>
+                  <p className="font-medium text-[#3D4F3E] text-lg">Cuentas con acceso anticipado</p>
+                  <p className="text-lg text-[#3D4F3E]/90">Te notificaremos por email cuando puedas acceder</p>
                 </div>
               </div>
             </div>
