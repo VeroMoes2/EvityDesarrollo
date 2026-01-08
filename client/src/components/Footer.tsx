@@ -99,33 +99,8 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-card-border mt-12 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="text-sm text-muted-foreground">
-              © {currentYear} {companyName}. {t('footer.allRightsReserved')}
-            </div>
-            <div className="flex items-center gap-6 text-sm">
-              <button 
-                onClick={() => handleLinkClick("privacy")}
-                className="text-muted-foreground hover:text-primary transition-colors"
-                data-testid="footer-link-privacy"
-              >
-                {t('footer.privacyPolicy')}
-              </button>
-              <button 
-                onClick={() => handleLinkClick("terms")}
-                className="text-muted-foreground hover:text-primary transition-colors"
-                data-testid="footer-link-terms"
-              >
-                {t('footer.termsOfUse')}
-              </button>
-              <button 
-                onClick={() => handleLinkClick("cookies")}
-                className="text-muted-foreground hover:text-primary transition-colors"
-                data-testid="footer-link-cookies"
-              >
-                {t('footer.cookies')}
-              </button>
-            </div>
+          <div className="text-sm text-muted-foreground text-center">
+            © {currentYear} {companyName}. {t('footer.allRightsReserved')}
           </div>
         </div>
       </div>
