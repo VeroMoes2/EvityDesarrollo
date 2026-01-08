@@ -1,29 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { Moon, Sun } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
 import { useLocation } from "wouter";
 import WaitlistModal from "./WaitlistModal";
 
 export default function Header() {
-  const [isDark, setIsDark] = useState(false);
   const [waitlistOpen, setWaitlistOpen] = useState(false);
   const { data: confluenceData } = useConfluenceData();
   const [, navigate] = useLocation();
-
-  useEffect(() => {
-    const saved = localStorage.getItem("theme");
-    const isDarkMode = saved === "dark" || (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    setIsDark(isDarkMode);
-    document.documentElement.classList.toggle("dark", isDarkMode);
-  }, []);
-
-  const toggleTheme = () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    document.documentElement.classList.toggle("dark", newTheme);
-    localStorage.setItem("theme", newTheme ? "dark" : "light");
-  };
 
   const companyName = confluenceData?.companyName || "Evity";
 
@@ -40,15 +24,6 @@ export default function Header() {
           </button>
 
           <div className="flex items-center space-x-4">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={toggleTheme}
-              data-testid="button-theme-toggle"
-            >
-              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
-
             <Button 
               data-testid="button-waitlist"
               onClick={() => setWaitlistOpen(true)}
