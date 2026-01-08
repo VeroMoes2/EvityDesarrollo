@@ -67,8 +67,8 @@ export default function WaitlistSection() {
                   <Clock className="h-4 w-4 text-primary" />
                 </div>
                 <div className="text-left">
-                  <p className="font-medium text-foreground text-sm">Próximamente: Acceso anticipado</p>
-                  <p className="text-xs text-muted-foreground">Te notificaremos por Email cuando sea momento</p>
+                  <p className="font-medium text-foreground text-sm">Cuentas con acceso anticipado</p>
+                  <p className="text-xs text-muted-foreground">Te notificaremos por email cuando puedas acceder</p>
                 </div>
               </div>
             </div>
