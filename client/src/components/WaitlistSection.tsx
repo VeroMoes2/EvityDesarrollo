@@ -30,7 +30,7 @@ export default function WaitlistSection() {
         setIsSuccess(true);
         setEmail("");
       } else if (data.alreadyRegistered) {
-        setAlreadyRegisteredMessage("Correo ya registrado. Este correo ya está en nuestra lista de espera. Te notificaremos pronto.");
+        setAlreadyRegisteredMessage("Este correo ya está registrado en nuestra lista de espera. Te notificaremos pronto.");
       } else {
         toast({
           title: "Error",
