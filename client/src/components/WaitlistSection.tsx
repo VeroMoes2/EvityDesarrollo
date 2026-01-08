@@ -1,0 +1,131 @@
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { Mail, ArrowRight, Loader2, CheckCircle, Clock } from "lucide-react";
+
+export default function WaitlistSection() {
+  const [email, setEmail] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
+  const { toast } = useToast();
+
+  const mutation = useMutation({
+    mutationFn: async (email: string) => {
+      const response = await apiRequest("POST", "/api/waitlist", { email });
+      return response.json();
+    },
+    onSuccess: () => {
+      setIsSuccess(true);
+      setEmail("");
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "No se pudo registrar. Intenta de nuevo.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    mutation.mutate(email);
+  };
+
+  return (
+    <section className="py-20 bg-[#f5f5f0] dark:bg-[#1a1a1a]">
+      <div className="max-w-2xl mx-auto px-6 text-center">
+        <div className="flex justify-center mb-6">
+          <div className="w-14 h-14 bg-primary/10 dark:bg-primary/20 rounded-xl flex items-center justify-center">
+            <Mail className="w-6 h-6 text-primary" />
+          </div>
+        </div>
+
+        <h2 
+          className="text-4xl md:text-5xl font-light text-foreground mb-4"
+          style={{ fontFamily: "'Lovelace Light', serif" }}
+        >
+          Únete a la Lista de Espera
+        </h2>
+
+        <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
+          ¡La espera casi termina! Únete para recibir acceso prioritario a{" "}
+          <span className="text-primary font-medium">Evity</span> tan pronto como esté disponible.
+        </p>
+
+        {isSuccess ? (
+          <div className="flex flex-col items-center">
+            <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-6">
+              <CheckCircle className="h-8 w-8 text-white" />
+            </div>
+            <h3 
+              className="text-2xl font-light text-foreground mb-3"
+              style={{ fontFamily: "'Lovelace Light', serif" }}
+            >
+              ¡Gracias por unirte a Evity!
+            </h3>
+            <p className="text-muted-foreground mb-6 max-w-sm">
+              Tu registro en nuestra lista de espera ha sido confirmado exitosamente.
+            </p>
+            <div className="bg-card rounded-xl p-5 space-y-4 max-w-sm w-full">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <CheckCircle className="h-4 w-4 text-primary" />
+                </div>
+                <div className="text-left">
+                  <p className="font-medium text-foreground text-sm">Registro completado</p>
+                  <p className="text-xs text-muted-foreground">Has asegurado tu lugar en la fila</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Clock className="h-4 w-4 text-primary" />
+                </div>
+                <div className="text-left">
+                  <p className="font-medium text-foreground text-sm">Próximamente: Acceso anticipado</p>
+                  <p className="text-xs text-muted-foreground">Te notificaremos por Email cuando sea momento</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-4">
+            <Input
+              type="email"
+              placeholder="tu@correo.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="flex-1 bg-white dark:bg-background border-border"
+              required
+              data-testid="input-waitlist-email-inline"
+            />
+            <Button 
+              type="submit" 
+              disabled={mutation.isPending}
+              className="whitespace-nowrap"
+              data-testid="button-waitlist-submit-inline"
+            >
+              {mutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  Unirme ahora
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </form>
+        )}
+
+        {!isSuccess && (
+          <p className="text-xs text-muted-foreground">
+            Respetamos tu privacidad. Sin spam, solo actualizaciones importantes.
+          </p>
+        )}
+      </div>
+    </section>
+  );
+}

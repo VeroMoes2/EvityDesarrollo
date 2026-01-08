@@ -1,19 +1,19 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Upload, FileText, X, CheckCircle, AlertCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Upload, FileText, X, CheckCircle, AlertCircle, FlaskConical, ClipboardList } from "lucide-react";
 import { createNotifications } from "@/lib/notifications";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { uploadWithCsrf } from "@/lib/queryClient";
-import { useQuery } from "@tanstack/react-query";
+import { MemoryGame } from "./MemoryGame";
+import { MatchingGame } from "./MatchingGame";
 
 interface FileUploadProps {
-  fileType: "study" | "lab";
   onUploadSuccess: () => void;
   disabled?: boolean;
 }
@@ -25,6 +25,7 @@ interface UploadFile {
   progress: number;
   error?: string;
   success?: boolean;
+  documentType: "study" | "lab"; // Store document type per file
 }
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -37,37 +38,41 @@ const ACCEPTED_TYPES = [
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 ];
 
-export default function FileUpload({ fileType, onUploadSuccess, disabled }: FileUploadProps) {
+export default function FileUpload({ onUploadSuccess, disabled }: FileUploadProps) {
   const { t } = useLanguage();
   const notifications = createNotifications(t);
   const [files, setFiles] = useState<UploadFile[]>([]);
   const [dragActive, setDragActive] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
+  const [selectedDocumentType, setSelectedDocumentType] = useState<"study" | "lab" | null>(null);
+  const [gameDialogOpen, setGameDialogOpen] = useState(false);
+  const [currentGame, setCurrentGame] = useState<"memory" | "matching">("memory");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const isTypeSelected = selectedDocumentType !== null;
+  
+  const isFileProcessing = useMemo(() => {
+    return files.some(f => f.uploading);
+  }, [files]);
 
-  // LS-128: Fetch document categories
-  const { data: categoriesData } = useQuery({
-    queryKey: ["/api/profile/medical-documents/categories"],
-    enabled: true,
-  });
+  useEffect(() => {
+    if (isFileProcessing) {
+      setGameDialogOpen(true);
+    } else {
+      setGameDialogOpen(false);
+    }
+  }, [isFileProcessing]);
 
-  const categories = (categoriesData as any)?.categories || {};
-
-  const getFileTypeLabel = () => {
-    return fileType === "study" ? t('fileUpload.medicalStudies') : t('fileUpload.labResults');
-  };
+  const handleGameComplete = useCallback(() => {
+    setCurrentGame(prev => prev === "memory" ? "matching" : "memory");
+  }, []);
 
   const validateFile = (file: File): string | null => {
     if (file.size > MAX_FILE_SIZE) {
-      // LS-107: Show validation error notification
       notifications.error.validationError(t('fileUpload.fileSizeValidation').replace('{size}', Math.round(file.size / 1024 / 1024).toString()));
       return t('fileUpload.fileTooLarge');
     }
     
     if (!ACCEPTED_TYPES.includes(file.type)) {
-      // LS-107: Show validation error notification
       notifications.error.validationError(t('fileUpload.fileTypeValidation'));
       return t('fileUpload.invalidFileType');
     }
@@ -84,6 +89,7 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
       const file = fileList[i];
       const error = validateFile(file);
       
+      // Store the currently selected document type with each file
       newFiles.push({
         file,
         preview: file.name,
@@ -91,12 +97,12 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
         progress: 0,
         error: error || undefined,
         success: false,
+        documentType: selectedDocumentType!, // Capture at time of file selection (! because we check isTypeSelected before allowing upload)
       });
     }
     
     setFiles(prev => [...prev, ...newFiles]);
     
-    // Reset input value to allow re-selecting the same file
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -106,7 +112,6 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
     const uploadFile = files[fileIndex];
     if (!uploadFile || uploadFile.error) return;
 
-    // Update file status to uploading
     setFiles(prev => prev.map((f, i) => 
       i === fileIndex ? { ...f, uploading: true, progress: 0 } : f
     ));
@@ -116,40 +121,25 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
     try {
       const formData = new FormData();
       formData.append('file', uploadFile.file);
-      formData.append('fileType', fileType);
+      formData.append('fileType', uploadFile.documentType); // Use file's stored document type
       formData.append('originalName', uploadFile.file.name);
-      
-      // LS-128: Include category information in upload
-      if (selectedCategory) {
-        formData.append('category', categories[selectedCategory]?.label || selectedCategory);
-        formData.append('fileType', selectedCategory); // Update fileType to match category
-      }
-      if (selectedSubcategory) {
-        formData.append('subcategory', selectedSubcategory);
-      }
-      if (description.trim()) {
-        formData.append('description', description.trim());
-      }
 
-      // Simulate upload progress (real implementation would track actual progress)
       progressInterval = setInterval(() => {
         setFiles(prev => prev.map((f, i) => 
           i === fileIndex ? { ...f, progress: Math.min(f.progress + 10, 90) } : f
         ));
       }, 200);
 
-      // LS-108: Use uploadWithCsrf helper that automatically handles CSRF tokens
-      const response = await uploadWithCsrf('/api/profile/medical-documents/upload', formData);
+      // Route based on the file's stored document type - labs go through OCR
+      const uploadUrl = uploadFile.documentType === "lab"
+        ? "/api/labs/upload"
+        : "/api/profile/medical-documents/upload";
+
+      const response = await uploadWithCsrf(uploadUrl, formData);
 
       if (response.ok) {
-        // LS-107: Show success notification with filename
         notifications.success.documentUploaded(uploadFile.file.name);
-        
-        // Remove the file from upload list immediately to avoid duplication
-        // since onUploadSuccess will refetch and show it in the documents list
         setFiles(prev => prev.filter((_, i) => i !== fileIndex));
-        
-        // Trigger the parent refetch to show the uploaded document
         onUploadSuccess();
       } else {
         const errorData = await response.json();
@@ -164,7 +154,6 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
         } : f
       ));
       
-      // LS-107: Show error notification with filename
       notifications.error.uploadFailed(uploadFile.file.name);
     } finally {
       if (progressInterval) {
@@ -203,31 +192,111 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
 
   return (
     <div className="space-y-4">
+      {/* Document Type Selection - Radio Buttons */}
+      <div className="p-4 bg-muted/30 rounded-lg border">
+        <Label className="text-sm font-medium mb-3 block">
+          Primero selecciona el tipo de documento
+        </Label>
+        <RadioGroup
+          value={selectedDocumentType || ""}
+          onValueChange={(value) => setSelectedDocumentType(value as "study" | "lab")}
+          className="flex flex-col sm:flex-row gap-4"
+        >
+          <div 
+            className={`flex items-center space-x-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+              selectedDocumentType === "study" 
+                ? "border-primary bg-primary/5" 
+                : "border-border hover:border-primary/50"
+            }`}
+            onClick={() => setSelectedDocumentType("study")}
+          >
+            <RadioGroupItem value="study" id="study" data-testid="radio-study" />
+            <Label 
+              htmlFor="study" 
+              className="flex items-center gap-2 cursor-pointer font-medium"
+            >
+              <ClipboardList className="h-5 w-5 text-blue-600" />
+              <div>
+                <span className="block">Estudio Medico</span>
+                <span className="text-xs text-muted-foreground font-normal">
+                  Radiografias, resonancias, estudios generales
+                </span>
+              </div>
+            </Label>
+          </div>
+          
+          <div 
+            className={`flex items-center space-x-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+              selectedDocumentType === "lab" 
+                ? "border-primary bg-primary/5" 
+                : "border-border hover:border-primary/50"
+            }`}
+            onClick={() => setSelectedDocumentType("lab")}
+          >
+            <RadioGroupItem value="lab" id="lab" data-testid="radio-lab" />
+            <Label 
+              htmlFor="lab" 
+              className="flex items-center gap-2 cursor-pointer font-medium"
+            >
+              <FlaskConical className="h-5 w-5 text-green-600" />
+              <div>
+                <span className="block">Laboratorio</span>
+                <span className="text-xs text-muted-foreground font-normal">
+                  Resultados de sangre, orina, biometrias
+                </span>
+              </div>
+            </Label>
+          </div>
+        </RadioGroup>
+        
+        {selectedDocumentType === "lab" && (
+          <p className="text-xs text-green-600 dark:text-green-400 mt-3 flex items-center gap-1">
+            <CheckCircle className="h-3 w-3" />
+            Los resultados de laboratorio seran procesados automaticamente para extraer tus analitos
+          </p>
+        )}
+      </div>
+
       {/* Drop Zone */}
       <Card 
-        className={`border-2 border-dashed transition-colors cursor-pointer hover-elevate ${
-          dragActive 
-            ? 'border-blue-500 bg-blue-50' 
-            : 'border-gray-300 hover:border-gray-400'
+        className={`border-2 border-dashed transition-colors ${
+          !isTypeSelected 
+            ? 'opacity-50 cursor-not-allowed border-gray-300 dark:border-gray-600' 
+            : dragActive 
+              ? 'border-primary bg-primary/5 cursor-pointer hover-elevate' 
+              : 'border-gray-300 dark:border-gray-600 hover:border-primary/50 cursor-pointer hover-elevate'
         } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-        onClick={!disabled ? openFileDialog : undefined}
-        onDragEnter={handleDrag}
-        onDragLeave={handleDrag}
-        onDragOver={handleDrag}
-        onDrop={handleDrop}
-        data-testid={`upload-zone-${fileType}`}
+        onClick={!disabled && isTypeSelected ? openFileDialog : undefined}
+        onDragEnter={isTypeSelected ? handleDrag : undefined}
+        onDragLeave={isTypeSelected ? handleDrag : undefined}
+        onDragOver={isTypeSelected ? handleDrag : undefined}
+        onDrop={isTypeSelected ? handleDrop : undefined}
+        data-testid="upload-zone-unified"
       >
         <CardContent className="flex flex-col items-center justify-center py-8 text-center">
-          <Upload className="h-12 w-12 text-gray-400 mb-4" />
-          <p className="text-lg font-medium text-gray-700 mb-2">
-            {t('fileUpload.upload')} {getFileTypeLabel()}
-          </p>
-          <p className="text-sm text-gray-500 mb-4">
-            {t('fileUpload.dragHere')}
-          </p>
-          <p className="text-xs text-gray-400">
-            {t('fileUpload.formats')}
-          </p>
+          <Upload className={`h-12 w-12 mb-4 ${isTypeSelected ? 'text-gray-400' : 'text-gray-300'}`} />
+          {!isTypeSelected ? (
+            <>
+              <p className="text-lg font-medium text-gray-400 dark:text-gray-500 mb-2">
+                Selecciona el tipo de documento arriba
+              </p>
+              <p className="text-sm text-gray-400 dark:text-gray-500">
+                para habilitar la carga de archivos
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Subir {selectedDocumentType === "study" ? "estudio médico" : "resultados de laboratorio"}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                {t('fileUpload.dragHere')}
+              </p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">
+                PDF, imágenes, Word - Máximo 10MB
+              </p>
+            </>
+          )}
         </CardContent>
       </Card>
 
@@ -239,22 +308,30 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
         accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
         onChange={(e) => handleFiles(e.target.files)}
         className="hidden"
-        disabled={disabled}
+        disabled={disabled || !isTypeSelected}
+        data-testid="input-file-upload"
       />
 
-      {/* File List */}
+      {/* File List - Each file shows its assigned document type */}
       {files.length > 0 && (
         <div className="space-y-3">
           {files.map((uploadFile, index) => (
             <Card key={index} className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3 flex-1">
-                  <FileText className="h-5 w-5 text-blue-600" />
+                  <FileText className={`h-5 w-5 ${uploadFile.documentType === "lab" ? "text-green-600" : "text-blue-600"}`} />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium truncate">{uploadFile.preview}</p>
-                    <p className="text-sm text-gray-500">
-                      {(uploadFile.file.size / 1024 / 1024).toFixed(2)} MB
-                    </p>
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <span>{(uploadFile.file.size / 1024 / 1024).toFixed(2)} MB</span>
+                      <span className={`text-xs px-2 py-0.5 rounded ${
+                        uploadFile.documentType === "lab" 
+                          ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300" 
+                          : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                      }`}>
+                        {uploadFile.documentType === "lab" ? "Laboratorio" : "Estudio"}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -299,7 +376,7 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
 
               {uploadFile.uploading && (
                 <div className="mt-3">
-                  <div className="flex justify-between text-sm text-gray-600">
+                  <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                     <span>{t('fileUpload.uploading')}</span>
                     <span>{uploadFile.progress}%</span>
                   </div>
@@ -310,6 +387,26 @@ export default function FileUpload({ fileType, onUploadSuccess, disabled }: File
           ))}
         </div>
       )}
+
+      {/* Game Dialog - appears automatically when processing files */}
+      <Dialog open={gameDialogOpen} onOpenChange={() => {}}>
+        <DialogContent 
+          className="sm:max-w-md"
+          onPointerDownOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
+        >
+          <DialogHeader>
+            <DialogTitle className="text-center flex items-center justify-center gap-2">
+              <FlaskConical className="h-5 w-5 text-primary" />
+              Procesando tu laboratorio...
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              ¡Diviértete mientras analizamos tus resultados!
+            </DialogDescription>
+          </DialogHeader>
+          {currentGame === "memory" ? <MemoryGame onComplete={handleGameComplete} /> : <MatchingGame onComplete={handleGameComplete} />}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

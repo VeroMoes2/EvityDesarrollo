@@ -203,6 +203,18 @@ export default function HistorialCuestionarios() {
                               </div>
                             </div>
                           )}
+
+                          {/* Personalized Summary */}
+                          {result.personalizedSummary && (
+                            <div className="space-y-3">
+                              <h4 className="font-semibold text-sm text-gray-700 dark:text-gray-300">Tu perfil de bienestar personalizado:</h4>
+                              <div className="bg-muted/30 rounded-lg p-4">
+                                <p className="text-sm leading-relaxed text-foreground">
+                                  {result.personalizedSummary}
+                                </p>
+                              </div>
+                            </div>
+                          )}
                           
                           <h4 className="font-semibold text-sm text-gray-700 dark:text-gray-300">Respuestas del cuestionario:</h4>
                           <div className="space-y-2 max-h-96 overflow-y-auto">

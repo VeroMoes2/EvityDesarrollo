@@ -1,4 +1,5 @@
-import { Heart, Mail, MapPin, Phone } from "lucide-react";
+import { Heart } from "lucide-react";
+import { SiTiktok, SiInstagram } from "react-icons/si";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
 import { useLocation } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -10,10 +11,10 @@ export default function Footer() {
   const { t, language } = useLanguage();
 
   const handleLinkClick = (linkName: string) => {
-    if (linkName === "about") {
-      navigate('/nosotros');
+    if (linkName === "contact") {
+      navigate('/contacto');
     } else {
-      console.log(`Footer link clicked: ${linkName}`); // todo: remove mock functionality for other links
+      console.log(`Footer link clicked: ${linkName}`);
     }
   };
 
@@ -37,69 +38,49 @@ export default function Footer() {
     <footer className="bg-card border-t border-card-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="space-y-12">
-          {/* Primera fila: Enlaces Rápidos, Recursos y Contacto */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+          {/* Primera fila: Enlaces Rápidos, Contacto y Síguenos */}
+          <div 
+            className="grid gap-8"
+            style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}
+          >
             {/* Quick Links */}
             <div className="space-y-4">
               <h4 className="font-semibold text-card-foreground">{t('footer.quickLinks')}</h4>
               <nav className="space-y-2">
                 <button 
-                  onClick={() => handleLinkClick("about")}
+                  onClick={() => handleLinkClick("contact")}
                   className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                  data-testid="footer-link-about"
+                  data-testid="footer-link-contact"
                 >
-                  {t('footer.aboutUs')}
+                  {t('footer.contactUs')}
                 </button>
               </nav>
             </div>
 
-            {/* Resources */}
+            {/* Social Media */}
             <div className="space-y-4">
-              <h4 className="font-semibold text-card-foreground">{t('footer.resources')}</h4>
-              <nav className="space-y-2">
-                <button 
-                  onClick={() => {
-                    window.location.href = "/#calculadora";
-                  }}
-                  className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                  data-testid="footer-link-calculators"
+              <h4 className="font-semibold text-card-foreground">{t('footer.followUs')}</h4>
+              <div className="flex gap-4">
+                <a 
+                  href="https://www.tiktok.com/@evity.mx"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                  data-testid="footer-social-tiktok"
+                  aria-label="TikTok"
                 >
-                  {t('footer.calculators')}
-                </button>
-                <button 
-                  onClick={() => {
-                    window.location.href = "/#blog";
-                  }}
-                  className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-                  data-testid="footer-link-blog"
+                  <SiTiktok className="h-5 w-5" />
+                </a>
+                <a 
+                  href="https://www.instagram.com/evity.mx"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                  data-testid="footer-social-instagram"
+                  aria-label="Instagram"
                 >
-                  {t('footer.blog')}
-                </button>
-              </nav>
-            </div>
-
-            {/* Contact */}
-            <div className="space-y-4">
-              <h4 className="font-semibold text-card-foreground">{t('footer.contact')}</h4>
-              <div className="space-y-3">
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <Mail className="h-4 w-4 mr-3" />
-                  <button 
-                    onClick={() => handleLinkClick("Email")}
-                    className="hover:text-primary transition-colors"
-                    data-testid="footer-contact-email"
-                  >
-                    evitycontacto@gmail.com
-                  </button>
-                </div>
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <Phone className="h-4 w-4 mr-3" />
-                  <span>Por definir</span>
-                </div>
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <MapPin className="h-4 w-4 mr-3" />
-                  <span>Monterrey, México</span>
-                </div>
+                  <SiInstagram className="h-5 w-5" />
+                </a>
               </div>
             </div>
           </div>

@@ -1,0 +1,91 @@
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowRight } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useLocation } from "wouter";
+
+export default function PreventionSection() {
+  const { t } = useLanguage();
+  const [, navigate] = useLocation();
+
+  const features = [
+    {
+      title: t('prevention.feature1Title'),
+      description: t('prevention.feature1Desc')
+    },
+    {
+      title: t('prevention.feature2Title'),
+      description: t('prevention.feature2Desc')
+    },
+    {
+      title: t('prevention.feature3Title'),
+      description: t('prevention.feature3Desc')
+    },
+    {
+      title: t('prevention.feature4Title'),
+      description: t('prevention.feature4Desc')
+    }
+  ];
+
+  return (
+    <section className="py-20 bg-background">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Prevention Header - Two columns */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 mb-16">
+          {/* Left column - Image placeholder */}
+          <div className="pr-0 lg:pr-12 mb-8 lg:mb-0">
+            <div className="bg-[#c5c5b8] rounded-lg aspect-[4/3] w-full" data-testid="prevention-image-placeholder" />
+          </div>
+          
+          {/* Right column - Title and Text */}
+          <div className="pl-0 lg:pl-12 flex flex-col justify-center relative">
+            {/* Vertical beige line for desktop */}
+            <div className="hidden lg:block absolute left-0 top-0 bottom-0 w-[2px] bg-[#c9b99a]" />
+            
+            {/* Title */}
+            <h2 className="text-4xl lg:text-5xl font-serif text-foreground leading-tight mb-8">
+              {t('prevention.title')}
+            </h2>
+            
+            {/* Descriptions */}
+            <div className="space-y-6">
+              <p className="text-lg text-foreground leading-relaxed">
+                {t('prevention.description1')}
+              </p>
+              <p className="text-muted-foreground leading-relaxed">
+                {t('prevention.description2').split(t('prevention.biomarkers'))[0]}
+                <span className="font-light text-[#626d84]">{t('prevention.biomarkers')}</span>
+                {t('prevention.description2').split(t('prevention.biomarkers'))[1]}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Feature Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {features.map((feature, index) => (
+            <Card 
+              key={index} 
+              className="bg-card border-card-border hover-elevate transition-all duration-300 group cursor-pointer"
+              data-testid={`prevention-feature-card-${index}`}
+              onClick={() => navigate('/nosotros')}
+            >
+              <CardContent className="p-6 flex flex-col h-full min-h-[220px]">
+                <h3 className="text-card-foreground mb-3 font-sans font-light text-[23px]">
+                  {feature.title}
+                </h3>
+                <p className="text-muted-foreground flex-grow font-sans font-light text-[18px]">
+                  {feature.description}
+                </p>
+                <div className="mt-4 flex justify-end">
+                  <div className="w-8 h-8 rounded-full border border-muted-foreground/30 flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-colors">
+                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

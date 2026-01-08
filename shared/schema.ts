@@ -32,6 +32,8 @@ export const users = pgTable("users", {
   lastName: varchar("last_name").notNull(),
   gender: varchar("gender"), // 'masculino', 'femenino', 'otro', 'prefiero_no_decir'
   dateOfBirth: varchar("date_of_birth"), // Date of birth in YYYY-MM-DD format
+  birthPlace: varchar("birth_place"), // Lugar de nacimiento
+  currentResidence: varchar("current_residence"), // Residencia actual
   phoneNumber: varchar("phone_number"), // LS-110: User's phone number
   password: varchar("password").notNull(), // Hashed password
   profileImageUrl: varchar("profile_image_url"),
@@ -90,6 +92,7 @@ export const questionnaireResults = pgTable("questionnaire_results", {
   healthStatus: varchar("health_status").notNull(), // Health status legend
   sectionScores: jsonb("section_scores").$type<Record<string, number>>(), // Section-specific scores (numeric)
   sectionInterpretations: jsonb("section_interpretations").$type<Record<string, string>>(), // Section-specific focus areas
+  personalizedSummary: text("personalized_summary"), // AI-generated personalized description
   completedAt: timestamp("completed_at").defaultNow().notNull(),
 });
 
@@ -109,6 +112,23 @@ export const securityAuditLog = pgTable("security_audit_log", {
   timestamp: timestamp("timestamp").defaultNow().notNull(),
 });
 
+
+// Lab analytes table for storing OCR-extracted lab results
+// Stores individual analyte values with history for trend tracking
+export const labAnalytes = pgTable("lab_analytes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  analyteName: varchar("analyte_name").notNull(), // e.g., "Glucosa", "Colesterol", "Triglicéridos"
+  valueNumeric: varchar("value_numeric").notNull(), // Stored as string for flexibility (some values may have ranges)
+  unit: varchar("unit").notNull(), // e.g., "mg/dL", "g/dL", "U/L"
+  referenceMin: varchar("reference_min"), // Minimum reference value (e.g., "70" for glucose 70-100)
+  referenceMax: varchar("reference_max"), // Maximum reference value (e.g., "100" for glucose 70-100)
+  referenceText: varchar("reference_text"), // Raw reference text if not parseable (e.g., "Negativo", "< 200")
+  collectedAt: timestamp("collected_at"), // Date when the lab test was performed
+  sourceDocumentId: varchar("source_document_id").references(() => medicalDocuments.id, { onDelete: "set null" }), // Link to uploaded document
+  notes: text("notes"), // Optional notes about the analyte
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
 
 // LS-101: Unified gender enum for consistency across the system
 export const genderEnum = z.enum(["masculino", "femenino", "otro", "prefiero_no_decir"], {
@@ -268,6 +288,50 @@ export const insertQuestionnaireResultSchema = createInsertSchema(questionnaireR
   completedAt: true,
 });
 
+// Lab analytes schema and types
+export const insertLabAnalyteSchema = createInsertSchema(labAnalytes).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Waitlist table for storing interested users
+export const waitlist = pgTable("waitlist", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name"),
+  email: varchar("email").notNull(),
+  phone: varchar("phone"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertWaitlistSchema = createInsertSchema(waitlist).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type Waitlist = typeof waitlist.$inferSelect;
+export type InsertWaitlist = z.infer<typeof insertWaitlistSchema>;
+
+// Analyte comments table for user annotations on lab results
+export const analyteComments = pgTable("analyte_comments", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  analyteName: varchar("analyte_name").notNull(), // The analyte this comment refers to
+  comment: text("comment").notNull(), // The comment text
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertAnalyteCommentSchema = createInsertSchema(analyteComments).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const labAnalyteFromOcrSchema = z.object({
+  nombre: z.string().min(1),
+  valor: z.union([z.number(), z.string()]),
+  unidad: z.string().min(1),
+  fecha: z.string().nullable().optional(),
+});
+
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -280,3 +344,8 @@ export type InsertQuestionnaire = z.infer<typeof insertQuestionnaireSchema>;
 export type UpdateQuestionnaire = z.infer<typeof updateQuestionnaireSchema>;
 export type QuestionnaireResult = typeof questionnaireResults.$inferSelect;
 export type InsertQuestionnaireResult = z.infer<typeof insertQuestionnaireResultSchema>;
+export type LabAnalyte = typeof labAnalytes.$inferSelect;
+export type InsertLabAnalyte = z.infer<typeof insertLabAnalyteSchema>;
+export type LabAnalyteFromOcr = z.infer<typeof labAnalyteFromOcrSchema>;
+export type AnalyteComment = typeof analyteComments.$inferSelect;
+export type InsertAnalyteComment = z.infer<typeof insertAnalyteCommentSchema>;

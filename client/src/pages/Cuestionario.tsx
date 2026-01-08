@@ -16,7 +16,6 @@ import {
   ArrowRight, 
   Save, 
   CheckCircle2,
-  Pause,
   Calculator,
   RotateCcw,
   Calendar,
@@ -951,6 +950,14 @@ export default function Cuestionario() {
         await saveProgressMutation.mutateAsync(data);
       }
 
+      // Generar resumen personalizado con IA
+      try {
+        await apiRequest("POST", "/api/ai-agent/generate-summary", { answers });
+      } catch (summaryError) {
+        console.error("Error generating personalized summary:", summaryError);
+        // No bloqueamos el flujo si falla la generación del resumen
+      }
+
       toast({
         title: "¡Cuestionario completado!",
         description: `Has obtenido ${longevityPoints} puntos de longevidad.`,
@@ -1335,20 +1342,11 @@ export default function Cuestionario() {
 
               <Button
                 variant="outline"
-                onClick={() => handleSaveProgress(true)}
+                onClick={handlePauseAndExit}
                 disabled={isSaving}
                 data-testid="button-save"
               >
                 <Save className="h-4 w-4" />
-              </Button>
-
-              <Button
-                variant="outline"
-                onClick={handlePauseAndExit}
-                disabled={isSaving}
-                data-testid="button-pause"
-              >
-                <Pause className="h-4 w-4" />
               </Button>
             </div>
           </CardContent>

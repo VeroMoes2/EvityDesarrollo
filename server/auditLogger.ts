@@ -9,7 +9,7 @@ export type AuditAction =
   | 'ADMIN_ACCESS' | 'ADMIN_USER_CREATE' | 'ADMIN_USER_DELETE'
   | 'SECURITY_BREACH_ATTEMPT' | 'RATE_LIMIT_EXCEEDED'
   | 'CSRF_VIOLATION' | 'INVALID_SESSION'
-  | 'AI_AGENT_QUERY';
+  | 'AI_AGENT_QUERY' | 'AI_SUMMARY_GENERATION';
 
 export type AuditOutcome = 'SUCCESS' | 'FAILURE' | 'ERROR';
 export type RiskLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';

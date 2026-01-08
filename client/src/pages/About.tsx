@@ -1,201 +1,176 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Heart, Target, Users, ArrowRight, Mail, AlertCircle, Home } from "lucide-react";
-import { useConfluenceData } from "@/hooks/useConfluenceData";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useLocation } from "wouter";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { motion } from "framer-motion";
 
+const steps = [
+  {
+    number: 1,
+    title: "Historia Clínica",
+    description: "Tu historia importa. Una conversación profunda con nuestros doctores para entender tu genética, hábitos y riesgos.",
+    imagePosition: "left" as const
+  },
+  {
+    number: 2,
+    title: "Estudios y exámenes",
+    description: "Simple. Intuitivo. Preciso. Realiza tus laboratorios en Evity o con nuestros aliados. Todo inicia con datos reales.",
+    imagePosition: "right" as const
+  },
+  {
+    number: 3,
+    title: "Diagnóstico de Longevidad",
+    description: "Claro. Visual. Accionable. Biomarcadores, edad biológica y riesgos en un portal fácil de entender.",
+    imagePosition: "left" as const
+  },
+  {
+    number: 4,
+    title: "Plan Personalizado",
+    description: "Diseñado para ti. Nutrición, ejercicio, sueño, suplementos y prevención. Una ruta clara y personalizada para transformar tu salud día a día.",
+    imagePosition: "right" as const
+  },
+  {
+    number: 5,
+    title: "Monitoreo y Evolución",
+    description: "Siempre contigo. Monitoreamos tu progreso, ajustamos tu plan y te guiamos para mantener y mejorar tus resultados en el tiempo. Te revaluamos cada 6 meses para optimizar tu evolución.",
+    imagePosition: "left" as const
+  }
+];
 
 export default function About() {
-  // Fetch real company information from Confluence
-  const { data: companyInfo, isLoading, error } = useConfluenceData();
-  const { t } = useLanguage();
-  const [, navigate] = useLocation();
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-teal-50 dark:from-gray-900 dark:to-gray-800">
-        <div className="container mx-auto px-4 py-16">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="animate-pulse text-muted-foreground">
-              {t('about.loadingInfo')}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-teal-50 dark:from-gray-900 dark:to-gray-800">
-        <div className="container mx-auto px-4 py-16">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <Card className="max-w-md">
-              <CardContent className="p-6 text-center">
-                <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">{t('about.errorLoading')}</h3>
-                <p className="text-muted-foreground">
-                  {t('about.errorDescription')}
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!companyInfo) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-teal-50 dark:from-gray-900 dark:to-gray-800">
-        <div className="container mx-auto px-4 py-16">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-muted-foreground">
-              {t('about.noInfo')}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-teal-50 dark:from-gray-900 dark:to-gray-800">
-      <div className="container mx-auto px-4 py-16">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <Badge variant="outline" className="mb-4" data-testid="page-badge">
-            {t('about.pageTitle')}
-          </Badge>
-          <h1 className="text-4xl md:text-5xl font-bold text-card-foreground mb-6" data-testid="page-title">
-            {t('about.meetCompany')} {companyInfo.companyName}
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed" data-testid="page-subtitle">
-            {companyInfo.valueProposition}
-          </p>
-        </div>
-
-        {/* Mission & Vision */}
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
-          {/* Mission */}
-          <Card className="hover-elevate" data-testid="mission-card">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center">
-                <Heart className="h-8 w-8 text-primary" />
-              </div>
-              <CardTitle className="text-2xl font-bold text-card-foreground">
-                {t('about.mission')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground text-lg leading-relaxed text-center" data-testid="mission-text">
-                {companyInfo.mission}
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Vision */}
-          <Card className="hover-elevate" data-testid="vision-card">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center">
-                <Target className="h-8 w-8 text-primary" />
-              </div>
-              <CardTitle className="text-2xl font-bold text-card-foreground">
-                {t('about.vision')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground text-lg leading-relaxed text-center" data-testid="vision-text">
-                {companyInfo.vision}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Contact Section */}
-        <div className="mb-16">
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center mb-4">
-              <Users className="h-8 w-8 text-primary mr-3" />
-              <h2 className="text-3xl font-bold text-card-foreground" data-testid="team-title">
-                {t('about.team')}
-              </h2>
-            </div>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto" data-testid="team-subtitle">
-              {t('about.teamSubtitle')}
-            </p>
+    <div className="min-h-screen bg-background">
+      <Header />
+      
+      <main className="pt-20">
+        {/* Hero Section */}
+        <section className="py-16 bg-background">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4">
+            <motion.h1 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="text-6xl lg:text-7xl font-light text-foreground leading-[1.1] mb-8"
+              style={{ fontFamily: "'Lovelace Light', serif" }}
+              data-testid="evity-way-title"
+            >
+              Lo de hoy es prevenir
+            </motion.h1>
+            
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+              className="text-xl text-foreground mb-6 max-w-4xl italic"
+              data-testid="evity-way-subtitle"
+            >
+              Anticipa riesgos y vive más años con mejor salud – viéndote y sintiéndote mejor, desde hoy.
+            </motion.p>
+            
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+              className="text-base text-muted-foreground max-w-4xl"
+              data-testid="evity-way-description"
+            >
+              Combinamos medicina preventiva, biomarcadores avanzados e inteligencia artificial.
+            </motion.p>
           </div>
+        </section>
 
-          <Card className="max-w-md mx-auto hover-elevate" data-testid="contact-card">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center">
-                <Mail className="h-8 w-8 text-primary" />
-              </div>
-              <CardTitle className="text-xl font-semibold text-card-foreground">
-                {t('about.contactEmail')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              <a 
-                href="mailto:contacto@evity.mx"
-                className="text-primary hover:underline text-lg font-medium"
-                data-testid="link-contact-email"
+        {/* Steps Section */}
+        <section className="py-10 bg-background">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 space-y-32">
+            {steps.map((step, index) => (
+              <div 
+                key={index}
+                className="grid gap-12 items-center"
+                style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}
+                data-testid={`step-${step.number}`}
               >
-                contacto@evity.mx
-              </a>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Call to Action */}
-        <div className="text-center mb-12">
-          <Card className="bg-primary text-primary-foreground hover-elevate max-w-2xl mx-auto" data-testid="cta-card">
-            <CardContent className="p-8">
-              <h3 className="text-2xl font-bold mb-4" data-testid="cta-title">
-                {t('about.ctaTitle')}
-              </h3>
-              <p className="text-primary-foreground/80 mb-6 text-lg" data-testid="cta-description">
-                {t('about.ctaDescription')}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
-                  size="lg" 
-                  variant="secondary"
-                  onClick={() => window.location.href = '/register'}
-                  data-testid="cta-register"
-                >
-                  {t('about.registerNow')}
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline"
-                  className="bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
-                  onClick={() => window.location.href = '/contacto'}
-                  data-testid="cta-contact"
-                >
-                  {t('about.contactUs')}
-                </Button>
+                {step.imagePosition === "left" ? (
+                  <>
+                    {/* Image on left */}
+                    <motion.div 
+                      className="flex justify-center"
+                      initial={{ opacity: 0, x: -60 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, margin: "-100px" }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
+                    >
+                      <div 
+                        className="bg-[#b8b8a8] rounded-2xl w-full max-w-md aspect-square"
+                        data-testid={`step-${step.number}-image`}
+                      />
+                    </motion.div>
+                    
+                    {/* Content on right */}
+                    <motion.div 
+                      className="flex flex-col justify-center"
+                      initial={{ opacity: 0, x: 60 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, margin: "-100px" }}
+                      transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                    >
+                      <span className="text-sm text-muted-foreground tracking-widest mb-2">
+                        PASO {step.number}
+                      </span>
+                      <h2 
+                        className="text-4xl font-light text-foreground mb-6"
+                        style={{ fontFamily: "'Lovelace Light', serif" }}
+                      >
+                        {step.title}
+                      </h2>
+                      <p className="text-lg text-muted-foreground leading-relaxed">
+                        {step.description}
+                      </p>
+                    </motion.div>
+                  </>
+                ) : (
+                  <>
+                    {/* Content on left */}
+                    <motion.div 
+                      className="flex flex-col justify-center"
+                      initial={{ opacity: 0, x: -60 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, margin: "-100px" }}
+                      transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                    >
+                      <span className="text-sm text-muted-foreground tracking-widest mb-2">
+                        PASO {step.number}
+                      </span>
+                      <h2 
+                        className="text-4xl font-light text-foreground mb-6"
+                        style={{ fontFamily: "'Lovelace Light', serif" }}
+                      >
+                        {step.title}
+                      </h2>
+                      <p className="text-lg text-muted-foreground leading-relaxed">
+                        {step.description}
+                      </p>
+                    </motion.div>
+                    
+                    {/* Image on right */}
+                    <motion.div 
+                      className="flex justify-center"
+                      initial={{ opacity: 0, x: 60 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, margin: "-100px" }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
+                    >
+                      <div 
+                        className="bg-[#b8b8a8] rounded-2xl w-full max-w-md aspect-square"
+                        data-testid={`step-${step.number}-image`}
+                      />
+                    </motion.div>
+                  </>
+                )}
               </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Back to Home Button */}
-        <div className="text-center">
-          <Button 
-            variant="outline" 
-            onClick={() => navigate("/")}
-            data-testid="button-back-home"
-            className="gap-2"
-          >
-            <Home className="h-4 w-4" />
-            Volver al Inicio
-          </Button>
-        </div>
-      </div>
+            ))}
+          </div>
+        </section>
+      </main>
+      
+      <Footer />
     </div>
   );
 }

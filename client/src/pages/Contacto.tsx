@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Mail, MapPin, Phone, Clock, Home } from "lucide-react";
+import { Mail, Clock, Home } from "lucide-react";
 import Header from "@/components/Header";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useLocation } from "wouter";
@@ -86,7 +86,10 @@ export default function Contacto() {
             
             {/* Header Section */}
             <div className="text-center mb-12">
-              <h1 className="text-4xl font-bold text-foreground mb-4">
+              <h1 
+                className="text-4xl lg:text-5xl font-light text-foreground mb-4"
+                style={{ fontFamily: "'Lovelace Light', serif" }}
+              >
                 {t('contact.title')}
               </h1>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -215,28 +218,6 @@ export default function Contacto() {
                       <div>
                         <h3 className="font-medium">{t('contact.emailAddress')}</h3>
                         <p className="text-muted-foreground">contacto@evity.mx</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                      <div className="bg-primary/10 p-3 rounded-full">
-                        <Phone className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium">{t('contact.phone')}</h3>
-                        <p className="text-muted-foreground">Por definir</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                      <div className="bg-primary/10 p-3 rounded-full">
-                        <MapPin className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium">{t('contact.office')}</h3>
-                        <p className="text-muted-foreground">
-                          Monterrey, México
-                        </p>
                       </div>
                     </div>
 

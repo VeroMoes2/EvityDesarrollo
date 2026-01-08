@@ -19,6 +19,8 @@ import AllBlog from "@/pages/AllBlog";
 import AllResources from "@/pages/AllResources";
 import Contacto from "@/pages/Contacto";
 import About from "@/pages/About";
+import Plans from "@/pages/Plans";
+import Biomarkers from "@/pages/Biomarkers";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import ForgotPassword from "@/pages/ForgotPassword";
@@ -29,6 +31,8 @@ import QuestionnaireResults from "@/pages/QuestionnaireResults";
 import HistorialCuestionarios from "@/pages/HistorialCuestionarios";
 import ScheduleAppointment from "@/pages/ScheduleAppointment";
 import AgenteIA from "@/pages/AgenteIA";
+import AnalyteDashboard from "@/pages/AnalyteDashboard";
+import AnalyteDetail from "@/pages/AnalyteDetail";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -67,6 +71,8 @@ function Router() {
           <Route path="/contacto" component={Contacto} />
           <Route path="/about" component={About} />
           <Route path="/nosotros" component={About} />
+          <Route path="/planes" component={Plans} />
+          <Route path="/biomarcadores" component={Biomarkers} />
         </>
       ) : (
         // When authenticated, show protected routes and redirect auth pages to profile
@@ -83,10 +89,12 @@ function Router() {
           <Route path="/archivos" component={MisArchivos} />
           <Route path="/agente-ia" component={AgenteIA} />
           <Route path="/asistente" component={AgenteIA} />
+          <Route path="/mis-analitos" component={AnalyteDashboard} />
+          <Route path="/analito/:analyteName" component={AnalyteDetail} />
           <Route path="/admin" component={Admin} />
           <Route path="/debug" component={Debug} />
           <Route path="/login" component={Profile} />
-          <Route path="/register" component={Profile} />
+          <Route path="/register" component={Register} />
           <Route path="/forgot-password" component={Profile} />
           <Route path="/reset-password" component={Profile} />
           <Route path="/verify-email" component={VerifyEmail} />
@@ -97,6 +105,8 @@ function Router() {
           <Route path="/contacto" component={Contacto} />
           <Route path="/about" component={About} />
           <Route path="/nosotros" component={About} />
+          <Route path="/planes" component={Plans} />
+          <Route path="/biomarcadores" component={Biomarkers} />
         </>
       )}
       <Route component={NotFound} />

@@ -1,11 +1,12 @@
 // LS-98: Registration page with complete user information form
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,7 +32,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Eye, EyeOff, UserPlus, ArrowLeft, Phone } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Eye, EyeOff, UserPlus, ArrowLeft, Phone, User, ClipboardList } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { phoneNumberSchema } from "@shared/schema";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -48,6 +57,8 @@ type RegisterForm = {
   confirmPassword: string;
   gender?: string;
   dateOfBirth?: string;
+  birthPlace?: string;
+  currentResidence?: string;
   phoneNumber: string;
 };
 
@@ -55,10 +66,20 @@ export default function Register() {
   const [, setLocation] = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showWelcomeDialog, setShowWelcomeDialog] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { t } = useLanguage();
   const notifications = createNotifications(t);
+  const { isAuthenticated } = useAuth();
+  const justRegistered = useRef(false);
+
+  // Redirect authenticated users who didn't just register
+  useEffect(() => {
+    if (isAuthenticated && !justRegistered.current && !showWelcomeDialog) {
+      setLocation('/perfil');
+    }
+  }, [isAuthenticated, showWelcomeDialog, setLocation]);
 
   // Create schema inside component to access t() for translations
   const registerSchema = z.object({
@@ -93,6 +114,8 @@ export default function Register() {
         const age = today.getFullYear() - birthDate.getFullYear();
         return age >= 18 && age <= 120;
       }, t('register.minimumAge')),
+    birthPlace: z.string().max(100).optional(),
+    currentResidence: z.string().max(100).optional(),
     phoneNumber: phoneNumberSchema,
   }).refine((data) => data.password === data.confirmPassword, {
     message: t('register.passwordMismatch'),
@@ -109,6 +132,8 @@ export default function Register() {
       confirmPassword: "",
       gender: "",
       dateOfBirth: "",
+      birthPlace: "",
+      currentResidence: "",
       phoneNumber: "", // LS-110: Phone number default value
     },
   });
@@ -120,17 +145,19 @@ export default function Register() {
       return await response.json();
     },
     onSuccess: async (data) => {
+      // Mark that user just registered to prevent redirect
+      justRegistered.current = true;
+      
       toast({
         title: t('register.successToast'),
         description: t('register.successToastDesc'),
       });
       
-      // Refetch auth state and wait for it to complete before redirecting
-      // This prevents any timing issues during auth state refresh
+      // Refetch auth state and wait for it to complete before showing dialog
       await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
       
-      // Redirect to questionnaire after successful registration
-      setLocation("/cuestionario");
+      // Show welcome dialog instead of redirecting immediately
+      setShowWelcomeDialog(true);
     },
     onError: (error: any) => {
       console.error("Registration error:", error);
@@ -158,9 +185,62 @@ export default function Register() {
     registerMutation.mutate(registerData);
   };
 
+  // Handle dialog close - always redirect to profile when closing
+  const handleDialogClose = (open: boolean) => {
+    if (!open && showWelcomeDialog) {
+      // Dialog is being closed, redirect to profile
+      setShowWelcomeDialog(false);
+      setLocation('/perfil');
+    }
+  };
+
+  // Don't render form if user is already authenticated (unless they just registered)
+  if (isAuthenticated && !justRegistered.current && !showWelcomeDialog) {
+    return null; // The useEffect will handle the redirect
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 px-4">
-      <Card className="w-full max-w-md">
+    <>
+      <AlertDialog open={showWelcomeDialog} onOpenChange={handleDialogClose}>
+        <AlertDialogContent data-testid="dialog-welcome">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl text-center">
+              ¡Bienvenido a Evity! 🎉
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-center">
+              Tu cuenta ha sido creada exitosamente. ¿Qué te gustaría hacer ahora?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:flex-col gap-2">
+            <Button
+              onClick={() => {
+                setShowWelcomeDialog(false);
+                setLocation("/perfil");
+              }}
+              variant="outline"
+              className="w-full"
+              data-testid="button-go-to-profile"
+            >
+              <User className="h-4 w-4 mr-2" />
+              Explorar mi Perfil
+            </Button>
+            <Button
+              onClick={() => {
+                setShowWelcomeDialog(false);
+                setLocation("/cuestionario");
+              }}
+              className="w-full"
+              data-testid="button-go-to-questionnaire"
+            >
+              <ClipboardList className="h-4 w-4 mr-2" />
+              Conócete Mejor
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 px-4">
+        <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-between">
             <Link href="/" data-testid="link-back-home">
@@ -278,6 +358,44 @@ export default function Register() {
                           type="date"
                           data-testid="input-date-of-birth"
                           max={new Date().toISOString().split('T')[0]}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Birth place and current residence fields */}
+              <div className="grid grid-cols-2 gap-3">
+                <FormField
+                  control={form.control}
+                  name="birthPlace"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Lugar de nacimiento</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Ciudad, País"
+                          data-testid="input-birth-place"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="currentResidence"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Residencia actual</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Ciudad, País"
+                          data-testid="input-current-residence"
                         />
                       </FormControl>
                       <FormMessage />
@@ -409,5 +527,6 @@ export default function Register() {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 }

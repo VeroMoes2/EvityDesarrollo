@@ -165,6 +165,28 @@ export default function QuestionnaireResults() {
           </CardContent>
         </Card>
 
+        {/* Personalized AI Summary */}
+        {result.personalizedSummary && (
+          <Card className="border-primary/20">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                <CardTitle className="text-2xl">Tu perfil de bienestar personalizado</CardTitle>
+              </div>
+              <CardDescription>
+                Análisis generado por IA basado en tus respuestas
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="bg-muted/30 rounded-lg p-6">
+                <p className="text-base leading-relaxed text-foreground" data-testid="text-personalized-summary">
+                  {result.personalizedSummary}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Section Scores - Scores por sección */}
         {Object.keys(sectionScores).length > 0 && (
           <Card>

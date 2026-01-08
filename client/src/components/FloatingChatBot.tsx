@@ -35,7 +35,27 @@ export default function FloatingChatBot() {
   ]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  // Reset conversation when chat is closed/reopened
+  useEffect(() => {
+    if (isOpen && !conversationId) {
+      // Chat was just opened, reset conversation
+      setMessages([
+        {
+          id: "welcome",
+          role: "assistant",
+          content: "¡Hola! Soy tu asistente de longevidad y salud. Puedo responder tus preguntas sobre nutrición, ejercicio, biomarcadores, suplementación y más. ¿En qué puedo ayudarte hoy?",
+          timestamp: new Date(),
+        }
+      ]);
+      setConversationId(null);
+    } else if (!isOpen) {
+      // Chat was closed, reset conversation ID for next time
+      setConversationId(null);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -75,7 +95,10 @@ export default function FloatingChatBot() {
           'Content-Type': 'application/json',
           'X-CSRF-Token': csrfToken,
         },
-        body: JSON.stringify({ question }),
+        body: JSON.stringify({ 
+          question,
+          conversationId: conversationId || undefined
+        }),
       });
 
       if (!response.ok) {
@@ -84,6 +107,11 @@ export default function FloatingChatBot() {
       }
 
       const data = await response.json();
+
+      // Update conversation ID if received from backend
+      if (data.conversationId && data.conversationId !== conversationId) {
+        setConversationId(data.conversationId);
+      }
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),

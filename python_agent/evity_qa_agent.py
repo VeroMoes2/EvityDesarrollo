@@ -8,6 +8,7 @@ Evity QA Agent – versión bilingüe (ES/EN) con reconstrucción automática de
 - Genera embeddings y guarda un índice local
 - Si agregas/actualizas archivos, se reconstruye automáticamente al preguntar
 - Responde con un tono empático y comprensible para pacientes
+- Personalización: usa nombre de la persona usuaria, responde saludos y agradecimientos
 """
 
 import argparse
@@ -15,7 +16,7 @@ import os
 import re
 import time
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import numpy as np
 from openai import OpenAI
@@ -240,52 +241,122 @@ def load_index(base: Path):
 
 
 # ---------------------------------------------------------------------------
-# Búsqueda y respuesta (tono empático para pacientes)
+# Búsqueda y respuesta (tono empático + personalización)
 # ---------------------------------------------------------------------------
 
 
-def _empathetic_completion(client: OpenAI, contexto: str, pregunta: str) -> str:
+def _empathetic_completion(
+    client: OpenAI,
+    contexto: str,
+    pregunta: str,
+    nombre_usuario: Optional[str] = None,
+    historial: Optional[list] = None,
+    ya_saludo: bool = False,
+    mensaje_tiene_saludo: bool = False,
+) -> str:
+    """
+    Genera la respuesta con tono empático, usando el contexto y cuidando
+    que Evity responda saludos, agradecimientos y use el nombre de la persona
+    cuando esté disponible. Respuestas más bien cortas.
+    """
+    if historial is None:
+        historial = []
+    
+    # Determinar si debemos usar el nombre en esta respuesta
+    debe_saludar = mensaje_tiene_saludo and not ya_saludo and nombre_usuario
+    
+    nombre_info = ""
+    if debe_saludar:
+        nombre_info = (
+            f"El nombre de la persona usuaria es: {nombre_usuario}. "
+            "Ya que te está saludando por primera vez, responde el saludo "
+            "usando su nombre (ej: '¡Hola, {nombre}!', '¡Buenos días, {nombre}!'). "
+            "Luego continúa con tu respuesta si hay una pregunta."
+        )
+    elif ya_saludo:
+        nombre_info = (
+            "Ya saludaste a esta persona anteriormente en esta conversación. "
+            "NO vuelvas a saludar ni a usar su nombre. "
+            "Para preguntas médicas, usa transiciones amables como: "
+            "'Perfecto, te explico...', '¡Excelente pregunta!', '¡Qué interesante!', "
+            "o responde directamente sin saludo."
+        )
+    elif not mensaje_tiene_saludo:
+        nombre_info = (
+            "Esta pregunta NO contiene un saludo. "
+            "NO saludes ni digas 'hola' o 'buenos días'. "
+            "Usa transiciones amables como: 'Perfecto, te explico...', "
+            "'¡Excelente pregunta!', '¡Qué interesante!', o responde directamente."
+        )
+    
+    # Construir historial para el prompt
+    historial_text = ""
+    if historial:
+        historial_text = "\n\nHistorial de la conversación:\n"
+        for msg in historial[-6:]:  # Solo últimos 6 mensajes
+            rol = "Usuario" if msg.get("role") == "user" else "Evity"
+            historial_text += f"{rol}: {msg.get('content', '')}\n"
+
     resp = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
             {
                 "role": "system",
                 "content": (
-                    "Eres un profesional de la salud empático y claro especializado en longevidad y salud integral. "
-                    "IMPORTANTE: SOLO puedes responder usando la información del contexto proporcionado. "
-                    "Si el contexto NO contiene información relevante para responder la pregunta, "
-                    "debes decir claramente: 'Lo siento, no tengo información sobre ese tema en mi base de conocimiento especializada en longevidad y salud. "
-                    "Mi conocimiento esta limitado por ahora, pero pronto te podré ayudar'\n\n"
-                    "Cuando SÍ tengas información relevante en el contexto:\n"
-                    "- Explicas temas médicos con palabras sencillas, sin jerga técnica\n"
-                    "- Ofreces orientación útil y tranquilizadora\n"
-                    "- Si hay términos médicos, explícalos brevemente\n"
-                    "- Nunca prometas curas y sugiere consultar a un profesional de salud si es necesario"
+                    "Te llamas Evity. Eres un asistente de salud y longevidad especializado. "
+                    "Tu propósito es ayudar a las personas a resolver sus dudas específicas sobre salud, "
+                    "longevidad, nutrición, ejercicio y bienestar de forma clara y práctica. "
+                    "Explicas temas médicos con palabras sencillas, sin jerga técnica, "
+                    "y ofreces orientación útil, específica y tranquilizadora.\n\n"
+                    "Brevedad:\n"
+                    "- Responde en un máximo de 2–3 párrafos cortos o 5–7 oraciones en total.\n"
+                    "- Si el mensaje es solo un saludo o un agradecimiento, responde con 1–2 frases breves.\n\n"
+                    "Interacción y tono:\n"
+                    "- Para preguntas médicas SIN saludo, NO digas 'hola' ni saludes. En su lugar, usa "
+                    "transiciones amables como: 'Perfecto, te explico...', '¡Excelente pregunta!', "
+                    "'¡Qué interesante!', 'Claro, hablemos de esto...', o simplemente responde directamente.\n"
+                    "- Si detectas agradecimientos (ej: 'gracias', 'muchas gracias'), respóndelos de manera "
+                    "cálida y breve, agradeciendo la confianza.\n"
+                    "- Usa un tono cercano pero profesional, como si hablaras con alguien "
+                    "a quien quieres ayudar genuinamente.\n\n"
+                    "Estructura general cuando hay una duda de salud (manteniendo brevedad):\n"
+                    "1) Explicación sencilla y clara del concepto o problema.\n"
+                    "2) 2–4 consejos o pasos prácticos específicos que la persona puede aplicar.\n"
+                    "3) Información adicional relevante o matices importantes.\n\n"
+                    "IMPORTANTE: Tu objetivo es ayudar a resolver dudas específicas directamente. "
+                    "NO termines tus respuestas diciendo 'consulta a un médico' o 'esto no sustituye una consulta médica', "
+                    "a menos que la situación sea una emergencia médica real (ej: dolor de pecho intenso, sangrado severo). "
+                    "Tu propósito es ser útil y resolver las inquietudes de salud de las personas con información práctica y accionable."
                 ),
+            },
+            {
+                "role": "system",
+                "content": nombre_info,
             },
             {
                 "role": "user",
                 "content": (
-                    "Lee cuidadosamente el siguiente contexto de documentos científicos sobre longevidad y salud.\n"
-                    "SOLO responde si el contexto contiene información relevante para la pregunta.\n"
-                    "Si el contexto NO es relevante, di que no tienes información sobre ese tema.\n\n"
-                    f"Contexto:\n{contexto}\n\n"
-                    f"Pregunta: {pregunta}\n\n"
-                    "Si el contexto ES relevante, incluye:\n"
-                    "1) Una explicación sencilla basada en el contexto\n"
-                    "2) Consejos o pasos prácticos (solo si el contexto los menciona)\n"
-                    "3) Cuándo consultar a un médico\n"
-                    "Termina con: 'Esto no sustituye una consulta médica profesional.'"
+                    "Usa el siguiente contexto de documentos para responder a la pregunta "
+                    "de forma breve, amable y comprensible.\n\n"
+                    f"Contexto:\n{contexto}\n"
+                    f"{historial_text}\n"
+                    f"Pregunta actual de la persona usuaria: {pregunta}\n\n"
+                    "Responde de acuerdo a las instrucciones anteriores sobre saludos y tono."
                 ),
             },
         ],
-        temperature=0.3,
+        temperature=0.4,
     )
     return resp.choices[0].message.content.strip()
 
 
-def answer_question(base: Path, pregunta: str, k: int = 5):
-    """CLI: imprime respuesta en consola con tono empático."""
+def answer_question(
+    base: Path,
+    pregunta: str,
+    k: int = 5,
+    nombre_usuario: Optional[str] = None,
+):
+    """CLI: imprime respuesta en consola con tono empático y algo de personalización."""
     ensure_index_fresh(base)
 
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY", ""))
@@ -300,16 +371,20 @@ def answer_question(base: Path, pregunta: str, k: int = 5):
 
     top_k, sims = search_similar(query_emb, embs, k=k)
 
-    print("\n📚 **Contexto relevante encontrado:**\n")
+    print("\n📚 Contexto relevante encontrado:\n")
     for idx, score in zip(top_k, sims):
         print(f"→ ({score:.3f}) {names[idx]}")
 
-    # Construimos el contexto con los textos ya traducidos del índice
     contexto = "\n\n".join([texts[i] for i in top_k][:3]) if top_k.size > 0 else ""
 
-    respuesta = _empathetic_completion(client, contexto, pregunta)
+    respuesta = _empathetic_completion(
+        client,
+        contexto,
+        pregunta,
+        nombre_usuario=nombre_usuario,
+    )
 
-    print("\n💬 **Respuesta generada:**\n")
+    print("\n💬 Respuesta generada:\n")
     print(respuesta)
 
 
@@ -320,7 +395,10 @@ def answer_question(base: Path, pregunta: str, k: int = 5):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Evity QA Agent - Busca respuestas en TXT y PDFs (ES/EN) con auto-rebuild y tono empático"
+        description=(
+            "Evity QA Agent - Busca respuestas en TXT y PDFs (ES/EN) con auto-rebuild, "
+            "tono empático y personalización básica."
+        )
     )
     parser.add_argument("--carpeta", required=True, help="Carpeta raíz del proyecto")
     parser.add_argument(
@@ -330,6 +408,12 @@ def main():
     parser.add_argument(
         "--k", type=int, default=5, help="Número de documentos relevantes a recuperar"
     )
+    # El nombre de usuario para uso desde CLI (opcional)
+    parser.add_argument(
+        "--nombre",
+        type=str,
+        help="Nombre de la persona usuaria (para personalizar la respuesta)",
+    )
     args = parser.parse_args()
 
     base = Path(args.carpeta).resolve()
@@ -338,7 +422,7 @@ def main():
         build_index(base)
 
     if args.ask:
-        answer_question(base, args.ask, k=args.k)
+        answer_question(base, args.ask, k=args.k, nombre_usuario=args.nombre)
 
 
 if __name__ == "__main__":
@@ -350,11 +434,28 @@ if __name__ == "__main__":
 # ---------------------------------------------------------------------------
 
 
-def preguntar_qa(pregunta: str, carpeta_base: str = ".") -> str:
+def preguntar_qa(
+    pregunta: str,
+    carpeta_base: str = ".",
+    nombre_usuario: Optional[str] = None,
+    historial: Optional[list] = None,
+    ya_saludo: bool = False,
+    mensaje_tiene_saludo: bool = False,
+) -> str:
     """
     Devuelve una respuesta en tono empático usando el índice local (si hay cambios, se reconstruye).
-    Útil para integrarlo desde otros scripts/servicios.
+    Puede personalizar el trato usando el nombre del usuario si se proporciona.
+
+    Parámetros:
+    - pregunta: texto que envía la persona usuaria.
+    - carpeta_base: ruta base del proyecto donde están 'contenidos/' y 'vector_index/'.
+    - nombre_usuario: (opcional) nombre de la persona usuaria, para que Evity pueda saludarle y despedirse por su nombre.
+    - historial: (opcional) lista de mensajes previos en la conversación.
+    - ya_saludo: (opcional) si ya se envió un saludo personalizado en esta conversación.
+    - mensaje_tiene_saludo: (opcional) si el mensaje actual contiene un saludo.
     """
+    if historial is None:
+        historial = []
     base = Path(carpeta_base).resolve()
     ensure_index_fresh(base)
 
@@ -371,4 +472,12 @@ def preguntar_qa(pregunta: str, carpeta_base: str = ".") -> str:
     top_k, _ = search_similar(query_emb, embs, k=5)
     contexto = "\n\n".join([texts[i] for i in top_k][:3]) if top_k.size > 0 else ""
 
-    return _empathetic_completion(client, contexto, pregunta)
+    return _empathetic_completion(
+        client,
+        contexto,
+        pregunta,
+        nombre_usuario=nombre_usuario,
+        historial=historial,
+        ya_saludo=ya_saludo,
+        mensaje_tiene_saludo=mensaje_tiene_saludo,
+    )

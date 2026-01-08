@@ -49,6 +49,7 @@ import {
   Calendar,
   FileType,
   Trash2,
+  RefreshCw,
 } from "lucide-react";
 import { format } from "date-fns";
 import { es, enUS } from "date-fns/locale";
@@ -121,6 +122,40 @@ export default function MisArchivos() {
       });
       
       setDocumentToDelete(null);
+    }
+  });
+
+  // Mutation for reprocessing all lab documents
+  const reprocessMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/labs/reprocess-all', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/labs'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/labs/analytes'] });
+      
+      toast({
+        title: "Reprocesamiento completado",
+        description: `Se procesaron ${data.processed} documentos y se actualizaron ${data.totalAnalytes} analitos con las fechas correctas.`,
+      });
+    },
+    onError: (error: Error) => {
+      console.error('Error reprocessing documents:', error);
+      toast({
+        title: "Error al reprocesar",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   });
 
@@ -303,6 +338,15 @@ export default function MisArchivos() {
             {t('files.subtitle')}
           </p>
         </div>
+        <Button 
+          variant="outline" 
+          onClick={() => reprocessMutation.mutate()}
+          disabled={reprocessMutation.isPending}
+          data-testid="button-reprocess-labs"
+        >
+          <RefreshCw className={`h-4 w-4 mr-2 ${reprocessMutation.isPending ? 'animate-spin' : ''}`} />
+          {reprocessMutation.isPending ? 'Reprocesando...' : 'Reprocesar Labs'}
+        </Button>
       </div>
 
       {/* Search and Filters */}

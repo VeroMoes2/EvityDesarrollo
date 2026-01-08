@@ -185,7 +185,7 @@ export default function Login() {
               {/* Forgot password link */}
               <div className="flex justify-end">
                 <Link href="/forgot-password" data-testid="link-forgot-password">
-                  <Button variant="ghost" className="px-0 text-sm">
+                  <Button type="button" variant="ghost" className="px-0 text-sm">
                     {t('login.forgotPassword')}
                   </Button>
                 </Link>
@@ -206,7 +206,7 @@ export default function Login() {
             <p className="text-sm text-muted-foreground">
               {t('login.noAccount')}{" "}
               <Link href="/register" data-testid="link-register">
-                <Button variant="ghost" className="p-0 h-auto">
+                <Button type="button" variant="ghost" className="p-0 h-auto">
                   {t('login.signUpHere')}
                 </Button>
               </Link>

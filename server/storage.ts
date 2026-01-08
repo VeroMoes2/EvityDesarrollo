@@ -4,6 +4,9 @@ import {
   medicalQuestionnaire,
   questionnaireResults,
   securityAuditLog,
+  labAnalytes,
+  analyteComments,
+  waitlist,
   type User,
   type UpsertUser,
   type MedicalDocument,
@@ -13,9 +16,14 @@ import {
   type UpdateQuestionnaire,
   type QuestionnaireResult,
   type InsertQuestionnaireResult,
+  type LabAnalyte,
+  type InsertLabAnalyte,
+  type AnalyteComment,
+  type Waitlist,
+  type InsertWaitlist,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, and, desc } from "drizzle-orm";
 // LS-108: Import encryption for sensitive data
 import { encryptSensitiveFields, decryptSensitiveFields } from "./encryption";
 
@@ -67,6 +75,7 @@ export interface IStorage {
   getAllUsers(): Promise<Array<User & { documentsCount: number; deletedDocumentsCount: number }>>;
   getAllMedicalDocuments(): Promise<Array<Omit<MedicalDocument, 'fileData'> & { userEmail: string | null; userName: string }>>;
   getMedicalDocumentById(documentId: string): Promise<MedicalDocument | undefined>;
+  getMedicalDocumentsByType(userId: string, fileType: string): Promise<MedicalDocument[]>;
   getSystemStats(): Promise<{
     totalUsers: number;
     totalDocuments: number;
@@ -130,6 +139,30 @@ export interface IStorage {
   saveQuestionnaireResult(data: InsertQuestionnaireResult): Promise<QuestionnaireResult>;
   getUserQuestionnaireResults(userId: string): Promise<QuestionnaireResult[]>;
   getAllQuestionnaireResults(): Promise<Array<QuestionnaireResult & { userEmail: string; userName: string }>>;
+  updateLatestQuestionnaireResult(userId: string, data: { personalizedSummary?: string }): Promise<void>;
+
+  // Lab Analytes operations (OCR results)
+  saveLabAnalytesBatch(userId: string, analytes: Array<{
+    analyteName: string;
+    valueNumeric: string;
+    unit: string;
+    referenceMin?: string | null;
+    referenceMax?: string | null;
+    referenceText?: string | null;
+    collectedAt?: Date | null;
+    sourceDocumentId?: string | null;
+  }>): Promise<LabAnalyte[]>;
+  getUserLabAnalytes(userId: string): Promise<LabAnalyte[]>;
+  getAnalyteHistory(userId: string, analyteName: string): Promise<LabAnalyte[]>;
+  getLatestAnalytesForUser(userId: string): Promise<LabAnalyte[]>;
+  
+  // Analyte Comments operations
+  getAnalyteComments(userId: string, analyteName: string): Promise<AnalyteComment[]>;
+  createAnalyteComment(userId: string, analyteName: string, comment: string): Promise<AnalyteComment>;
+  deleteAnalyteComment(userId: string, commentId: string): Promise<void>;
+
+  // Waitlist operations
+  createWaitlistEntry(data: InsertWaitlist): Promise<Waitlist>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -415,6 +448,24 @@ export class DatabaseStorage implements IStorage {
       .where(eq(medicalDocuments.id, documentId));
     
     return document;
+  }
+
+  // Get all medical documents of a specific type for a user
+  async getMedicalDocumentsByType(userId: string, fileType: string): Promise<MedicalDocument[]> {
+    const { and, isNull } = await import("drizzle-orm");
+    
+    const documents = await db
+      .select()
+      .from(medicalDocuments)
+      .where(
+        and(
+          eq(medicalDocuments.userId, userId),
+          eq(medicalDocuments.fileType, fileType),
+          isNull(medicalDocuments.deletedAt)
+        )
+      );
+    
+    return documents;
   }
 
   async createMedicalDocument(document: InsertMedicalDocument): Promise<MedicalDocument> {
@@ -823,6 +874,148 @@ export class DatabaseStorage implements IStorage {
     }));
   }
 
+  async updateLatestQuestionnaireResult(userId: string, data: { personalizedSummary?: string }): Promise<void> {
+    // Get the most recent questionnaire result for this user
+    const latestResults = await db
+      .select()
+      .from(questionnaireResults)
+      .where(eq(questionnaireResults.userId, userId))
+      .orderBy(sql`${questionnaireResults.completedAt} DESC`)
+      .limit(1);
+
+    if (latestResults.length === 0) {
+      throw new Error('No questionnaire results found for user');
+    }
+
+    const latestResult = latestResults[0];
+
+    // Update the latest result with the personalized summary
+    await db
+      .update(questionnaireResults)
+      .set({
+        personalizedSummary: data.personalizedSummary,
+      })
+      .where(eq(questionnaireResults.id, latestResult.id));
+  }
+
+  // Lab Analytes operations (OCR results storage)
+  async saveLabAnalytesBatch(userId: string, analytes: Array<{
+    analyteName: string;
+    valueNumeric: string;
+    unit: string;
+    referenceMin?: string | null;
+    referenceMax?: string | null;
+    referenceText?: string | null;
+    collectedAt?: Date | null;
+    sourceDocumentId?: string | null;
+  }>): Promise<LabAnalyte[]> {
+    if (analytes.length === 0) {
+      return [];
+    }
+
+    const insertData = analytes.map(a => ({
+      userId,
+      analyteName: a.analyteName,
+      valueNumeric: a.valueNumeric,
+      unit: a.unit,
+      referenceMin: a.referenceMin || null,
+      referenceMax: a.referenceMax || null,
+      referenceText: a.referenceText || null,
+      collectedAt: a.collectedAt || null,
+      sourceDocumentId: a.sourceDocumentId || null,
+    }));
+
+    const results = await db
+      .insert(labAnalytes)
+      .values(insertData)
+      .returning();
+
+    return results;
+  }
+
+  async getUserLabAnalytes(userId: string): Promise<LabAnalyte[]> {
+    const results = await db
+      .select()
+      .from(labAnalytes)
+      .where(eq(labAnalytes.userId, userId))
+      .orderBy(sql`${labAnalytes.collectedAt} DESC NULLS LAST, ${labAnalytes.createdAt} DESC`);
+    return results;
+  }
+
+  async getAnalyteHistory(userId: string, analyteName: string): Promise<LabAnalyte[]> {
+    const results = await db
+      .select()
+      .from(labAnalytes)
+      .where(sql`${labAnalytes.userId} = ${userId} AND LOWER(${labAnalytes.analyteName}) = LOWER(${analyteName})`)
+      .orderBy(sql`${labAnalytes.collectedAt} DESC NULLS LAST, ${labAnalytes.createdAt} DESC`);
+    return results;
+  }
+
+  async getLatestAnalytesForUser(userId: string): Promise<LabAnalyte[]> {
+    // Get the most recent value for each unique analyte name using raw SQL with proper column aliases
+    const results = await db.execute(sql`
+      SELECT DISTINCT ON (LOWER(analyte_name)) 
+        id,
+        user_id AS "userId",
+        analyte_name AS "analyteName",
+        value_numeric AS "valueNumeric",
+        unit,
+        reference_min AS "referenceMin",
+        reference_max AS "referenceMax",
+        reference_text AS "referenceText",
+        collected_at AS "collectedAt",
+        source_document_id AS "sourceDocumentId",
+        notes,
+        created_at AS "createdAt"
+      FROM lab_analytes
+      WHERE user_id = ${userId}
+      ORDER BY LOWER(analyte_name), collected_at DESC NULLS LAST, created_at DESC
+    `);
+    return results.rows as LabAnalyte[];
+  }
+
+  // Analyte Comments operations
+  async getAnalyteComments(userId: string, analyteName: string): Promise<AnalyteComment[]> {
+    const results = await db
+      .select()
+      .from(analyteComments)
+      .where(and(
+        eq(analyteComments.userId, userId),
+        sql`LOWER(${analyteComments.analyteName}) = LOWER(${analyteName})`
+      ))
+      .orderBy(desc(analyteComments.createdAt));
+    return results;
+  }
+
+  async createAnalyteComment(userId: string, analyteName: string, comment: string): Promise<AnalyteComment> {
+    const [result] = await db
+      .insert(analyteComments)
+      .values({
+        userId,
+        analyteName,
+        comment,
+      })
+      .returning();
+    return result;
+  }
+
+  async deleteAnalyteComment(userId: string, commentId: string): Promise<void> {
+    await db
+      .delete(analyteComments)
+      .where(and(
+        eq(analyteComments.id, commentId),
+        eq(analyteComments.userId, userId)
+      ));
+  }
+
+  // Waitlist operations
+  async createWaitlistEntry(data: InsertWaitlist): Promise<Waitlist> {
+    const [result] = await db
+      .insert(waitlist)
+      .values(data)
+      .returning();
+    return result;
+  }
 }
 
 export const storage = new DatabaseStorage();

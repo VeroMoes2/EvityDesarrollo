@@ -30,6 +30,24 @@ const translations = {
     'hero.welcome': 'Bienvenido a',
     'hero.valueProposition': 'Descubre los secretos científicos de la longevidad. Herramientas personalizadas, recursos basados en evidencia y una comunidad dedicada a vivir más y mejor.',
     'hero.discoverMore': 'Descubre Más',
+    'hero.title1': 'Creemos en la longevidad.',
+    'hero.title2': 'La creamos contigo.',
+    'hero.subtitle': 'Te acompañamos para sentirte mejor, verte mejor y vivir mejor.',
+    'hero.cta': 'Comenzar',
+    
+    // Prevention Section
+    'prevention.title': 'Lo de hoy es prevenir',
+    'prevention.description1': 'Anticipa riesgos y vive más años con mejor salud: viéndote y sintiéndote mejor, desde hoy.',
+    'prevention.description2': 'Combinamos medicina preventiva, biomarcadores avanzados e inteligencia artificial.',
+    'prevention.biomarkers': 'biomarcadores',
+    'prevention.feature1Title': 'Una clínica para todo',
+    'prevention.feature1Desc': 'Todos los exámenes que necesitas en un solo lugar.',
+    'prevention.feature2Title': 'Diagnóstico integral',
+    'prevention.feature2Desc': 'Basado en evidencia. Lo mejor de la medicina con la velocidad de IA.',
+    'prevention.feature3Title': 'Planes personalizados',
+    'prevention.feature3Desc': 'Alimento, sueño, suplementos y ejercicio paso a paso para mejorar tu longevidad.',
+    'prevention.feature4Title': 'Seguimiento cercano y digital',
+    'prevention.feature4Desc': 'Toda tu información en tu portal, accesible para ti y tus doctores. Te acompañamos dentro y fuera de la clínica.',
     
     // Features Section
     'features.title': '¿Por Qué Elegir',
@@ -424,6 +442,7 @@ const translations = {
     // Footer
     'footer.company': 'Empresa',
     'footer.aboutUs': 'Sobre Nosotros',
+    'footer.contactUs': 'Contáctanos',
     'footer.research': 'Investigación',
     'footer.team': 'Equipo',
     'footer.services': 'Servicios',
@@ -440,6 +459,7 @@ const translations = {
     'footer.madeWithLove': 'Hecho con amor para tu bienestar',
     'footer.quickLinks': 'Enlaces Rápidos',
     'footer.contact': 'Contacto',
+    'footer.followUs': 'Síguenos',
     'footer.faq': 'Preguntas Frecuentes',
     'footer.calculators': 'Calculadoras',
     'footer.location': 'Madrid, España',
@@ -635,6 +655,24 @@ const translations = {
     'hero.welcome': 'Welcome to',
     'hero.valueProposition': 'Discover the scientific secrets of longevity. Personalized tools, evidence-based resources and a community dedicated to living longer and better.',
     'hero.discoverMore': 'Discover More',
+    'hero.title1': 'We believe in longevity.',
+    'hero.title2': 'We create it with you.',
+    'hero.subtitle': 'We accompany you to feel better, look better and live better.',
+    'hero.cta': 'Get Started',
+    
+    // Prevention Section
+    'prevention.title': 'Today is about prevention',
+    'prevention.description1': 'Anticipate risks and live more years with better health: looking and feeling better, starting today.',
+    'prevention.description2': 'We combine preventive medicine, advanced biomarkers and artificial intelligence.',
+    'prevention.biomarkers': 'biomarkers',
+    'prevention.feature1Title': 'One clinic for everything',
+    'prevention.feature1Desc': 'All the exams you need in one place.',
+    'prevention.feature2Title': 'Comprehensive diagnosis',
+    'prevention.feature2Desc': 'Evidence-based. The best of medicine with the speed of AI.',
+    'prevention.feature3Title': 'Personalized plans',
+    'prevention.feature3Desc': 'Food, sleep, supplements and exercise step by step to improve your longevity.',
+    'prevention.feature4Title': 'Close and digital follow-up',
+    'prevention.feature4Desc': 'All your information in your portal, accessible to you and your doctors. We accompany you inside and outside the clinic.',
     
     // Features Section
     'features.title': 'Why Choose',
@@ -1027,6 +1065,7 @@ const translations = {
     // Footer
     'footer.company': 'Company',
     'footer.aboutUs': 'About Us',
+    'footer.contactUs': 'Contact Us',
     'footer.research': 'Research',
     'footer.team': 'Team',
     'footer.services': 'Services',
@@ -1046,6 +1085,7 @@ const translations = {
     'footer.companyDescription': 'Your personalized longevity platform. Science-based, designed for you.',
     'footer.quickLinks': 'Quick Links',
     'footer.contact': 'Contact',
+    'footer.followUs': 'Follow Us',
     'footer.faq': 'FAQ',
     'footer.calculators': 'Calculators',
     'footer.location': 'Madrid, Spain',
