@@ -77,15 +77,15 @@ export async function sendWaitlistConfirmationEmail(email: string): Promise<bool
       subject: "¡Registro exitoso! Bienvenido(a) a la lista de espera",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <p>Hola,</p>
-          <p><strong>¡Tu registro fue exitoso!</strong> Ya formas parte de nuestra lista de espera y te notificaremos muy pronto con actualizaciones y acceso anticipado.</p>
+          <p><strong>¡Tu registro fue exitoso!</strong></p>
+          <p>Bienvenido a Evity, ya formas parte de nuestra lista de espera y te notificaremos muy pronto con actualizaciones y acceso anticipado.</p>
           <p>Mientras tanto, síguenos en redes sociales para conocer más sobre longevidad, salud integral y bienestar basado en ciencia.</p>
           <p>
             👉 <a href="https://www.instagram.com/evity.mx" style="color: #4CAF50;">Instagram</a><br>
             👉 <a href="https://www.tiktok.com/@evity.mx" style="color: #4CAF50;">TikTok</a>
           </p>
-          <p>Gracias por ser parte de Evity.</p>
-          <p>—<br>Equipo Evity</p>
+          <br>
+          <p>-Equipo Evity</p>
         </div>
       `,
     });
