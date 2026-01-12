@@ -1,11 +1,16 @@
 import { useLanguage } from "@/contexts/LanguageContext";
+import preventionBackground from "@assets/Fondo_Evity_1768187185274.jpg";
 
 export default function PreventionSection() {
   const { t } = useLanguage();
 
   return (
-    <section className="min-h-screen bg-background flex items-center">
-      <div className="max-w-3xl mx-auto px-6 sm:px-8">
+    <section className="min-h-screen flex items-center relative overflow-hidden">
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${preventionBackground})` }}
+      />
+      <div className="relative z-10 max-w-3xl mx-auto px-6 sm:px-8">
         <div className="text-left">
           <h2 
             className="md:text-5xl font-light text-foreground mb-8 text-[40px]"
