@@ -4,8 +4,8 @@ export default function PreventionSection() {
   const { t } = useLanguage();
 
   return (
-    <section className="py-10 bg-background pt-[100px] pb-[100px]">
-      <div className="max-w-3xl mx-auto px-6 sm:px-8 pl-[0px] pr-[0px]">
+    <section className="min-h-screen bg-background flex items-center">
+      <div className="max-w-3xl mx-auto px-6 sm:px-8">
         <div className="text-left">
           <h2 
             className="md:text-5xl font-light text-foreground mb-8 text-[40px]"
