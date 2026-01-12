@@ -8,7 +8,7 @@ export default function PreventionSection() {
       <div className="max-w-3xl mx-auto px-6 sm:px-8">
         <div className="text-left">
           <h2 
-            className="text-4xl md:text-5xl font-light text-foreground leading-[1.1] mb-8"
+            className="md:text-5xl font-light text-foreground mb-8 text-[46px]"
             style={{ fontFamily: "'Lovelace Light', serif" }}
           >Vive más años, con mejor salud.</h2>
           
