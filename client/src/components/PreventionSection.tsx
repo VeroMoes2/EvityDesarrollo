@@ -10,9 +10,7 @@ export default function PreventionSection() {
           <h2 
             className="text-4xl md:text-5xl font-light text-foreground leading-[1.1] mb-8"
             style={{ fontFamily: "'Lovelace Light', serif" }}
-          >
-            Lo de hoy es prevenir
-          </h2>
+          >No vemos diagnósticos, vemos personas.</h2>
           
           <p className="text-xl md:text-2xl text-foreground leading-relaxed mb-6">
             Anticipa riesgos y vive más años con mejor salud – viéndote y sintiéndote mejor, desde hoy.
