@@ -12,9 +12,7 @@ export default function PreventionSection() {
             style={{ fontFamily: "'Lovelace Light', serif" }}
           >Vive más años, con mejor salud.</h2>
           
-          <p className="text-xl md:text-2xl text-foreground leading-relaxed mb-6">
-            Anticipa riesgos y vive más años con mejor salud – viéndote y sintiéndote mejor, desde hoy.
-          </p>
+          <p className="text-xl md:text-2xl text-foreground leading-relaxed mb-6">En Evity combinamos medicina preventiva, biomarcadores avanzados e inteligencia artificial para identificar riesgos tempranos y diseñar un plan de salud hecho especialmente a tu medida, para que te veas y sientas mejor, desde hoy.</p>
           
           <p className="text-lg text-muted-foreground leading-relaxed">En Evity combinamos medicina preventiva, biomarcadores avanzados e inteligencia artificial para identificar riesgos tempranos y diseñar un plan de salud hecho especialmente a tu medida.</p>
         </div>
