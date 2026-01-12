@@ -18,9 +18,7 @@ export default function PreventionSection() {
             Anticipa riesgos y vive más años con mejor salud – viéndote y sintiéndote mejor, desde hoy.
           </p>
           
-          <p className="text-lg text-muted-foreground leading-relaxed">
-            Combinamos medicina preventiva, biomarcadores avanzados e inteligencia artificial.
-          </p>
+          <p className="text-lg text-muted-foreground leading-relaxed">En Evity combinamos medicina preventiva, biomarcadores avanzados e inteligencia artificial para identificar riesgos tempranos y diseñar un plan de salud hecho especialmente a tu medida.</p>
         </div>
       </div>
     </section>
