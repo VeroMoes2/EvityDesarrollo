@@ -14,7 +14,7 @@ export default function HeroSection() {
   return (
     <section 
       id="inicio" 
-      className="relative min-h-[70vh] flex items-center justify-center overflow-hidden pt-16"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
       {/* DNA Helix Background */}
       <div 
