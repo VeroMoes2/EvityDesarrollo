@@ -72,9 +72,9 @@ export async function sendWaitlistConfirmationEmail(email: string): Promise<bool
 
   try {
     await transporter.sendMail({
-      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+      from: `"Evity" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
       to: email,
-      subject: "Bienvenido a Evity",
+      subject: "Tu camino con Evity comienza aquí",
       html: `
         <!DOCTYPE html>
         <html>
