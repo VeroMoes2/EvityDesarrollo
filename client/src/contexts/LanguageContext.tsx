@@ -30,8 +30,8 @@ const translations = {
     'hero.welcome': 'Bienvenido a',
     'hero.valueProposition': 'Descubre los secretos científicos de la longevidad. Herramientas personalizadas, recursos basados en evidencia y una comunidad dedicada a vivir más y mejor.',
     'hero.discoverMore': 'Descubre Más',
-    'hero.title1': 'Creemos en la longevidad.',
-    'hero.title2': 'La creamos contigo.',
+    'hero.title1': 'Evity',
+    'hero.title2': '',
     'hero.subtitle': 'Creemos en la longevidad. La creamos contigo.',
     'hero.cta': 'Comenzar',
     

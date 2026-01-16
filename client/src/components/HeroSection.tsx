@@ -44,7 +44,7 @@ export default function HeroSection() {
           
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-light text-[#2C3E2D] mb-6 leading-[1.1] tracking-tight" style={{ fontFamily: "'Lovelace Light', serif" }}>
             {t('hero.title1')}
-            <span className="block">{t('hero.title2')}</span>
+            {t('hero.title2') && <span className="block">{t('hero.title2')}</span>}
           </h1>
           
           <p className="text-lg text-[#3D4F3E]/90 mb-8 max-w-2xl mx-auto leading-relaxed">
