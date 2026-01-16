@@ -1,15 +1,19 @@
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 import { useConfluenceData } from "@/hooks/useConfluenceData";
 import { useLocation } from "wouter";
-import WaitlistModal from "./WaitlistModal";
 
 export default function Header() {
-  const [waitlistOpen, setWaitlistOpen] = useState(false);
   const { data: confluenceData } = useConfluenceData();
   const [, navigate] = useLocation();
 
   const companyName = confluenceData?.companyName || "Evity";
+
+  const scrollToWaitlist = () => {
+    const waitlistSection = document.getElementById('waitlist-section');
+    if (waitlistSection) {
+      waitlistSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
@@ -26,12 +30,11 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             <Button 
               data-testid="button-waitlist"
-              onClick={() => setWaitlistOpen(true)}
+              onClick={scrollToWaitlist}
             >Comenzar</Button>
           </div>
         </div>
       </div>
-      <WaitlistModal open={waitlistOpen} onOpenChange={setWaitlistOpen} />
     </header>
   );
 }
