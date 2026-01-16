@@ -56,6 +56,16 @@ export default function WaitlistSection() {
 
   return (
     <section className="h-[50vh] min-h-[400px] flex items-center justify-center waitlist-gradient-bg relative">
+      {/* Third breathing shape - warm gray, center */}
+      <div 
+        className="absolute w-[120%] h-[100%] rounded-full pointer-events-none"
+        style={{
+          top: '10%',
+          left: '-10%',
+          background: 'radial-gradient(ellipse at center, rgba(200, 195, 185, 0.06) 0%, transparent 60%)',
+          animation: 'breathe-3 14s ease-in-out infinite',
+        }}
+      />
       <div className="max-w-2xl mx-auto px-6 text-center relative z-10">
         <div className="waitlist-text-overlay rounded-2xl p-8 sm:p-10">
         {isSuccess ? (

@@ -1,0 +1,70 @@
+
+Context & Brand Tone:
+- High-end, clinical, calm, intelligent
+- Inspired by Apple Health, medical journals, and longevity clinics
+- The animation should feel human and organic, not techy or flashy
+- If the animation is noticeable at first glance, it is too strong
+
+Layout Requirements:
+- Full-width hero section (min-height: 70vh)
+- Centered content (vertically and horizontally)
+- Text content:
+  - H1: “Acceso anticipado”
+  - Subheadline: “Únete a la lista de espera y recibe acceso prioritario a la plataforma.”
+  - Email input field
+  - Primary CTA button: “Unirme a la lista”
+
+Background Animation (Core Requirement):
+- Create a “breathing” effect using large, soft light waves or gradients
+- Use 2–3 oversized abstract shapes with:
+  - Very soft, feathered edges
+  - Low opacity (5–12%)
+  - No sharp edges, no particles, no noise
+- Animate them slowly to expand and contract (like breathing):
+  - Duration: 14–22 seconds per cycle
+  - Use ease-in-out timing
+  - No visible loop reset
+- Movement should feel like:
+  - Calm inhaling / exhaling
+  - Balance and homeostasis
+- Absolutely avoid:
+  - Pulsing, flashing, bouncing
+  - Heartbeat metaphors
+  - DNA, organs, neural networks
+  - Neon colors or high contrast
+
+Color System:
+- Base background: warm off-white or very light neutral
+- Wave colors: muted sage green, soft teal, or warm gray
+- Very low saturation
+- No gradients with harsh color transitions
+
+Text Readability:
+- Place content on top of the animation
+- Add a subtle translucent overlay or frosted-glass card:
+  - White background at ~75–85% opacity
+  - Optional soft blur (backdrop-filter)
+- Maintain strong contrast and calm spacing
+
+Typography:
+- Use a refined serif for the H1 (system serif fallback)
+- Clean system sans-serif for body text
+- Generous spacing, no heavy borders
+- Soft shadow only if needed (very subtle)
+
+Accessibility:
+- Respect prefers-reduced-motion:
+  - If enabled, disable animation and show a static background
+- Ensure text contrast meets accessibility standards
+
+Technical Constraints:
+- Use only HTML and CSS
+- No canvas, no SVGs, no external libraries
+- No JavaScript unless strictly necessary
+- Single self-contained index.html file
+- Include brief CSS comments explaining:
+  - How the breathing animation works
+  - How reduced motion is handled
+
+Goal:
+The final result should feel like a calm, living surface behind the content — elegant, restrained, and trustworthy — suitable for a premium longevity brand’s waitlist page.
