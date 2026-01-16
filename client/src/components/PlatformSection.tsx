@@ -27,7 +27,7 @@ export default function PlatformSection() {
           className="text-center mb-16"
         >
           <h2 
-            className="text-3xl md:text-4xl lg:text-5xl font-light text-foreground mb-6 leading-tight"
+            className="md:text-4xl lg:text-5xl font-light text-foreground mb-6 text-[44px]"
             style={{ fontFamily: "'Lovelace Light', serif" }}
           >Tu plataforma de salud preventiva y longevidad</h2>
           <p 
