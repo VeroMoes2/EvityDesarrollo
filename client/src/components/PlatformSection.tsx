@@ -1,19 +1,15 @@
 import { motion } from "framer-motion";
-import { Stethoscope, ClipboardList, TrendingUp } from "lucide-react";
 
 const features = [
   {
-    icon: Stethoscope,
     title: "Diagnóstico integral",
     description: "Evaluación profunda basada en biomarcadores, historial clínico, hábitos y estilo de vida para entender tu salud como un todo."
   },
   {
-    icon: ClipboardList,
     title: "Planes personalizados",
     description: "Recomendaciones claras y accionables en nutrición, ejercicio, sueño y prevención, diseñadas para tu perfil y objetivos."
   },
   {
-    icon: TrendingUp,
     title: "Seguimiento continuo",
     description: "Un sistema de acompañamiento que te mantiene constante, mide tu progreso y te ayuda a cumplir tus objetivos de salud."
   }
@@ -60,9 +56,6 @@ export default function PlatformSection() {
                   boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.02)'
                 }}
               >
-                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-6 transition-colors duration-300 group-hover:bg-primary/15">
-                  <feature.icon className="w-7 h-7 text-primary" />
-                </div>
                 <h3 
                   className="text-xl font-semibold text-foreground mb-3"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}
