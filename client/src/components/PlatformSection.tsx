@@ -34,7 +34,7 @@ export default function PlatformSection() {
           </h2>
           <p 
             className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
+            style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
           >
             Evaluamos tu salud de forma integral para prevenir enfermedades y ayudarte a vivir mejor, con más energía, claridad y bienestar desde hoy.
           </p>
@@ -58,13 +58,13 @@ export default function PlatformSection() {
               >
                 <h3 
                   className="text-xl text-foreground mb-3 font-light"
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                  style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
                 >
                   {feature.title}
                 </h3>
                 <p 
                   className="text-muted-foreground leading-relaxed"
-                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                  style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
                 >
                   {feature.description}
                 </p>
