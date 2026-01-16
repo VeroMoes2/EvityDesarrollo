@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowRight, Loader2, CheckCircle, Clock } from "lucide-react";
+import fondoEvity from "@assets/Fondo_Evity_1768605844451.jpg";
 
 export default function WaitlistSection() {
   const [email, setEmail] = useState("");
@@ -55,17 +56,14 @@ export default function WaitlistSection() {
   };
 
   return (
-    <section className="h-[50vh] min-h-[400px] flex items-center justify-center waitlist-gradient-bg relative">
-      {/* Third breathing shape - warm gray, center */}
-      <div 
-        className="absolute w-[120%] h-[100%] rounded-full pointer-events-none"
-        style={{
-          top: '10%',
-          left: '-10%',
-          background: 'radial-gradient(ellipse at center, rgba(200, 195, 185, 0.06) 0%, transparent 60%)',
-          animation: 'breathe-3 14s ease-in-out infinite',
-        }}
-      />
+    <section 
+      className="h-[50vh] min-h-[400px] flex items-center justify-center relative"
+      style={{
+        backgroundImage: `url(${fondoEvity})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
       <div className="max-w-2xl mx-auto px-6 text-center relative z-10">
         {isSuccess ? (
           <div className="flex flex-col items-center">
