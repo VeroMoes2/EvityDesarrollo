@@ -24,14 +24,14 @@ export default function PlatformSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-10%" }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="text-left mb-16"
+          className="text-center mb-16"
         >
           <h2 
             className="text-2xl md:text-3xl lg:text-4xl font-light text-foreground mb-6"
             style={{ fontFamily: "'Lovelace Light', serif" }}
           >Tu plataforma de salud preventiva y longevidad</h2>
           <p 
-            className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl"
+            className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto"
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
           >
             Evaluamos tu salud de forma integral para prevenir enfermedades y ayudarte a vivir mejor, con más energía, claridad y bienestar desde hoy.
