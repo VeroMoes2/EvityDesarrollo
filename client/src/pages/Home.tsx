@@ -93,13 +93,9 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Waitlist Section */}
-        <div id="waitlist-section" className="snap-section">
+        {/* Waitlist Section + Footer */}
+        <div id="waitlist-section" className="snap-section flex flex-col">
           <WaitlistSection />
-        </div>
-        
-        {/* Footer */}
-        <div className="snap-section">
           <Footer />
         </div>
       </main>
