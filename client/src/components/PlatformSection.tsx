@@ -51,19 +51,19 @@ export default function PlatformSection() {
               className="group"
             >
               <div 
-                className="bg-white dark:bg-[#1a1a1a] rounded-xl p-8 h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                className="bg-white dark:bg-[#1a1a1a] rounded-xl p-10 lg:p-12 h-full min-h-[280px] transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
                 style={{ 
                   boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.02)'
                 }}
               >
                 <h3 
-                  className="text-xl text-foreground mb-3 font-light"
+                  className="text-2xl lg:text-3xl text-foreground mb-4 font-light"
                   style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
                 >
                   {feature.title}
                 </h3>
                 <p 
-                  className="text-muted-foreground leading-relaxed"
+                  className="text-lg lg:text-xl text-muted-foreground leading-relaxed"
                   style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
                 >
                   {feature.description}
