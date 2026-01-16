@@ -16,7 +16,7 @@ const steps = [
   {
     number: 2,
     title: "Estudios y exámenes",
-    description: "Simple. Intuitivo. Preciso. Realiza tus laboratorios en Evity o con nuestros aliados. Todo inicia con datos reales.",
+    description: "Realiza tus estudios y laboratorios con nuestros aliados. Datos precisos y confiables que se convierten en la base de todo tu plan.",
     bgColor: "bg-[#e8e8e0] dark:bg-[#222222]"
   },
   {
