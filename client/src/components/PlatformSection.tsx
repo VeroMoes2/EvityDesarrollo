@@ -57,7 +57,7 @@ export default function PlatformSection() {
                 }}
               >
                 <h3 
-                  className="text-xl font-semibold text-foreground mb-3"
+                  className="text-xl text-foreground mb-3 font-light"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}
                 >
                   {feature.title}
