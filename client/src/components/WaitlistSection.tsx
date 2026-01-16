@@ -100,8 +100,7 @@ export default function WaitlistSection() {
             >Acceso anticipado</h2>
 
             <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
-              ¡La espera casi termina! Únete para recibir acceso prioritario a{" "}
-              <span className="text-primary font-medium">Evity</span> tan pronto como esté disponible.
+              Únete a la lista de espera y recibe acceso prioritario a la plataforma.
             </p>
 
             <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-4">
