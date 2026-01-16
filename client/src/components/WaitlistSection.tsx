@@ -131,7 +131,7 @@ export default function WaitlistSection() {
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
-                  Unirme ahora
+                  Acceso anticipado
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </>
               )}
