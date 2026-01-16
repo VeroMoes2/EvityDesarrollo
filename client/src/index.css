@@ -391,6 +391,7 @@
     min-height: 100vh;
     scroll-snap-align: start;
     scroll-snap-stop: always;
+    scroll-margin-top: 64px;
   }
 
   /* Steps container - single snap section containing all sticky steps */
