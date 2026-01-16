@@ -86,7 +86,7 @@ export default function Home() {
         ))}
 
         {/* Waitlist Section */}
-        <div className="snap-section">
+        <div id="waitlist-section" className="snap-section">
           <WaitlistSection />
         </div>
         

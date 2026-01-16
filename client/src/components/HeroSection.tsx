@@ -1,16 +1,19 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Link } from "wouter";
 import heroBackground from "@assets/Gemini_Generated_Image_64rbf264rbf264rb_1765770834961_1766003947092.png";
 import heroVideo from "@assets/generated_videos/light_beige_particles_animation.mp4";
-import WaitlistModal from "./WaitlistModal";
 
 export default function HeroSection() {
   const { isAuthenticated } = useAuth();
   const { t } = useLanguage();
-  const [waitlistOpen, setWaitlistOpen] = useState(false);
+
+  const scrollToWaitlist = () => {
+    const waitlistSection = document.getElementById('waitlist-section');
+    if (waitlistSection) {
+      waitlistSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <section 
@@ -52,7 +55,7 @@ export default function HeroSection() {
             <Button 
               className="px-8 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md"
               data-testid="button-hero-comenzar"
-              onClick={() => setWaitlistOpen(true)}
+              onClick={scrollToWaitlist}
             >
               Unirme a la lista de espera
             </Button>
@@ -60,8 +63,6 @@ export default function HeroSection() {
           
         </div>
       </div>
-
-      <WaitlistModal open={waitlistOpen} onOpenChange={setWaitlistOpen} />
     </section>
   );
 }
