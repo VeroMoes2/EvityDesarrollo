@@ -139,13 +139,9 @@ export default function WaitlistSection() {
             </Button>
           </form>
 
-          {alreadyRegisteredMessage ? (
+          {alreadyRegisteredMessage && (
             <p className="text-sm font-bold text-primary mb-4">
               {alreadyRegisteredMessage}
-            </p>
-          ) : (
-            <p className="text-xs text-muted-foreground">
-              Respetamos tu privacidad. Sin spam, solo actualizaciones importantes.
             </p>
           )}
           </>
