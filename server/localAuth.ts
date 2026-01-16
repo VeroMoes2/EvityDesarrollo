@@ -74,19 +74,128 @@ export async function sendWaitlistConfirmationEmail(email: string): Promise<bool
     await transporter.sendMail({
       from: process.env.SMTP_FROM || process.env.SMTP_USER,
       to: email,
-      subject: "¡Registro exitoso! Bienvenido(a) a la lista de espera",
+      subject: "Bienvenido a Evity",
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <p><strong>¡Tu registro fue exitoso!</strong></p>
-          <p>Bienvenido a Evity, ya formas parte de nuestra lista de espera y te notificaremos muy pronto con actualizaciones y acceso anticipado.</p>
-          <p>Mientras tanto, síguenos en redes sociales para conocer más sobre longevidad, salud integral y bienestar basado en ciencia.</p>
-          <p>
-            👉 <a href="https://www.instagram.com/evity.mx" style="color: #4CAF50;">Instagram</a><br>
-            👉 <a href="https://www.tiktok.com/@evity.mx" style="color: #4CAF50;">TikTok</a>
-          </p>
-          <br>
-          <p>-Equipo Evity</p>
-        </div>
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+        </head>
+        <body style="margin: 0; padding: 0; background-color: #f5f5f0;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f0; padding: 40px 20px;">
+            <tr>
+              <td align="center">
+                <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 500px; background-color: #f5f5f0;">
+                  <!-- Header -->
+                  <tr>
+                    <td style="padding-bottom: 30px;">
+                      <table width="100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 18px; font-weight: 400; color: #1a1a1a; letter-spacing: 2px;">
+                            EVITY
+                          </td>
+                          <td align="right">
+                            <a href="https://www.instagram.com/evity.mx" style="text-decoration: none; color: #666; margin-right: 12px;">
+                              <img src="https://cdn-icons-png.flaticon.com/24/174/174855.png" alt="Instagram" width="18" height="18" style="vertical-align: middle;">
+                            </a>
+                            <a href="https://www.tiktok.com/@evity.mx" style="text-decoration: none; color: #666;">
+                              <img src="https://cdn-icons-png.flaticon.com/24/3046/3046121.png" alt="TikTok" width="18" height="18" style="vertical-align: middle;">
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  
+                  <!-- Title -->
+                  <tr>
+                    <td style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 36px; font-weight: 300; color: #1a1a1a; padding-bottom: 30px; line-height: 1.2;">
+                      Bienvenido a Evity
+                    </td>
+                  </tr>
+                  
+                  <!-- Content -->
+                  <tr>
+                    <td style="font-family: 'DM Sans', Arial, sans-serif; font-size: 15px; font-weight: 300; color: #1a1a1a; line-height: 1.6; padding-bottom: 20px;">
+                      Hola,
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="font-family: 'DM Sans', Arial, sans-serif; font-size: 15px; font-weight: 300; color: #1a1a1a; line-height: 1.6; padding-bottom: 20px;">
+                      Gracias por sumarte a Evity. Tu lugar en la lista de espera está confirmado.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="font-family: 'DM Sans', Arial, sans-serif; font-size: 15px; font-weight: 300; color: #1a1a1a; line-height: 1.6; padding-bottom: 30px;">
+                      Estamos creando una nueva forma de cuidar tu salud: consciente, personalizada y basada en ciencia. Porque vivir más solo tiene sentido si se vive mejor.
+                    </td>
+                  </tr>
+                  
+                  <!-- Separator -->
+                  <tr>
+                    <td style="padding: 20px 0;">
+                      <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 0;">
+                    </td>
+                  </tr>
+                  
+                  <!-- Coming Soon -->
+                  <tr>
+                    <td style="font-family: 'DM Sans', Arial, sans-serif; font-size: 15px; font-weight: 300; color: #1a1a1a; line-height: 1.6; padding: 20px 0 40px 0;">
+                      Muy pronto sabrás de nosotros...
+                    </td>
+                  </tr>
+                  
+                  <!-- Social Section -->
+                  <tr>
+                    <td align="center" style="padding-bottom: 20px;">
+                      <p style="font-family: 'DM Sans', Arial, sans-serif; font-size: 11px; font-weight: 400; color: #888; letter-spacing: 2px; margin: 0 0 20px 0;">
+                        SÍGUENOS PARA CONOCER MÁS
+                      </p>
+                      <table cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td align="center" style="padding: 0 15px;">
+                            <a href="https://www.instagram.com/evity.mx" style="text-decoration: none;">
+                              <div style="width: 50px; height: 50px; border: 1px solid #ddd; border-radius: 50%; display: inline-block; line-height: 50px; text-align: center;">
+                                <img src="https://cdn-icons-png.flaticon.com/24/174/174855.png" alt="Instagram" width="20" height="20" style="vertical-align: middle;">
+                              </div>
+                              <p style="font-family: 'DM Sans', Arial, sans-serif; font-size: 12px; color: #666; margin: 8px 0 0 0;">Instagram</p>
+                            </a>
+                          </td>
+                          <td align="center" style="padding: 0 15px;">
+                            <a href="https://www.tiktok.com/@evity.mx" style="text-decoration: none;">
+                              <div style="width: 50px; height: 50px; border: 1px solid #ddd; border-radius: 50%; display: inline-block; line-height: 50px; text-align: center;">
+                                <img src="https://cdn-icons-png.flaticon.com/24/3046/3046121.png" alt="TikTok" width="20" height="20" style="vertical-align: middle;">
+                              </div>
+                              <p style="font-family: 'DM Sans', Arial, sans-serif; font-size: 12px; color: #666; margin: 8px 0 0 0;">TikTok</p>
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  
+                  <!-- Footer -->
+                  <tr>
+                    <td align="center" style="padding-top: 40px; border-top: 1px solid #e0e0e0;">
+                      <p style="font-family: 'DM Sans', Arial, sans-serif; font-size: 13px; font-weight: 300; font-style: italic; color: #888; margin: 0 0 10px 0;">
+                        Gracias por confiar en nosotros.
+                      </p>
+                      <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 18px; font-weight: 400; color: #1a1a1a; margin: 0 0 15px 0;">
+                        Equipo Evity
+                      </p>
+                      <p style="font-family: 'DM Sans', Arial, sans-serif; font-size: 10px; font-weight: 400; color: #aaa; letter-spacing: 2px; margin: 0;">
+                        LONGEVIDAD &bull; PREVENCIÓN &bull; CIENCIA
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+        </html>
       `,
     });
     console.log(`Waitlist confirmation email sent to: ${email}`);
