@@ -34,7 +34,7 @@ const steps = [
   {
     number: 5,
     title: "Monitoreo y Evolución",
-    description: "Monitoreamos tu progreso, ajustamos tu plan e implementamos un sistema de seguimiento activo para asegurar la ejecución y mantener resultados en el tiempo. Te revaluamos periódicamente para optimizar tu evolución.",
+    description: "Monitoreamos tu progreso, ajustamos tu plan y te guiamos con seguimiento activo para asegurar la ejecución y resultados sostenibles. Te revaluamos periódicamente para optimizar tu evolución.",
     bgColor: "bg-[#f5f5f0] dark:bg-[#1a1a1a]"
   }
 ];
