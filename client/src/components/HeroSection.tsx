@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "wouter";
 import heroBackground from "@assets/Gemini_Generated_Image_64rbf264rbf264rb_1765770834961_1766003947092.png";
-import heroVideo from "@assets/generated_videos/abstract_glowing_particles_animation.mp4";
+import heroVideo from "@assets/generated_videos/light_beige_particles_animation.mp4";
 import WaitlistModal from "./WaitlistModal";
 
 export default function HeroSection() {
