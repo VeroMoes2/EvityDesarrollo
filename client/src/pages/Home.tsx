@@ -28,7 +28,7 @@ const steps = [
   {
     number: 4,
     title: "Plan Personalizado",
-    description: "Diseñado para ti. Nutrición, ejercicio, sueño, suplementos y prevención. Una ruta clara y personalizada para transformar tu salud día a día.",
+    description: "Creamos una guía integral de nutrición, ejercicio, sueño, suplementos y prevención, adaptado a tu cuerpo, tus objetivos y tu estilo de vida.",
     bgColor: "bg-[#e5e5dd] dark:bg-[#252525]"
   },
   {
