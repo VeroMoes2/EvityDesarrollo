@@ -1,0 +1,85 @@
+import { motion } from "framer-motion";
+import { Stethoscope, ClipboardList, TrendingUp } from "lucide-react";
+
+const features = [
+  {
+    icon: Stethoscope,
+    title: "Diagnóstico integral",
+    description: "Evaluación profunda basada en biomarcadores, historial clínico, hábitos y estilo de vida para entender tu salud como un todo."
+  },
+  {
+    icon: ClipboardList,
+    title: "Planes personalizados",
+    description: "Recomendaciones claras y accionables en nutrición, ejercicio, sueño y prevención, diseñadas para tu perfil y objetivos."
+  },
+  {
+    icon: TrendingUp,
+    title: "Seguimiento continuo",
+    description: "Un sistema de acompañamiento que te mantiene constante, mide tu progreso y te ayuda a cumplir tus objetivos de salud."
+  }
+];
+
+export default function PlatformSection() {
+  return (
+    <section className="min-h-screen flex items-center bg-[#fafaf8] dark:bg-[#0f0f0f]">
+      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-20 w-full">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10%" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="text-center mb-16"
+        >
+          <h2 
+            className="text-3xl md:text-4xl lg:text-5xl font-light text-foreground mb-6 leading-tight"
+            style={{ fontFamily: "'Lovelace Light', serif" }}
+          >
+            Evity es una plataforma de salud preventiva y longevidad.
+          </h2>
+          <p 
+            className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            Evaluamos tu salud de forma integral para prevenir enfermedades y ayudarte a vivir mejor, con más energía, claridad y bienestar desde hoy.
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+          {features.map((feature, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-10%" }}
+              transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
+              className="group"
+            >
+              <div 
+                className="bg-white dark:bg-[#1a1a1a] rounded-xl p-8 h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                style={{ 
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.02)'
+                }}
+              >
+                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-6 transition-colors duration-300 group-hover:bg-primary/15">
+                  <feature.icon className="w-7 h-7 text-primary" />
+                </div>
+                <h3 
+                  className="text-xl font-semibold text-foreground mb-3"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  {feature.title}
+                </h3>
+                <p 
+                  className="text-muted-foreground leading-relaxed"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  {feature.description}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

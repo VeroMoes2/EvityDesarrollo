@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
+import PlatformSection from "@/components/PlatformSection";
 import PreventionSection from "@/components/PreventionSection";
 import WaitlistSection from "@/components/WaitlistSection";
 import Footer from "@/components/Footer";
@@ -46,6 +47,11 @@ export default function Home() {
         {/* Hero Section */}
         <div className="snap-section">
           <HeroSection />
+        </div>
+
+        {/* Platform Section */}
+        <div className="snap-section">
+          <PlatformSection />
         </div>
         
         {/* Prevention Section */}
