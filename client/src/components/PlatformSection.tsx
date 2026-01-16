@@ -52,7 +52,7 @@ export default function PlatformSection() {
                 className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-10 lg:p-12 h-full min-h-[280px] transition-all duration-300 hover:-translate-y-1"
               >
                 <h3 
-                  className="text-xl lg:text-2xl text-foreground mb-4 font-light"
+                  className="text-lg lg:text-xl text-foreground mb-4 font-light"
                   style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
                 >
                   {feature.title}
