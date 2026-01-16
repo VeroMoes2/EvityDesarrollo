@@ -55,13 +55,13 @@ export default function PlatformSection() {
                 }}
               >
                 <h3 
-                  className="text-2xl lg:text-3xl text-foreground mb-4 font-light"
+                  className="text-xl lg:text-2xl text-foreground mb-4 font-light"
                   style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
                 >
                   {feature.title}
                 </h3>
                 <p 
-                  className="lg:text-xl text-muted-foreground text-[16px]"
+                  className="text-sm lg:text-base text-muted-foreground leading-relaxed"
                   style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
                 >
                   {feature.description}
