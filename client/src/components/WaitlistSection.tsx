@@ -55,8 +55,9 @@ export default function WaitlistSection() {
   };
 
   return (
-    <section className="h-[50vh] min-h-[400px] flex items-center justify-center bg-[#f5f5f0] dark:bg-[#1a1a1a]">
-      <div className="max-w-2xl mx-auto px-6 text-center">
+    <section className="h-[50vh] min-h-[400px] flex items-center justify-center waitlist-gradient-bg relative">
+      <div className="max-w-2xl mx-auto px-6 text-center relative z-10">
+        <div className="waitlist-text-overlay rounded-2xl p-8 sm:p-10">
         {isSuccess ? (
           <div className="flex flex-col items-center">
             <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-6">
@@ -137,6 +138,7 @@ export default function WaitlistSection() {
           )}
           </>
         )}
+        </div>
       </div>
     </section>
   );
