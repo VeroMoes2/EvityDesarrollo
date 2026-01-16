@@ -32,7 +32,7 @@ const translations = {
     'hero.discoverMore': 'Descubre Más',
     'hero.title1': 'Creemos en la longevidad.',
     'hero.title2': 'La creamos contigo.',
-    'hero.subtitle': 'Te acompañamos para sentirte mejor, verte mejor y vivir mejor.',
+    'hero.subtitle': 'Creemos en la longevidad. La creamos contigo.',
     'hero.cta': 'Comenzar',
     
     // Prevention Section
