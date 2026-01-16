@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, ArrowRight, Loader2, CheckCircle, Clock } from "lucide-react";
+import { ArrowRight, Loader2, CheckCircle, Clock } from "lucide-react";
 
 export default function WaitlistSection() {
   const [email, setEmail] = useState("");
@@ -55,7 +55,7 @@ export default function WaitlistSection() {
   };
 
   return (
-    <section className="h-full min-h-screen flex items-center justify-center bg-[#f5f5f0] dark:bg-[#1a1a1a]">
+    <section className="h-[50vh] min-h-[400px] flex items-center justify-center bg-[#f5f5f0] dark:bg-[#1a1a1a]">
       <div className="max-w-2xl mx-auto px-6 text-center">
         {isSuccess ? (
           <div className="flex flex-col items-center">
@@ -94,12 +94,6 @@ export default function WaitlistSection() {
           </div>
         ) : (
           <>
-            <div className="flex justify-center mb-6">
-              <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center">
-                <Mail className="w-6 h-6 text-primary" />
-              </div>
-            </div>
-
             <h2 
               className="text-4xl md:text-5xl font-light text-foreground mb-4"
               style={{ fontFamily: "'Lovelace Light', serif" }}
