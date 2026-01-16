@@ -31,7 +31,7 @@ export default function Header() {
             <Button 
               data-testid="button-waitlist"
               onClick={scrollToWaitlist}
-            >Comenzar</Button>
+            >Acceso anticipado</Button>
           </div>
         </div>
       </div>
