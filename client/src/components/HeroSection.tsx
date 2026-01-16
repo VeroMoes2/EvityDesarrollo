@@ -32,7 +32,6 @@ export default function HeroSection() {
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
-      
       {/* Beige color tint overlay */}
       <div 
         className="absolute inset-0 pointer-events-none"
@@ -41,13 +40,11 @@ export default function HeroSection() {
           mixBlendMode: 'overlay'
         }}
       />
-      
       {/* Fallback Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat -z-10"
         style={{ backgroundImage: `url(${heroBackground})` }}
       />
-      
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center flex items-center justify-center">
         <div className="max-w-4xl mx-auto">
@@ -56,7 +53,7 @@ export default function HeroSection() {
             {t('hero.title1')}
           </h1>
           
-          <p className="text-lg text-[#3D4F3E]/90 mb-8 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-[#3D4F3E]/90 mb-8 max-w-2xl mx-auto text-[24px]">
             {t('hero.subtitle')}
           </p>
           
