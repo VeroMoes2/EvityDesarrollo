@@ -73,14 +73,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Segunda fila: Company Info (abarcando todo el ancho) */}
-          <div className="space-y-4">
-            <div className="flex items-center text-sm text-muted-foreground">
-              <Heart className="h-4 w-4 mr-2 text-red-500" />
-              {t('footer.madeWithLove')}
-            </div>
           </div>
-        </div>
 
         <div className="border-t border-card-border mt-12 pt-8">
           <div className="text-sm text-muted-foreground text-center">
