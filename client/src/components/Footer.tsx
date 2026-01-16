@@ -76,9 +76,6 @@ export default function Footer() {
           {/* Segunda fila: Company Info (abarcando todo el ancho) */}
           <div className="space-y-4">
             <h3 className="text-xl font-bold text-primary">{companyName}</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              {companyDescription}
-            </p>
             <div className="flex items-center text-sm text-muted-foreground">
               <Heart className="h-4 w-4 mr-2 text-red-500" />
               {t('footer.madeWithLove')}
