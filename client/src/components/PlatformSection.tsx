@@ -29,9 +29,7 @@ export default function PlatformSection() {
           <h2 
             className="text-3xl md:text-4xl lg:text-5xl font-light text-foreground mb-6 leading-tight"
             style={{ fontFamily: "'Lovelace Light', serif" }}
-          >
-            Evity es una plataforma de salud preventiva y longevidad.
-          </h2>
+          >Tu plataforma de salud preventiva y longevidad</h2>
           <p 
             className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto"
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
