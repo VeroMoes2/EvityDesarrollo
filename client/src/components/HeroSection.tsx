@@ -28,9 +28,19 @@ export default function HeroSection() {
         playsInline
         poster={heroBackground}
         className="absolute inset-0 w-full h-full object-cover"
+        style={{ filter: 'sepia(15%) saturate(85%) hue-rotate(-5deg)' }}
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
+      
+      {/* Beige color tint overlay */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{ 
+          background: 'linear-gradient(to bottom, rgba(245, 240, 230, 0.12) 0%, rgba(240, 235, 225, 0.08) 100%)',
+          mixBlendMode: 'overlay'
+        }}
+      />
       
       {/* Fallback Background Image */}
       <div 
