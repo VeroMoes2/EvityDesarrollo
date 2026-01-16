@@ -97,9 +97,7 @@ export default function WaitlistSection() {
             <h2 
               className="text-4xl md:text-5xl font-light text-foreground mb-4"
               style={{ fontFamily: "'Lovelace Light', serif" }}
-            >
-              Únete a la Lista de Espera
-            </h2>
+            >Acceso anticipado</h2>
 
             <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
               ¡La espera casi termina! Únete para recibir acceso prioritario a{" "}
