@@ -23,8 +23,8 @@ export default function Footer() {
   const companyDescription = "Transformamos la forma en que las personas envejecen, proporcionando herramientas científicas y personalizadas para vivir vidas más largas, saludables y plenas. Todo en una clínica con una plataforma innovadora que combina atención humanista y tecnología digital, con un enfoque en longevidad y salud integral.";
 
   return (
-    <footer className="h-full min-h-screen flex flex-col justify-center bg-card border-t border-card-border">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <footer className="bg-card border-t border-card-border">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="space-y-12">
           {/* Primera fila: Enlaces Rápidos, Contacto y Síguenos */}
           <div 
