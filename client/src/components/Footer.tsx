@@ -25,7 +25,7 @@ export default function Footer() {
   return (
     <footer className="bg-card border-t border-card-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="space-y-12">
+        <div className="space-y-12 pt-[30px] pb-[30px]">
           {/* Primera fila: Enlaces Rápidos, Contacto y Síguenos */}
           <div 
             className="grid gap-8"
