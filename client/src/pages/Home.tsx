@@ -11,31 +11,31 @@ const steps = [
     number: 1,
     title: "Historia Clínica",
     description: "Iniciamos con una conversación profunda con nuestros doctores para entender tu genética, hábitos, contexto y riesgos de salud.",
-    bgColor: "bg-[#f5f5f0] dark:bg-[#1a1a1a]"
+    bgColor: "bg-[#f8f8f3] dark:bg-[#1a1a1a]"
   },
   {
     number: 2,
     title: "Estudios y exámenes",
     description: "Realiza tus estudios y laboratorios con nuestros aliados. Datos precisos y confiables que se convierten en la base de todo tu plan.",
-    bgColor: "bg-[#e8e8e0] dark:bg-[#222222]"
+    bgColor: "bg-[#f0f0ea] dark:bg-[#1e1e1e]"
   },
   {
     number: 3,
     title: "Diagnóstico de Longevidad",
     description: "Traducimos tus resultados y biomarcadores en un diagnóstico claro y accionable: edad biológica, riesgos y oportunidades de mejora. Te lo explicamos en consulta médica y podrás revisarlo en tu portal.",
-    bgColor: "bg-[#f0f0e8] dark:bg-[#1e1e1e]"
+    bgColor: "bg-[#e8e8e0] dark:bg-[#222222]"
   },
   {
     number: 4,
     title: "Plan Personalizado",
     description: "Creamos una guía integral de nutrición, ejercicio, sueño, suplementos y prevención, adaptado a tu cuerpo, tus objetivos y tu estilo de vida.",
-    bgColor: "bg-[#e5e5dd] dark:bg-[#252525]"
+    bgColor: "bg-[#e0e0d6] dark:bg-[#262626]"
   },
   {
     number: 5,
     title: "Monitoreo y Evolución",
     description: "Monitoreamos tu progreso, ajustamos tu plan y te guiamos con seguimiento activo para asegurar la ejecución y resultados sostenibles. Te revaluamos periódicamente para optimizar tu evolución.",
-    bgColor: "bg-[#f5f5f0] dark:bg-[#1a1a1a]"
+    bgColor: "bg-[#d8d8cc] dark:bg-[#2a2a2a]"
   }
 ];
 
