@@ -377,4 +377,25 @@
     overflow-wrap: anywhere;
     word-break: break-word;
   }
+
+  /* Full-page scroll snap */
+  .snap-container {
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+  }
+
+  .snap-section {
+    min-height: 100vh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  /* Respect prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    .snap-container {
+      scroll-behavior: auto;
+    }
+  }
 }

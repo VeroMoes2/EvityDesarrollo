@@ -40,50 +40,61 @@ const steps = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background">
       <Header />
-      <main>
-        <HeroSection />
-        <PreventionSection />
+      <main className="snap-container">
+        {/* Hero Section */}
+        <div className="snap-section">
+          <HeroSection />
+        </div>
         
-        {/* Evity Way Steps - Sticky Scroll */}
-        <section className="relative">
-          {steps.map((step, index) => (
-            <div 
-              key={index}
-              className={`sticky top-0 min-h-[50vh] flex items-center ${step.bgColor} shadow-[0_-10px_30px_rgba(0,0,0,0.1)]`}
-              style={{ zIndex: index + 1 }}
-              data-testid={`step-${step.number}`}
-            >
-              <div className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 py-12 w-full">
-                <motion.div
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-20%" }}
-                  transition={{ duration: 0.6, ease: "easeOut" }}
-                  className="text-left"
+        {/* Prevention Section */}
+        <div className="snap-section">
+          <PreventionSection />
+        </div>
+        
+        {/* Evity Way Steps - Full Page Snap Sections */}
+        {steps.map((step, index) => (
+          <section 
+            key={index}
+            className={`snap-section flex items-center ${step.bgColor}`}
+            data-testid={`step-${step.number}`}
+          >
+            <div className="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 py-12 w-full">
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-20%" }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                className="text-left"
+              >
+                <span className="text-sm text-muted-foreground tracking-widest mb-4 block font-semibold">
+                  PASO {step.number}
+                </span>
+                <h2 
+                  className="text-4xl md:text-5xl lg:text-6xl font-light text-foreground mb-6"
+                  style={{ fontFamily: "'Lovelace Light', serif" }}
                 >
-                  <span className="text-sm text-muted-foreground tracking-widest mb-4 block font-semibold">
-                    PASO {step.number}
-                  </span>
-                  <h2 
-                    className="text-4xl md:text-5xl lg:text-6xl font-light text-foreground mb-6"
-                    style={{ fontFamily: "'Lovelace Light', serif" }}
-                  >
-                    {step.title}
-                  </h2>
-                  <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl font-light">
-                    {step.description}
-                  </p>
-                </motion.div>
-              </div>
+                  {step.title}
+                </h2>
+                <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl font-light">
+                  {step.description}
+                </p>
+              </motion.div>
             </div>
-          ))}
-        </section>
+          </section>
+        ))}
 
-        <WaitlistSection />
+        {/* Waitlist Section */}
+        <div className="snap-section">
+          <WaitlistSection />
+        </div>
+        
+        {/* Footer */}
+        <div className="snap-section">
+          <Footer />
+        </div>
       </main>
-      <Footer />
     </div>
   );
 }

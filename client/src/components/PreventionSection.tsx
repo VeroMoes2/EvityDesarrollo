@@ -5,7 +5,7 @@ export default function PreventionSection() {
   const { t } = useLanguage();
 
   return (
-    <section className="min-h-screen flex items-center relative overflow-hidden">
+    <section className="h-full min-h-screen flex items-center relative overflow-hidden">
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${preventionBackground})` }}

@@ -55,7 +55,7 @@ export default function WaitlistSection() {
   };
 
   return (
-    <section className="py-20 bg-[#f5f5f0] dark:bg-[#1a1a1a]">
+    <section className="h-full min-h-screen flex items-center justify-center bg-[#f5f5f0] dark:bg-[#1a1a1a]">
       <div className="max-w-2xl mx-auto px-6 text-center">
         {isSuccess ? (
           <div className="flex flex-col items-center">
