@@ -28,7 +28,7 @@ export default function HeroSection() {
         playsInline
         poster={heroBackground}
         className="absolute inset-0 w-full h-full object-cover"
-        style={{ filter: 'sepia(15%) saturate(85%) hue-rotate(-5deg)' }}
+        style={{ filter: 'sepia(20%) saturate(60%) brightness(1.05) hue-rotate(-5deg)' }}
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
