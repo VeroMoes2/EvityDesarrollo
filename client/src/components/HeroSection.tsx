@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "wouter";
 import heroBackground from "@assets/Gemini_Generated_Image_64rbf264rbf264rb_1765770834961_1766003947092.png";
+import heroVideo from "@assets/generated_videos/abstract_glowing_particles_animation.mp4";
 import WaitlistModal from "./WaitlistModal";
 
 export default function HeroSection() {
@@ -16,9 +17,21 @@ export default function HeroSection() {
       id="inicio" 
       className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16"
     >
-      {/* DNA Helix Background */}
+      {/* Animated Video Background */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        poster={heroBackground}
+        className="absolute inset-0 w-full h-full object-cover"
+      >
+        <source src={heroVideo} type="video/mp4" />
+      </video>
+      
+      {/* Fallback Background Image */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat -z-10"
         style={{ backgroundImage: `url(${heroBackground})` }}
       />
       
