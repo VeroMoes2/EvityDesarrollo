@@ -24,8 +24,8 @@ export default function Footer() {
 
   return (
     <footer className="bg-card border-t border-card-border">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-6">
-        <div className="space-y-12 pt-[30px] pb-[30px]">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="space-y-8 pt-6 pb-4">
           {/* Primera fila: Enlaces Rápidos, Contacto y Síguenos */}
           <div 
             className="grid gap-8"
@@ -75,7 +75,7 @@ export default function Footer() {
 
           </div>
 
-        <div className="border-t border-card-border mt-4 pt-6">
+        <div className="border-t border-card-border mt-2 pt-4 pb-4">
           <div className="text-sm text-muted-foreground text-center">
             © {currentYear} {companyName}. {t('footer.allRightsReserved')}
           </div>
