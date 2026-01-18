@@ -8,8 +8,7 @@ import heroVideo from "@assets/generated_videos/light_beige_particles_animation.
 export default function HeroSection() {
   const { isAuthenticated } = useAuth();
   const { t } = useLanguage();
-  const video1Ref = useRef<HTMLVideoElement>(null);
-  const video2Ref = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const scrollToWaitlist = () => {
     const waitlistSection = document.getElementById('waitlist-section');
@@ -18,60 +17,23 @@ export default function HeroSection() {
     }
   };
 
-  // Seamless infinite loop: two staggered videos always playing
-  // Video2 starts when video1 is halfway through, creating continuous coverage
+  // Seamless loop: reset video before it reaches the white end frames
   useEffect(() => {
-    const video1 = video1Ref.current;
-    const video2 = video2Ref.current;
-    if (!video1 || !video2) return;
+    const video = videoRef.current;
+    if (!video) return;
 
-    let video1Started = false;
-    let video2Started = false;
-
-    const startVideo2WhenReady = () => {
-      if (!video1Started || video2Started) return;
-      
-      // Start video2 when video1 is at 40% to ensure overlap
-      if (video1.currentTime >= video1.duration * 0.4) {
-        video2.currentTime = 0;
-        video2.play().catch(() => {});
-        video2Started = true;
-      }
-    };
-
-    const loopVideo = (video: HTMLVideoElement, otherVideo: HTMLVideoElement) => {
-      // Reset to beginning before reaching the problematic end frames
-      const loopPoint = video.duration - 0.3; // Skip last 0.3 seconds
-      if (video.currentTime >= loopPoint) {
+    const handleTimeUpdate = () => {
+      // Reset 1 second before the end to avoid white frames
+      if (video.duration && video.currentTime >= video.duration - 1) {
         video.currentTime = 0;
       }
     };
 
-    const handleVideo1TimeUpdate = () => {
-      startVideo2WhenReady();
-      loopVideo(video1, video2);
-    };
-
-    const handleVideo2TimeUpdate = () => {
-      loopVideo(video2, video1);
-    };
-
-    const handleVideo1CanPlay = () => {
-      video1Started = true;
-      video1.play().catch(() => {});
-    };
-
-    video1.addEventListener('canplay', handleVideo1CanPlay);
-    video1.addEventListener('timeupdate', handleVideo1TimeUpdate);
-    video2.addEventListener('timeupdate', handleVideo2TimeUpdate);
-
-    // Initial play attempt
-    video1.play().catch(() => {});
+    video.addEventListener('timeupdate', handleTimeUpdate);
+    video.play().catch(() => {});
 
     return () => {
-      video1.removeEventListener('canplay', handleVideo1CanPlay);
-      video1.removeEventListener('timeupdate', handleVideo1TimeUpdate);
-      video2.removeEventListener('timeupdate', handleVideo2TimeUpdate);
+      video.removeEventListener('timeupdate', handleTimeUpdate);
     };
   }, []);
 
@@ -81,22 +43,19 @@ export default function HeroSection() {
     <section 
       id="inicio" 
       className="relative h-full min-h-screen flex items-center justify-center overflow-hidden pt-16"
+      style={{ backgroundColor: '#f5f0e6' }}
     >
-      {/* Animated Video Background - Two staggered videos for seamless loop */}
+      {/* Solid beige background to prevent any white flash */}
+      <div 
+        className="absolute inset-0"
+        style={{ backgroundColor: '#f5f0e6' }}
+      />
+      {/* Animated Video Background */}
       <video
-        ref={video1Ref}
+        ref={videoRef}
         muted
         playsInline
         poster={heroBackground}
-        className="absolute inset-0 w-full h-full object-cover"
-        style={videoStyle}
-      >
-        <source src={heroVideo} type="video/mp4" />
-      </video>
-      <video
-        ref={video2Ref}
-        muted
-        playsInline
         className="absolute inset-0 w-full h-full object-cover"
         style={videoStyle}
       >
