@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useRef } from "react";
 import heroBackground from "@assets/Gemini_Generated_Image_64rbf264rbf264rb_1765770834961_1766003947092.png";
-import heroVideo from "@assets/generated_videos/seamless_beige_particles_loop.mp4";
+import heroVideo from "@assets/generated_videos/light_beige_particles_animation.mp4";
 
 export default function HeroSection() {
   const { isAuthenticated } = useAuth();
