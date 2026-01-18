@@ -1,14 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import heroBackground from "@assets/Gemini_Generated_Image_64rbf264rbf264rb_1765770834961_1766003947092.png";
 import heroVideo from "@assets/generated_videos/light_beige_particles_animation.mp4";
 
 export default function HeroSection() {
   const { isAuthenticated } = useAuth();
   const { t } = useLanguage();
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const video1Ref = useRef<HTMLVideoElement>(null);
+  const video2Ref = useRef<HTMLVideoElement>(null);
+  const [video1Opacity, setVideo1Opacity] = useState(1);
+  const [video2Opacity, setVideo2Opacity] = useState(0);
+  const isTransitioningRef = useRef(false);
 
   const scrollToWaitlist = () => {
     const waitlistSection = document.getElementById('waitlist-section');
@@ -18,9 +22,66 @@ export default function HeroSection() {
   };
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.play().catch(() => {});
+    const video1 = video1Ref.current;
+    const video2 = video2Ref.current;
+    if (!video1 || !video2) return;
+
+    const SKIP_START = 0.5;
+    const CROSSFADE_BEFORE_END = 1.5;
+    const CROSSFADE_DURATION = 1000;
+
+    const startVideoFromSafePoint = (video: HTMLVideoElement) => {
+      video.currentTime = SKIP_START;
+      video.play().catch(() => {});
+    };
+
+    const handleVideo1TimeUpdate = () => {
+      if (!video1.duration || isTransitioningRef.current) return;
+      
+      const timeRemaining = video1.duration - video1.currentTime;
+      if (timeRemaining <= CROSSFADE_BEFORE_END && timeRemaining > 0) {
+        isTransitioningRef.current = true;
+        startVideoFromSafePoint(video2);
+        
+        setVideo1Opacity(0);
+        setVideo2Opacity(1);
+        
+        setTimeout(() => {
+          video1.pause();
+          video1.currentTime = SKIP_START;
+          isTransitioningRef.current = false;
+        }, CROSSFADE_DURATION);
+      }
+    };
+
+    const handleVideo2TimeUpdate = () => {
+      if (!video2.duration || isTransitioningRef.current) return;
+      
+      const timeRemaining = video2.duration - video2.currentTime;
+      if (timeRemaining <= CROSSFADE_BEFORE_END && timeRemaining > 0) {
+        isTransitioningRef.current = true;
+        startVideoFromSafePoint(video1);
+        
+        setVideo2Opacity(0);
+        setVideo1Opacity(1);
+        
+        setTimeout(() => {
+          video2.pause();
+          video2.currentTime = SKIP_START;
+          isTransitioningRef.current = false;
+        }, CROSSFADE_DURATION);
+      }
+    };
+
+    video1.addEventListener('timeupdate', handleVideo1TimeUpdate);
+    video2.addEventListener('timeupdate', handleVideo2TimeUpdate);
+
+    startVideoFromSafePoint(video1);
+
+    return () => {
+      video1.removeEventListener('timeupdate', handleVideo1TimeUpdate);
+      video2.removeEventListener('timeupdate', handleVideo2TimeUpdate);
+    };
   }, []);
 
   const videoStyle = { filter: 'sepia(20%) saturate(60%) brightness(1.05) hue-rotate(-5deg)' };
@@ -36,16 +97,24 @@ export default function HeroSection() {
         className="absolute inset-0"
         style={{ backgroundColor: '#f5f0e6' }}
       />
-      {/* Animated Video Background */}
+      {/* Video 1 */}
       <video
-        ref={videoRef}
-        autoPlay
+        ref={video1Ref}
         muted
-        loop
         playsInline
         poster={heroBackground}
-        className="absolute inset-0 w-full h-full object-cover"
-        style={videoStyle}
+        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out"
+        style={{ ...videoStyle, opacity: video1Opacity }}
+      >
+        <source src={heroVideo} type="video/mp4" />
+      </video>
+      {/* Video 2 */}
+      <video
+        ref={video2Ref}
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out"
+        style={{ ...videoStyle, opacity: video2Opacity }}
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
