@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import heroBackground from "@assets/Gemini_Generated_Image_64rbf264rbf264rb_1765770834961_1766003947092.png";
 import heroVideo from "@assets/generated_videos/light_beige_particles_animation.mp4";
 
@@ -10,7 +10,6 @@ export default function HeroSection() {
   const { t } = useLanguage();
   const video1Ref = useRef<HTMLVideoElement>(null);
   const video2Ref = useRef<HTMLVideoElement>(null);
-  const [activeVideo, setActiveVideo] = useState<1 | 2>(1);
 
   const scrollToWaitlist = () => {
     const waitlistSection = document.getElementById('waitlist-section');
@@ -19,51 +18,60 @@ export default function HeroSection() {
     }
   };
 
-  // Seamless loop with crossfade between two video elements
+  // Seamless infinite loop: two staggered videos always playing
+  // Video2 starts when video1 is halfway through, creating continuous coverage
   useEffect(() => {
     const video1 = video1Ref.current;
     const video2 = video2Ref.current;
     if (!video1 || !video2) return;
 
-    const crossfadeDuration = 1.5; // seconds before end to start crossfade
+    let video1Started = false;
+    let video2Started = false;
 
-    const handleTimeUpdate = (activeVid: HTMLVideoElement, nextVid: HTMLVideoElement, nextActive: 1 | 2) => {
-      const timeRemaining = activeVid.duration - activeVid.currentTime;
-      if (timeRemaining <= crossfadeDuration && timeRemaining > 0) {
-        // Start the next video and crossfade
-        if (nextVid.paused) {
-          nextVid.currentTime = 0;
-          nextVid.play().catch(() => {});
-          setActiveVideo(nextActive);
-        }
+    const startVideo2WhenReady = () => {
+      if (!video1Started || video2Started) return;
+      
+      // Start video2 when video1 is at 40% to ensure overlap
+      if (video1.currentTime >= video1.duration * 0.4) {
+        video2.currentTime = 0;
+        video2.play().catch(() => {});
+        video2Started = true;
       }
     };
 
-    const handleVideo1TimeUpdate = () => handleTimeUpdate(video1, video2, 2);
-    const handleVideo2TimeUpdate = () => handleTimeUpdate(video2, video1, 1);
-
-    const handleVideo1Ended = () => {
-      video1.currentTime = 0;
-      video1.pause();
-    };
-    const handleVideo2Ended = () => {
-      video2.currentTime = 0;
-      video2.pause();
+    const loopVideo = (video: HTMLVideoElement, otherVideo: HTMLVideoElement) => {
+      // Reset to beginning before reaching the problematic end frames
+      const loopPoint = video.duration - 0.3; // Skip last 0.3 seconds
+      if (video.currentTime >= loopPoint) {
+        video.currentTime = 0;
+      }
     };
 
+    const handleVideo1TimeUpdate = () => {
+      startVideo2WhenReady();
+      loopVideo(video1, video2);
+    };
+
+    const handleVideo2TimeUpdate = () => {
+      loopVideo(video2, video1);
+    };
+
+    const handleVideo1CanPlay = () => {
+      video1Started = true;
+      video1.play().catch(() => {});
+    };
+
+    video1.addEventListener('canplay', handleVideo1CanPlay);
     video1.addEventListener('timeupdate', handleVideo1TimeUpdate);
     video2.addEventListener('timeupdate', handleVideo2TimeUpdate);
-    video1.addEventListener('ended', handleVideo1Ended);
-    video2.addEventListener('ended', handleVideo2Ended);
 
-    // Start video1
+    // Initial play attempt
     video1.play().catch(() => {});
 
     return () => {
+      video1.removeEventListener('canplay', handleVideo1CanPlay);
       video1.removeEventListener('timeupdate', handleVideo1TimeUpdate);
       video2.removeEventListener('timeupdate', handleVideo2TimeUpdate);
-      video1.removeEventListener('ended', handleVideo1Ended);
-      video2.removeEventListener('ended', handleVideo2Ended);
     };
   }, []);
 
@@ -74,14 +82,14 @@ export default function HeroSection() {
       id="inicio" 
       className="relative h-full min-h-screen flex items-center justify-center overflow-hidden pt-16"
     >
-      {/* Animated Video Background - Two videos for seamless crossfade loop */}
+      {/* Animated Video Background - Two staggered videos for seamless loop */}
       <video
         ref={video1Ref}
         muted
         playsInline
         poster={heroBackground}
-        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms] ease-in-out"
-        style={{ ...videoStyle, opacity: activeVideo === 1 ? 1 : 0 }}
+        className="absolute inset-0 w-full h-full object-cover"
+        style={videoStyle}
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
@@ -89,8 +97,8 @@ export default function HeroSection() {
         ref={video2Ref}
         muted
         playsInline
-        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms] ease-in-out"
-        style={{ ...videoStyle, opacity: activeVideo === 2 ? 1 : 0 }}
+        className="absolute inset-0 w-full h-full object-cover"
+        style={videoStyle}
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
