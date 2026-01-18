@@ -19,36 +19,58 @@ export default function HeroSection() {
     }
   };
 
-  // Seamless loop with crossfade between two video elements
+  // Seamless infinite loop with two videos that crossfade
   useEffect(() => {
     const video1 = video1Ref.current;
     const video2 = video2Ref.current;
     if (!video1 || !video2) return;
 
-    const crossfadeDuration = 1.5; // seconds before end to start crossfade
+    let currentActive = 1;
+    const crossfadeTime = 2.5; // Start crossfade 2.5 seconds before end
+    let video2Ready = false;
 
-    const handleTimeUpdate = (activeVid: HTMLVideoElement, nextVid: HTMLVideoElement, nextActive: 1 | 2) => {
-      const timeRemaining = activeVid.duration - activeVid.currentTime;
-      if (timeRemaining <= crossfadeDuration && timeRemaining > 0) {
-        // Start the next video and crossfade
-        if (nextVid.paused) {
-          nextVid.currentTime = 0;
-          nextVid.play().catch(() => {});
-          setActiveVideo(nextActive);
-        }
+    // Preload video2 immediately
+    video2.load();
+    video2.addEventListener('canplaythrough', () => {
+      video2Ready = true;
+    }, { once: true });
+
+    const handleVideo1TimeUpdate = () => {
+      if (!video1.duration || isNaN(video1.duration)) return;
+      const timeRemaining = video1.duration - video1.currentTime;
+      
+      if (timeRemaining <= crossfadeTime && timeRemaining > 0.5 && currentActive === 1 && video2Ready) {
+        currentActive = 2;
+        video2.currentTime = 0;
+        video2.play().catch(() => {});
+        setActiveVideo(2);
       }
     };
 
-    const handleVideo1TimeUpdate = () => handleTimeUpdate(video1, video2, 2);
-    const handleVideo2TimeUpdate = () => handleTimeUpdate(video2, video1, 1);
+    const handleVideo2TimeUpdate = () => {
+      if (!video2.duration || isNaN(video2.duration)) return;
+      const timeRemaining = video2.duration - video2.currentTime;
+      
+      if (timeRemaining <= crossfadeTime && timeRemaining > 0.5 && currentActive === 2) {
+        currentActive = 1;
+        video1.currentTime = 0;
+        video1.play().catch(() => {});
+        setActiveVideo(1);
+      }
+    };
 
     const handleVideo1Ended = () => {
-      video1.currentTime = 0;
-      video1.pause();
+      if (currentActive === 2) {
+        video1.pause();
+        video1.currentTime = 0;
+      }
     };
+
     const handleVideo2Ended = () => {
-      video2.currentTime = 0;
-      video2.pause();
+      if (currentActive === 1) {
+        video2.pause();
+        video2.currentTime = 0;
+      }
     };
 
     video1.addEventListener('timeupdate', handleVideo1TimeUpdate);
@@ -79,8 +101,9 @@ export default function HeroSection() {
         ref={video1Ref}
         muted
         playsInline
+        preload="auto"
         poster={heroBackground}
-        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms] ease-in-out"
+        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out"
         style={{ ...videoStyle, opacity: activeVideo === 1 ? 1 : 0 }}
       >
         <source src={heroVideo} type="video/mp4" />
@@ -89,7 +112,8 @@ export default function HeroSection() {
         ref={video2Ref}
         muted
         playsInline
-        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms] ease-in-out"
+        preload="auto"
+        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out"
         style={{ ...videoStyle, opacity: activeVideo === 2 ? 1 : 0 }}
       >
         <source src={heroVideo} type="video/mp4" />
