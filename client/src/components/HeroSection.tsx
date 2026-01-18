@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useEffect, useRef } from "react";
 import heroBackground from "@assets/Gemini_Generated_Image_64rbf264rbf264rb_1765770834961_1766003947092.png";
-import heroVideo from "@assets/generated_videos/light_beige_particles_animation.mp4";
+import heroVideo from "@assets/generated_videos/seamless_beige_particles_loop.mp4";
 
 export default function HeroSection() {
   const { isAuthenticated } = useAuth();
@@ -17,24 +17,11 @@ export default function HeroSection() {
     }
   };
 
-  // Seamless loop: reset video before it reaches the white end frames
+  // Start video playback
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-
-    const handleTimeUpdate = () => {
-      // Reset 1 second before the end to avoid white frames
-      if (video.duration && video.currentTime >= video.duration - 1) {
-        video.currentTime = 0;
-      }
-    };
-
-    video.addEventListener('timeupdate', handleTimeUpdate);
     video.play().catch(() => {});
-
-    return () => {
-      video.removeEventListener('timeupdate', handleTimeUpdate);
-    };
   }, []);
 
   const videoStyle = { filter: 'sepia(20%) saturate(60%) brightness(1.05) hue-rotate(-5deg)' };
@@ -53,7 +40,9 @@ export default function HeroSection() {
       {/* Animated Video Background */}
       <video
         ref={videoRef}
+        autoPlay
         muted
+        loop
         playsInline
         poster={heroBackground}
         className="absolute inset-0 w-full h-full object-cover"
