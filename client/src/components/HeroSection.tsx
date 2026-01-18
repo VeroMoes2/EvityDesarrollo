@@ -1,14 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useEffect, useRef } from "react";
-import heroBackground from "@assets/Gemini_Generated_Image_64rbf264rbf264rb_1765770834961_1766003947092.png";
-import heroVideo from "@assets/generated_videos/light_beige_particles_animation.mp4";
+import ParticleBackground from "./ParticleBackground";
 
 export default function HeroSection() {
   const { isAuthenticated } = useAuth();
   const { t } = useLanguage();
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   const scrollToWaitlist = () => {
     const waitlistSection = document.getElementById('waitlist-section');
@@ -17,52 +14,19 @@ export default function HeroSection() {
     }
   };
 
-  // Start video playback
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.play().catch(() => {});
-  }, []);
-
-  const videoStyle = { filter: 'sepia(20%) saturate(60%) brightness(1.05) hue-rotate(-5deg)' };
-
   return (
     <section 
       id="inicio" 
       className="relative h-full min-h-screen flex items-center justify-center overflow-hidden pt-16"
       style={{ backgroundColor: '#f5f0e6' }}
     >
-      {/* Solid beige background to prevent any white flash */}
+      {/* Solid beige background */}
       <div 
         className="absolute inset-0"
         style={{ backgroundColor: '#f5f0e6' }}
       />
-      {/* Animated Video Background */}
-      <video
-        ref={videoRef}
-        autoPlay
-        muted
-        loop
-        playsInline
-        poster={heroBackground}
-        className="absolute inset-0 w-full h-full object-cover"
-        style={videoStyle}
-      >
-        <source src={heroVideo} type="video/mp4" />
-      </video>
-      {/* Beige color tint overlay */}
-      <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{ 
-          background: 'linear-gradient(to bottom, rgba(245, 240, 230, 0.12) 0%, rgba(240, 235, 225, 0.08) 100%)',
-          mixBlendMode: 'overlay'
-        }}
-      />
-      {/* Fallback Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat -z-10"
-        style={{ backgroundImage: `url(${heroBackground})` }}
-      />
+      {/* CSS Particle Animation - Seamless infinite loop */}
+      <ParticleBackground />
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center flex items-center justify-center">
         <div className="max-w-4xl mx-auto">
