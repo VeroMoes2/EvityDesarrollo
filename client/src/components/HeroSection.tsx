@@ -125,26 +125,33 @@ export default function HeroSection() {
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center flex items-center justify-center">
         <div className="max-w-4xl mx-auto">
           
-          {/* Headline with subtle frosted glass background */}
+          {/* Headline with per-letter glow effect */}
           <h1 
-            className="inline-block text-5xl sm:text-6xl lg:text-7xl font-light text-[#2C3E2D] mb-6 leading-[1.1] tracking-tight px-6 py-2 rounded-lg"
+            className="text-5xl sm:text-6xl lg:text-7xl font-light text-[#2C3E2D] mb-6 leading-[1.1] tracking-tight"
             style={{ 
               fontFamily: "'Lovelace Light', serif",
-              backgroundColor: 'rgba(245, 240, 230, 0.2)',
-              backdropFilter: 'blur(4px)',
-              WebkitBackdropFilter: 'blur(4px)',
+              textShadow: `
+                0 0 8px rgba(245, 240, 230, 0.95),
+                0 0 16px rgba(245, 240, 230, 0.85),
+                0 0 24px rgba(245, 240, 230, 0.7),
+                0 0 32px rgba(245, 240, 230, 0.5),
+                0 0 48px rgba(245, 240, 230, 0.3)
+              `,
             }}
           >
             {t('hero.title1')}
           </h1>
           
-          {/* Subheadline with subtle frosted glass background */}
+          {/* Subheadline with per-letter glow effect */}
           <p 
-            className="inline-block text-[#3D4F3E] mb-8 max-w-2xl mx-auto text-[24px] px-5 py-2 rounded-md"
+            className="text-[#3D4F3E] mb-8 max-w-2xl mx-auto text-[24px]"
             style={{
-              backgroundColor: 'rgba(245, 240, 230, 0.15)',
-              backdropFilter: 'blur(3px)',
-              WebkitBackdropFilter: 'blur(3px)',
+              textShadow: `
+                0 0 6px rgba(245, 240, 230, 0.95),
+                0 0 12px rgba(245, 240, 230, 0.8),
+                0 0 20px rgba(245, 240, 230, 0.6),
+                0 0 30px rgba(245, 240, 230, 0.4)
+              `,
             }}
           >
             {t('hero.subtitle')}
