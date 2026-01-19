@@ -25,7 +25,7 @@ export default function Header() {
             data-testid="nav-home"
           >
             <h1 
-              className="text-xl text-[#2c3e2d] font-medium"
+              className="text-xl font-medium text-[#21242c]"
               style={{ 
                 fontFamily: "'Lovelace Light', serif",
                 textShadow: `
