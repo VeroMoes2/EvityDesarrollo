@@ -127,7 +127,7 @@ export default function HeroSection() {
           
           {/* Headline with per-letter glow effect */}
           <h1 
-            className="text-5xl sm:text-6xl lg:text-7xl font-light text-[#2C3E2D] mb-6 leading-[1.1] tracking-tight"
+            className="sm:text-6xl lg:text-7xl font-light text-[#2C3E2D] mb-6 tracking-tight text-[70px]"
             style={{ 
               fontFamily: "'Lovelace Light', serif",
               textShadow: `
