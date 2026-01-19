@@ -130,13 +130,35 @@ export default function HeroSection() {
             }}
           />
           
-          <h1 className="relative text-5xl sm:text-6xl lg:text-7xl font-light text-[#2C3E2D] mb-6 leading-[1.1] tracking-tight" style={{ fontFamily: "'Lovelace Light', serif" }}>
-            {t('hero.title1')}
-          </h1>
+          {/* Headline with localized text scrim */}
+          <div className="relative mb-6">
+            <div 
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                inset: '-12px -40px',
+                background: 'linear-gradient(to bottom, rgba(245, 240, 230, 0.7) 0%, rgba(245, 240, 230, 0.5) 50%, rgba(245, 240, 230, 0.3) 100%)',
+                filter: 'blur(20px)',
+              }}
+            />
+            <h1 className="relative text-5xl sm:text-6xl lg:text-7xl font-light text-[#2C3E2D] leading-[1.1] tracking-tight" style={{ fontFamily: "'Lovelace Light', serif" }}>
+              {t('hero.title1')}
+            </h1>
+          </div>
           
-          <p className="relative text-[#3D4F3E]/90 mb-8 max-w-2xl mx-auto text-[24px]">
-            {t('hero.subtitle')}
-          </p>
+          {/* Subheadline with localized text scrim */}
+          <div className="relative mb-8 max-w-2xl mx-auto">
+            <div 
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                inset: '-8px -24px',
+                background: 'rgba(245, 240, 230, 0.5)',
+                filter: 'blur(16px)',
+              }}
+            />
+            <p className="relative text-[#3D4F3E]/90 text-[24px]">
+              {t('hero.subtitle')}
+            </p>
+          </div>
           
           <div className="relative flex justify-center">
             <Button 
