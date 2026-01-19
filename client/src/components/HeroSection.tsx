@@ -131,11 +131,12 @@ export default function HeroSection() {
             style={{ 
               fontFamily: "'Lovelace Light', serif",
               textShadow: `
-                0 0 8px rgba(245, 240, 230, 0.95),
-                0 0 16px rgba(245, 240, 230, 0.85),
-                0 0 24px rgba(245, 240, 230, 0.7),
-                0 0 32px rgba(245, 240, 230, 0.5),
-                0 0 48px rgba(245, 240, 230, 0.3)
+                0 0 2px rgba(245, 240, 230, 1),
+                0 0 4px rgba(245, 240, 230, 1),
+                0 0 6px rgba(245, 240, 230, 0.9),
+                0 0 12px rgba(245, 240, 230, 0.7),
+                0 0 20px rgba(245, 240, 230, 0.5),
+                0 0 30px rgba(245, 240, 230, 0.3)
               `,
             }}
           >
@@ -147,10 +148,11 @@ export default function HeroSection() {
             className="text-[#3D4F3E] mb-8 max-w-2xl mx-auto text-[24px]"
             style={{
               textShadow: `
-                0 0 6px rgba(245, 240, 230, 0.95),
-                0 0 12px rgba(245, 240, 230, 0.8),
-                0 0 20px rgba(245, 240, 230, 0.6),
-                0 0 30px rgba(245, 240, 230, 0.4)
+                0 0 2px rgba(245, 240, 230, 1),
+                0 0 4px rgba(245, 240, 230, 0.95),
+                0 0 8px rgba(245, 240, 230, 0.8),
+                0 0 14px rgba(245, 240, 230, 0.5),
+                0 0 22px rgba(245, 240, 230, 0.3)
               `,
             }}
           >
