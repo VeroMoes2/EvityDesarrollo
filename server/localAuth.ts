@@ -96,14 +96,6 @@ export async function sendWaitlistConfirmationEmail(email: string): Promise<bool
                           <td style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 18px; font-weight: 400; color: #1a1a1a; letter-spacing: 2px;">
                             EVITY
                           </td>
-                          <td align="right">
-                            <a href="https://www.instagram.com/evity.mx" style="text-decoration: none; color: #666; margin-right: 12px;">
-                              <img src="https://cdn-icons-png.flaticon.com/24/174/174855.png" alt="Instagram" width="18" height="18" style="vertical-align: middle;">
-                            </a>
-                            <a href="https://www.tiktok.com/@evity.mx" style="text-decoration: none; color: #666;">
-                              <img src="https://cdn-icons-png.flaticon.com/24/3046/3046121.png" alt="TikTok" width="18" height="18" style="vertical-align: middle;">
-                            </a>
-                          </td>
                         </tr>
                       </table>
                     </td>
