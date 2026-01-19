@@ -118,47 +118,30 @@ export default function HeroSection() {
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
-      {/* Content with gradient scrim for readability */}
+      {/* Content */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center flex items-center justify-center">
-        <div className="relative max-w-4xl mx-auto">
-          {/* Subtle gradient scrim - blends naturally with background */}
-          <div 
-            className="absolute pointer-events-none"
-            style={{
-              inset: '-200px -400px',
-              background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(245, 240, 230, 0.5) 0%, rgba(245, 240, 230, 0.3) 30%, rgba(245, 240, 230, 0.1) 60%, transparent 100%)',
+        <div className="max-w-4xl mx-auto">
+          
+          {/* Headline with backdrop blur */}
+          <h1 
+            className="text-5xl sm:text-6xl lg:text-7xl font-light text-[#2C3E2D] mb-6 leading-[1.1] tracking-tight"
+            style={{ 
+              fontFamily: "'Lovelace Light', serif",
+              textShadow: '0 0 30px rgba(245, 240, 230, 0.9), 0 0 60px rgba(245, 240, 230, 0.7), 0 0 90px rgba(245, 240, 230, 0.5)',
             }}
-          />
+          >
+            {t('hero.title1')}
+          </h1>
           
-          {/* Headline with localized text scrim */}
-          <div className="relative mb-6">
-            <div 
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                inset: '-12px -40px',
-                background: 'linear-gradient(to bottom, rgba(245, 240, 230, 0.7) 0%, rgba(245, 240, 230, 0.5) 50%, rgba(245, 240, 230, 0.3) 100%)',
-                filter: 'blur(20px)',
-              }}
-            />
-            <h1 className="relative text-5xl sm:text-6xl lg:text-7xl font-light text-[#2C3E2D] leading-[1.1] tracking-tight" style={{ fontFamily: "'Lovelace Light', serif" }}>
-              {t('hero.title1')}
-            </h1>
-          </div>
-          
-          {/* Subheadline with localized text scrim */}
-          <div className="relative mb-8 max-w-2xl mx-auto">
-            <div 
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                inset: '-8px -24px',
-                background: 'rgba(245, 240, 230, 0.5)',
-                filter: 'blur(16px)',
-              }}
-            />
-            <p className="relative text-[#3D4F3E]/90 text-[24px]">
-              {t('hero.subtitle')}
-            </p>
-          </div>
+          {/* Subheadline with backdrop blur */}
+          <p 
+            className="text-[#3D4F3E] mb-8 max-w-2xl mx-auto text-[24px]"
+            style={{
+              textShadow: '0 0 20px rgba(245, 240, 230, 0.9), 0 0 40px rgba(245, 240, 230, 0.7), 0 0 60px rgba(245, 240, 230, 0.5)',
+            }}
+          >
+            {t('hero.subtitle')}
+          </p>
           
           <div className="relative flex justify-center">
             <Button 
