@@ -174,12 +174,28 @@ export async function sendWaitlistConfirmationEmail(email: string): Promise<bool
                       <p style="font-family: 'DM Sans', Arial, sans-serif; font-size: 13px; font-weight: 300; font-style: italic; color: #888; margin: 0 0 10px 0;">
                         Gracias por confiar en nosotros.
                       </p>
-                      <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 18px; font-weight: 400; color: #1a1a1a; margin: 0 0 15px 0;">
+                      <p style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 18px; font-weight: 400; color: #1a1a1a; margin: 0 0 30px 0;">
                         Equipo Evity
                       </p>
-                      <p style="font-family: 'DM Sans', Arial, sans-serif; font-size: 10px; font-weight: 400; color: #aaa; letter-spacing: 2px; margin: 0;">
-                        LONGEVIDAD &bull; PREVENCIÓN &bull; CIENCIA
-                      </p>
+                      <table width="100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td align="center" style="font-family: 'DM Sans', Arial, sans-serif; font-size: 11px; font-weight: 400; color: #aaa; letter-spacing: 3px;">
+                            LONGEVIDAD
+                          </td>
+                          <td align="center" style="font-family: 'DM Sans', Arial, sans-serif; font-size: 11px; font-weight: 400; color: #ccc;">
+                            &bull;
+                          </td>
+                          <td align="center" style="font-family: 'DM Sans', Arial, sans-serif; font-size: 11px; font-weight: 400; color: #aaa; letter-spacing: 3px;">
+                            PREVENCIÓN
+                          </td>
+                          <td align="center" style="font-family: 'DM Sans', Arial, sans-serif; font-size: 11px; font-weight: 400; color: #ccc;">
+                            &bull;
+                          </td>
+                          <td align="center" style="font-family: 'DM Sans', Arial, sans-serif; font-size: 11px; font-weight: 400; color: #aaa; letter-spacing: 3px;">
+                            CIENCIA
+                          </td>
+                        </tr>
+                      </table>
                     </td>
                   </tr>
                 </table>
