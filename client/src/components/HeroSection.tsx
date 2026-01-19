@@ -84,7 +84,10 @@ export default function HeroSection() {
     };
   }, []);
 
-  const videoStyle = { filter: 'sepia(20%) saturate(60%) brightness(1.05) hue-rotate(-5deg)' };
+  const videoStyle = { 
+    filter: 'sepia(15%) saturate(90%) brightness(1.1) hue-rotate(-3deg)',
+    transform: 'scale(1.15)',
+  };
 
   return (
     <section 
@@ -122,26 +125,26 @@ export default function HeroSection() {
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center flex items-center justify-center">
         <div className="max-w-4xl mx-auto">
           
-          {/* Headline with frosted glass background */}
+          {/* Headline with subtle frosted glass background */}
           <h1 
             className="inline-block text-5xl sm:text-6xl lg:text-7xl font-light text-[#2C3E2D] mb-6 leading-[1.1] tracking-tight px-6 py-2 rounded-lg"
             style={{ 
               fontFamily: "'Lovelace Light', serif",
-              backgroundColor: 'rgba(245, 240, 230, 0.4)',
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
+              backgroundColor: 'rgba(245, 240, 230, 0.2)',
+              backdropFilter: 'blur(4px)',
+              WebkitBackdropFilter: 'blur(4px)',
             }}
           >
             {t('hero.title1')}
           </h1>
           
-          {/* Subheadline with frosted glass background */}
+          {/* Subheadline with subtle frosted glass background */}
           <p 
             className="inline-block text-[#3D4F3E] mb-8 max-w-2xl mx-auto text-[24px] px-5 py-2 rounded-md"
             style={{
-              backgroundColor: 'rgba(245, 240, 230, 0.35)',
-              backdropFilter: 'blur(6px)',
-              WebkitBackdropFilter: 'blur(6px)',
+              backgroundColor: 'rgba(245, 240, 230, 0.15)',
+              backdropFilter: 'blur(3px)',
+              WebkitBackdropFilter: 'blur(3px)',
             }}
           >
             {t('hero.subtitle')}
