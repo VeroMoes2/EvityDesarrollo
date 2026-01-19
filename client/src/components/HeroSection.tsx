@@ -122,22 +122,26 @@ export default function HeroSection() {
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center flex items-center justify-center">
         <div className="max-w-4xl mx-auto">
           
-          {/* Headline with backdrop blur */}
+          {/* Headline with frosted glass background */}
           <h1 
-            className="text-5xl sm:text-6xl lg:text-7xl font-light text-[#2C3E2D] mb-6 leading-[1.1] tracking-tight"
+            className="inline-block text-5xl sm:text-6xl lg:text-7xl font-light text-[#2C3E2D] mb-6 leading-[1.1] tracking-tight px-6 py-2 rounded-lg"
             style={{ 
               fontFamily: "'Lovelace Light', serif",
-              textShadow: '0 0 30px rgba(245, 240, 230, 0.9), 0 0 60px rgba(245, 240, 230, 0.7), 0 0 90px rgba(245, 240, 230, 0.5)',
+              backgroundColor: 'rgba(245, 240, 230, 0.4)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
             }}
           >
             {t('hero.title1')}
           </h1>
           
-          {/* Subheadline with backdrop blur */}
+          {/* Subheadline with frosted glass background */}
           <p 
-            className="text-[#3D4F3E] mb-8 max-w-2xl mx-auto text-[24px]"
+            className="inline-block text-[#3D4F3E] mb-8 max-w-2xl mx-auto text-[24px] px-5 py-2 rounded-md"
             style={{
-              textShadow: '0 0 20px rgba(245, 240, 230, 0.9), 0 0 40px rgba(245, 240, 230, 0.7), 0 0 60px rgba(245, 240, 230, 0.5)',
+              backgroundColor: 'rgba(245, 240, 230, 0.35)',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
             }}
           >
             {t('hero.subtitle')}
