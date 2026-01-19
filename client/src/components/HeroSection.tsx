@@ -121,13 +121,12 @@ export default function HeroSection() {
       {/* Content with gradient scrim for readability */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center flex items-center justify-center">
         <div className="relative max-w-4xl mx-auto">
-          {/* Gradient scrim behind text */}
+          {/* Subtle gradient scrim - blends naturally with background */}
           <div 
-            className="absolute inset-0 -inset-x-16 -inset-y-12 pointer-events-none"
+            className="absolute pointer-events-none"
             style={{
-              background: 'radial-gradient(ellipse at center, rgba(245, 240, 230, 0.85) 0%, rgba(245, 240, 230, 0.6) 40%, rgba(245, 240, 230, 0.2) 70%, transparent 100%)',
-              borderRadius: '50%',
-              transform: 'scale(1.3)',
+              inset: '-200px -400px',
+              background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(245, 240, 230, 0.5) 0%, rgba(245, 240, 230, 0.3) 30%, rgba(245, 240, 230, 0.1) 60%, transparent 100%)',
             }}
           />
           
