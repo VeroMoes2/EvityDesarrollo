@@ -24,7 +24,20 @@ export default function Header() {
             className="flex items-center"
             data-testid="nav-home"
           >
-            <h1 className="text-xl font-bold text-primary">{companyName}</h1>
+            <h1 
+              className="text-xl font-light text-primary"
+              style={{ 
+                fontFamily: "'Lovelace Light', serif",
+                textShadow: `
+                  0 0 2px rgba(245, 240, 230, 1),
+                  0 0 4px rgba(245, 240, 230, 1),
+                  0 0 6px rgba(245, 240, 230, 0.9),
+                  0 0 12px rgba(245, 240, 230, 0.7),
+                  0 0 20px rgba(245, 240, 230, 0.5),
+                  0 0 30px rgba(245, 240, 230, 0.3)
+                `,
+              }}
+            >{companyName}</h1>
           </button>
 
           <div className="flex items-center space-x-4">
