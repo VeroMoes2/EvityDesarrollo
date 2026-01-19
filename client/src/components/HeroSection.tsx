@@ -118,19 +118,28 @@ export default function HeroSection() {
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
-      {/* Content */}
+      {/* Content with gradient scrim for readability */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center flex items-center justify-center">
-        <div className="max-w-4xl mx-auto">
+        <div className="relative max-w-4xl mx-auto">
+          {/* Gradient scrim behind text */}
+          <div 
+            className="absolute inset-0 -inset-x-16 -inset-y-12 pointer-events-none"
+            style={{
+              background: 'radial-gradient(ellipse at center, rgba(245, 240, 230, 0.85) 0%, rgba(245, 240, 230, 0.6) 40%, rgba(245, 240, 230, 0.2) 70%, transparent 100%)',
+              borderRadius: '50%',
+              transform: 'scale(1.3)',
+            }}
+          />
           
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-light text-[#2C3E2D] mb-6 leading-[1.1] tracking-tight" style={{ fontFamily: "'Lovelace Light', serif" }}>
+          <h1 className="relative text-5xl sm:text-6xl lg:text-7xl font-light text-[#2C3E2D] mb-6 leading-[1.1] tracking-tight" style={{ fontFamily: "'Lovelace Light', serif" }}>
             {t('hero.title1')}
           </h1>
           
-          <p className="text-[#3D4F3E]/90 mb-8 max-w-2xl mx-auto text-[24px]">
+          <p className="relative text-[#3D4F3E]/90 mb-8 max-w-2xl mx-auto text-[24px]">
             {t('hero.subtitle')}
           </p>
           
-          <div className="flex justify-center">
+          <div className="relative flex justify-center">
             <Button 
               className="px-8 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md"
               data-testid="button-hero-comenzar"
