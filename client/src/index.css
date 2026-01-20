@@ -394,10 +394,9 @@
     scroll-margin-top: 64px;
   }
 
-  /* Last snap section should fit content exactly */
+  /* Last snap section should fill the viewport */
   .snap-section:last-child {
-    min-height: auto;
-    height: fit-content;
+    min-height: 100vh;
   }
 
   /* Steps container - single snap section containing all sticky steps */
