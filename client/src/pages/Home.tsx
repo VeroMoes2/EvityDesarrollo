@@ -94,7 +94,7 @@ export default function Home() {
         </div>
 
         {/* Waitlist Section + Footer */}
-        <div id="waitlist-section" className="snap-section flex flex-col">
+        <div id="waitlist-section" className="snap-section flex flex-col justify-between">
           <WaitlistSection />
           <Footer />
         </div>
