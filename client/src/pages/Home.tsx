@@ -5,6 +5,7 @@ import PreventionSection from "@/components/PreventionSection";
 import WaitlistSection from "@/components/WaitlistSection";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
+import fondoEvity from "@assets/Fondo_Evity_1768605844451.jpg";
 
 const steps = [
   {
@@ -94,7 +95,15 @@ export default function Home() {
         </div>
 
         {/* Waitlist Section + Footer */}
-        <div id="waitlist-section" className="snap-section flex flex-col justify-between">
+        <div 
+          id="waitlist-section" 
+          className="snap-section flex flex-col justify-between"
+          style={{
+            backgroundImage: `url(${fondoEvity})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
           <WaitlistSection />
           <Footer />
         </div>
