@@ -32,6 +32,7 @@ export default function HeroSection() {
 
     const startVideoFromSafePoint = (video: HTMLVideoElement) => {
       video.currentTime = SKIP_START;
+      video.playbackRate = 0.5;
       video.play().catch(() => {});
     };
 
