@@ -123,7 +123,7 @@ export default function HeroSection() {
       </video>
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center flex items-center justify-center">
-        <div className="max-w-4xl mx-auto -mt-32">
+        <div className="max-w-4xl mx-auto -mt-44">
           
           {/* Headline with per-letter glow effect */}
           <h1 
