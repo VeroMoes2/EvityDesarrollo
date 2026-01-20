@@ -127,7 +127,7 @@ export default function HeroSection() {
           
           {/* Headline with per-letter glow effect */}
           <h1 
-            className="sm:text-6xl lg:text-7xl font-light text-[#2C3E2D] mb-6 tracking-tight text-[65px]"
+            className="sm:text-6xl lg:text-7xl font-light text-[#2C3E2D] mb-3 tracking-tight text-[65px]"
             style={{ 
               fontFamily: "'Lovelace Light', serif",
               textShadow: `
@@ -145,7 +145,7 @@ export default function HeroSection() {
           
           {/* Subheadline with per-letter glow effect */}
           <p 
-            className="text-[#3D4F3E] mb-8 max-w-2xl mx-auto text-[24px]"
+            className="text-[#3D4F3E] mb-4 max-w-2xl mx-auto text-[24px]"
             style={{
               textShadow: `
                 0 0 2px rgba(245, 240, 230, 1),
