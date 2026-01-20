@@ -20,31 +20,35 @@ export default function Confirmacion() {
               <CheckCircle className="h-8 w-8 text-white" />
             </div>
             <h1 
-              className="text-5xl sm:text-6xl lg:text-7xl font-light text-foreground mb-6 leading-[1.1] tracking-tight"
+              className="text-4xl md:text-5xl font-light text-foreground mb-4"
               style={{ fontFamily: "'Lovelace Light', serif" }}
             >
               ¡Gracias por unirte a Evity!
             </h1>
-            <p className="text-lg text-[#3D4F3E]/90 mb-6 max-w-sm leading-relaxed">
+            <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
               Tu registro en nuestra lista de espera ha sido confirmado exitosamente.
             </p>
-            <div className="bg-card rounded-xl p-5 space-y-4 max-w-sm w-full">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                </div>
-                <div className="text-left">
-                  <p className="font-medium text-[#3D4F3E] text-lg">Registro completado</p>
-                  <p className="text-lg text-[#3D4F3E]/90">Has asegurado tu lugar en la fila</p>
+            <div className="flex flex-col gap-4 max-w-sm w-full">
+              <div className="bg-card rounded-xl p-5">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="text-left">
+                    <p className="font-medium text-[#3D4F3E]">Registro completado</p>
+                    <p className="text-muted-foreground">Has asegurado tu lugar en la fila</p>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Clock className="h-4 w-4 text-primary" />
-                </div>
-                <div className="text-left">
-                  <p className="font-medium text-[#3D4F3E] text-lg">Cuentas con acceso anticipado</p>
-                  <p className="text-lg text-[#3D4F3E]/90">Te notificaremos por email cuando puedas acceder</p>
+              <div className="bg-card rounded-xl p-5">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Clock className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="text-left">
+                    <p className="font-medium text-[#3D4F3E]">Cuentas con acceso anticipado</p>
+                    <p className="text-muted-foreground">Te notificaremos por email cuando puedas acceder</p>
+                  </div>
                 </div>
               </div>
             </div>
