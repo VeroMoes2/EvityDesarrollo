@@ -86,7 +86,7 @@ export default function HeroSection() {
 
   const videoStyle = { 
     filter: 'sepia(15%) saturate(90%) brightness(1.1) hue-rotate(-3deg)',
-    transform: 'scale(1.15)',
+    transform: 'scale(1.15) translateY(10%)',
   };
 
   return (
