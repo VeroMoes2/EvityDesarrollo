@@ -161,7 +161,7 @@ export default function HeroSection() {
           
           <div className="relative flex justify-center mt-12">
             <Button 
-              className="px-8 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md"
+              className="px-8 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md pt-[8px] pb-[8px]"
               data-testid="button-hero-comenzar"
               onClick={scrollToWaitlist}
             >
