@@ -159,7 +159,7 @@ export default function HeroSection() {
             {t('hero.subtitle')}
           </p>
           
-          <div className="relative flex justify-center">
+          <div className="relative flex justify-center mt-4">
             <Button 
               className="px-8 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md"
               data-testid="button-hero-comenzar"
