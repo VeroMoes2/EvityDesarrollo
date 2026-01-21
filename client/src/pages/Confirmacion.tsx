@@ -17,7 +17,7 @@ export default function Confirmacion() {
         <div className="max-w-2xl mx-auto px-6 text-center relative z-10">
           <div className="flex flex-col items-center">
             <h1 
-              className="text-3xl sm:text-4xl md:text-5xl font-light text-foreground mb-4 px-4"
+              className="text-3xl sm:text-4xl md:text-5xl font-light text-foreground mb-4 px-4 md:whitespace-nowrap"
               style={{ fontFamily: "'Lovelace Light', serif" }}
             >
               ¡Gracias por unirte a Evity!
