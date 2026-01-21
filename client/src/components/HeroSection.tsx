@@ -96,9 +96,9 @@ export default function HeroSection() {
       className="relative h-full min-h-screen flex items-center justify-center overflow-hidden pt-16"
       style={{ backgroundColor: '#f5f0e6' }}
     >
-      {/* Solid beige background */}
+      {/* Solid beige background - extended to cover header area */}
       <div 
-        className="absolute inset-0"
+        className="absolute inset-0 -top-16"
         style={{ backgroundColor: '#f5f0e6' }}
       />
       {/* Video 1 */}
@@ -107,7 +107,7 @@ export default function HeroSection() {
         muted
         playsInline
         poster={heroBackground}
-        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out"
+        className="absolute inset-0 -top-16 w-full h-[calc(100%+4rem)] object-cover transition-opacity duration-1000 ease-in-out"
         style={{ ...videoStyle, opacity: video1Opacity }}
       >
         <source src={heroVideo} type="video/mp4" />
@@ -117,7 +117,7 @@ export default function HeroSection() {
         ref={video2Ref}
         muted
         playsInline
-        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out"
+        className="absolute inset-0 -top-16 w-full h-[calc(100%+4rem)] object-cover transition-opacity duration-1000 ease-in-out"
         style={{ ...videoStyle, opacity: video2Opacity }}
       >
         <source src={heroVideo} type="video/mp4" />
