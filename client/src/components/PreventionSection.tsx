@@ -23,7 +23,7 @@ export default function PreventionSection() {
           <h2 
             className="md:text-5xl font-light text-foreground mb-8 text-[40px]"
             style={{ fontFamily: "'Lovelace Light', serif" }}
-          >Vive más años, con mejor salud.</h2>
+          >Construir bienestar hoy, para vivir mejor.</h2>
           
           <p className="text-xl md:text-2xl text-foreground leading-relaxed mb-8">Combinamos medicina preventiva, biomarcadores avanzados e inteligencia artificial para identificar riesgos tempranos y diseñar un plan de salud hecho a tu medida. Para que te veas y sientas mejor, desde hoy.</p>
           
