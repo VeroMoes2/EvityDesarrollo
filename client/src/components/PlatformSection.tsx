@@ -33,9 +33,7 @@ export default function PlatformSection() {
           <p 
             className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto"
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
-          >
-            Evaluamos tu salud de forma integral para prevenir enfermedades y ayudarte a vivir mejor, con más energía, claridad y bienestar desde hoy.
-          </p>
+          >Te ayudamos a entender tu bienestar de forma integral para construir un plan personalizado y vivir mejor, con más energía y claridad desde hoy.</p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
