@@ -47,7 +47,7 @@ export default function Footer() {
 
             {/* Center Description */}
             <div className="text-center">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-[14px] font-semibold text-[#21242c]">
                 Evity es una plataforma de bienestar, tecnología y educación.
               </p>
             </div>
