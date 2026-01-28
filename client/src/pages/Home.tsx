@@ -29,7 +29,7 @@ const steps = [
   {
     number: 4,
     title: "Acompañamiento personalizado",
-    description: "Te acompañamos con la creación de una guía práctica para construir hábitos que puedas sostener en tu día a día, alineados a tu estilo de vida y obejtivos personales.",
+    description: "Creamos contigo una guía práctica para construir hábitos sostenibles en tu día a día, alineados a tu estilo de vida y objetivos personales.",
     bgColor: "bg-[#e0e0d6] dark:bg-[#262626]"
   },
   {
