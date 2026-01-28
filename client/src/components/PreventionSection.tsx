@@ -25,7 +25,7 @@ export default function PreventionSection() {
             style={{ fontFamily: "'Lovelace Light', serif" }}
           >Construir bienestar hoy, para vivir mejor.</h2>
           
-          <p className="text-xl md:text-2xl text-foreground leading-relaxed mb-8">Combinamos medicina preventiva, biomarcadores avanzados e inteligencia artificial para identificar riesgos tempranos y diseñar un plan de salud hecho a tu medida. Para que te veas y sientas mejor, desde hoy.</p>
+          <p className="text-xl md:text-2xl text-foreground leading-relaxed mb-8">Una plataforma enfocada en acompañamiento, educación y seguimiento de hábitos clave. En Evity combinamos tecnología y acompañamiento humano para ayudarte a vivir mejor, a tu ritmo. </p>
           
           <Button 
             className="px-8 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md"
