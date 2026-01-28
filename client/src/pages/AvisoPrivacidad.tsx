@@ -47,7 +47,7 @@ export default function AvisoPrivacidad() {
                 Evity S.A.P.I. de C.V.
               </p>
               <p className="text-base leading-relaxed">
-                Correo de contacto: <a href="mailto:hola@evity.mx" className="text-primary hover:underline">hola@evity.mx</a>
+                Correo de contacto: <a href="mailto:contacto@evity.mx" className="text-primary hover:underline">contacto@evity.mx</a>
               </p>
             </section>
 
@@ -62,6 +62,7 @@ export default function AvisoPrivacidad() {
                 Para inscribirte en nuestra lista de espera, únicamente solicitamos los siguientes datos:
               </p>
               <ul className="list-disc list-inside space-y-2 text-base leading-relaxed pl-4">
+                <li>Nombre</li>
                 <li>Correo electrónico</li>
               </ul>
               <p className="text-base leading-relaxed font-medium mt-4">
@@ -139,7 +140,7 @@ export default function AvisoPrivacidad() {
                 Derechos ARCO y revocación del consentimiento
               </h2>
               <p className="text-base leading-relaxed">
-                Como titular de los datos, puedes ejercer los derechos de Acceso, Rectificación, Cancelación u Oposición (ARCO) enviando una solicitud a: <a href="mailto:hola@evity.mx" className="text-primary hover:underline">hola@evity.mx</a>
+                Como titular de los datos, puedes ejercer los derechos de Acceso, Rectificación, Cancelación u Oposición (ARCO) enviando una solicitud a: <a href="mailto:contacto@evity.mx" className="text-primary hover:underline">contacto@evity.mx</a>
               </p>
             </section>
 
