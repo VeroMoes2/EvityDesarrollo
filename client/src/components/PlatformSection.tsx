@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 const features = [
   {
     title: "Tu punto de partida",
-    description: "Evaluación profunda basada en biomarcadores, historial clínico, hábitos y estilo de vida para entender tu salud como un todo."
+    description: "Panorama de estilo de vida y señales clave para entender tu bienestar como un todo."
   },
   {
     title: "Planes personalizados",
