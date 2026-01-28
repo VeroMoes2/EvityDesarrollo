@@ -29,7 +29,7 @@ const steps = [
   {
     number: 4,
     title: "Acompañamiento personalizado",
-    description: "Creamos una guía integral de nutrición, ejercicio, sueño, suplementos y prevención, adaptado a tu cuerpo, tus objetivos y tu estilo de vida.",
+    description: "Te acompañamos con la creación de una guía práctica para construir hábitos que puedas sostener en tu día a día, alineados a tu estilo de vida y obejtivos personales.",
     bgColor: "bg-[#e0e0d6] dark:bg-[#262626]"
   },
   {
