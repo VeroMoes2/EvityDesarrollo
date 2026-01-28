@@ -34,6 +34,8 @@ import AgenteIA from "@/pages/AgenteIA";
 import AnalyteDashboard from "@/pages/AnalyteDashboard";
 import AnalyteDetail from "@/pages/AnalyteDetail";
 import Confirmacion from "@/pages/Confirmacion";
+import TerminosCondiciones from "@/pages/TerminosCondiciones";
+import AvisoPrivacidad from "@/pages/AvisoPrivacidad";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -75,6 +77,8 @@ function Router() {
           <Route path="/planes" component={Plans} />
           <Route path="/biomarcadores" component={Biomarkers} />
           <Route path="/confirmacion" component={Confirmacion} />
+          <Route path="/terminos-condiciones" component={TerminosCondiciones} />
+          <Route path="/aviso-privacidad" component={AvisoPrivacidad} />
         </>
       ) : (
         // When authenticated, show protected routes and redirect auth pages to profile
@@ -110,6 +114,8 @@ function Router() {
           <Route path="/planes" component={Plans} />
           <Route path="/biomarcadores" component={Biomarkers} />
           <Route path="/confirmacion" component={Confirmacion} />
+          <Route path="/terminos-condiciones" component={TerminosCondiciones} />
+          <Route path="/aviso-privacidad" component={AvisoPrivacidad} />
         </>
       )}
       <Route component={NotFound} />
