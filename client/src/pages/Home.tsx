@@ -10,7 +10,7 @@ import fondoEvity from "@assets/Fondo_Evity_1768605844451.jpg";
 const steps = [
   {
     number: 1,
-    title: "Historia Clínica",
+    title: "Conocer tu punto de partida",
     description: "Iniciamos con una conversación profunda con nuestros doctores para entender tu genética, hábitos, contexto y riesgos de salud.",
     bgColor: "bg-[#f8f8f3] dark:bg-[#1a1a1a]"
   },
