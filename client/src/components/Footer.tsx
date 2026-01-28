@@ -13,6 +13,10 @@ export default function Footer() {
   const handleLinkClick = (linkName: string) => {
     if (linkName === "contact") {
       navigate('/contacto');
+    } else if (linkName === "privacy") {
+      navigate('/aviso-privacidad');
+    } else if (linkName === "terms") {
+      navigate('/terminos-condiciones');
     } else {
       console.log(`Footer link clicked: ${linkName}`);
     }
@@ -41,6 +45,20 @@ export default function Footer() {
                   data-testid="footer-link-contact"
                 >
                   {t('footer.contactUs')}
+                </button>
+                <button 
+                  onClick={() => handleLinkClick("privacy")}
+                  className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+                  data-testid="footer-link-privacy"
+                >
+                  Aviso de privacidad
+                </button>
+                <button 
+                  onClick={() => handleLinkClick("terms")}
+                  className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+                  data-testid="footer-link-terms"
+                >
+                  Términos y condiciones
                 </button>
               </nav>
             </div>
