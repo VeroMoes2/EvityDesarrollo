@@ -26,10 +26,10 @@ export default function Footer() {
     <footer className="bg-card border-t border-card-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="space-y-8 pt-6 pb-4">
-          {/* Primera fila: Enlaces Rápidos, Contacto y Síguenos */}
+          {/* Primera fila: Enlaces Rápidos, Descripción y Síguenos */}
           <div 
             className="grid gap-8"
-            style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}
+            style={{ gridTemplateColumns: '1fr 2fr 1fr' }}
           >
             {/* Quick Links */}
             <div className="space-y-4">
@@ -45,10 +45,17 @@ export default function Footer() {
               </nav>
             </div>
 
+            {/* Center Description */}
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">
+                Evity es una plataforma de bienestar, tecnología y educación.
+              </p>
+            </div>
+
             {/* Social Media */}
-            <div className="space-y-4">
+            <div className="space-y-4 text-right">
               <h4 className="font-semibold text-card-foreground">{t('footer.followUs')}</h4>
-              <div className="flex gap-4">
+              <div className="flex gap-4 justify-end">
                 <a 
                   href="https://www.tiktok.com/@evity.mx"
                   target="_blank"
