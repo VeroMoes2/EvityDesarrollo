@@ -47,7 +47,7 @@ export default function AvisoPrivacidad() {
                 Evity S.A.P.I. de C.V.
               </p>
               <p className="text-base leading-relaxed">
-                Correo de contacto: <a href="mailto:contacto@evity.mx" className="text-primary hover:underline">contacto@evity.mx</a>
+                Correo de contacto: contacto@evity.mx
               </p>
             </section>
 
@@ -65,8 +65,8 @@ export default function AvisoPrivacidad() {
                 <li>Nombre</li>
                 <li>Correo electrónico</li>
               </ul>
-              <p className="text-base leading-relaxed font-medium mt-4">
-                No recabamos datos de salud, información médica sensible durante el registro en la lista de espera.
+              <p className="text-base leading-relaxed mt-4">
+                No recabamos datos de salud o información médica sensible durante el registro en la lista de espera.
               </p>
             </section>
 
@@ -77,14 +77,14 @@ export default function AvisoPrivacidad() {
               >
                 Finalidades del tratamiento
               </h2>
-              <p className="text-base leading-relaxed font-medium">
+              <p className="text-base leading-relaxed">
                 Finalidades primarias (necesarias):
               </p>
               <ul className="list-disc list-inside space-y-2 text-base leading-relaxed pl-4">
                 <li>Gestionar tu registro en la lista de espera de Evity.</li>
                 <li>Enviarte comunicaciones relacionadas con el lanzamiento de nuestros servicios.</li>
               </ul>
-              <p className="text-base leading-relaxed font-medium mt-4">
+              <p className="text-base leading-relaxed mt-4">
                 Finalidades secundarias (opcionales):
               </p>
               <ul className="list-disc list-inside space-y-2 text-base leading-relaxed pl-4">
@@ -140,7 +140,7 @@ export default function AvisoPrivacidad() {
                 Derechos ARCO y revocación del consentimiento
               </h2>
               <p className="text-base leading-relaxed">
-                Como titular de los datos, puedes ejercer los derechos de Acceso, Rectificación, Cancelación u Oposición (ARCO) enviando una solicitud a: <a href="mailto:contacto@evity.mx" className="text-primary hover:underline">contacto@evity.mx</a>
+                Como titular de los datos, puedes ejercer los derechos de Acceso, Rectificación, Cancelación u Oposición (ARCO) enviando una solicitud a: contacto@evity.mx
               </p>
             </section>
 
