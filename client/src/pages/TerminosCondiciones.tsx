@@ -47,10 +47,10 @@ export default function TerminosCondiciones() {
                 Evity es una plataforma de salud, tecnología y bienestar en desarrollo.
               </p>
               <p className="text-base leading-relaxed mb-3">
-                El presente sitio web tiene como finalidad permitir a las personas interesadas <strong>registrarse en una lista de espera (waitlist)</strong> para recibir información sobre el futuro lanzamiento de nuestros servicios.
+                El presente sitio web tiene como finalidad permitir a las personas interesadas <strong style={{ fontWeight: 500 }}>registrarse en una lista de espera (waitlist)</strong> para recibir información sobre el futuro lanzamiento de nuestros servicios.
               </p>
               <p className="text-base leading-relaxed">
-                El registro en el waitlist <strong>no constituye una contratación, ni garantiza acceso inmediato a productos o servicios.</strong>
+                El registro en el waitlist <strong style={{ fontWeight: 500 }}>no constituye una contratación, ni garantiza acceso inmediato a productos o servicios.</strong>
               </p>
             </div>
 
@@ -67,7 +67,7 @@ export default function TerminosCondiciones() {
               <ul className="space-y-2 text-base leading-relaxed">
                 <li className="flex items-start gap-2">
                   <span className="mt-2 w-2 h-2 bg-foreground rounded-full flex-shrink-0"></span>
-                  <span>Evity <strong>no presta servicios médicos,</strong> diagnósticos, análisis de laboratorio, estudios médicos, ni tratamientos.</span>
+                  <span>Evity <strong style={{ fontWeight: 500 }}>no presta servicios médicos,</strong> diagnósticos, análisis de laboratorio, estudios médicos, ni tratamientos.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-2 w-2 h-2 bg-foreground rounded-full flex-shrink-0"></span>
@@ -88,7 +88,7 @@ export default function TerminosCondiciones() {
                 No atención de urgencias
               </h2>
               <p className="text-base leading-relaxed mb-3">
-                Evity <strong>no brinda atención médica de urgencia ni emergencia.</strong>
+                Evity <strong style={{ fontWeight: 500 }}>no brinda atención médica de urgencia ni emergencia.</strong>
               </p>
               <p className="text-base leading-relaxed">
                 Ante cualquier situación médica urgente, el usuario deberá acudir a servicios médicos presenciales o de emergencia.
