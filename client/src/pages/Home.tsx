@@ -11,7 +11,7 @@ const steps = [
   {
     number: 1,
     title: "Conocer tu punto de partida",
-    description: "Iniciamos con una conversación profunda con nuestros doctores para entender tu genética, hábitos, contexto y riesgos de salud.",
+    description: "Iniciamos con una conversación guiada para entender tu estilo de vida, hábitos y contexto personal.",
     bgColor: "bg-[#f8f8f3] dark:bg-[#1a1a1a]"
   },
   {
