@@ -35,7 +35,7 @@ const steps = [
   {
     number: 5,
     title: "Evolución constante",
-    description: "Monitoreamos tu progreso, ajustamos tu plan y te guiamos con seguimiento activo para asegurar la ejecución y resultados sostenibles. Te revaluamos periódicamente para optimizar tu evolución.",
+    description: "Brindamos un acompañamiento cercano para mantener claridad, constancia y visualizar avances a lo largo de tu proceso. Un monitoreo especial diseñádo con herramientas digitales por y para ti.",
     bgColor: "bg-[#d8d8cc] dark:bg-[#2a2a2a]"
   }
 ];
