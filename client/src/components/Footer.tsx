@@ -84,7 +84,7 @@ export default function Footer() {
 
         <div className="border-t border-card-border mt-2 pt-4 pb-4">
           <div className="text-sm text-muted-foreground text-center">
-            © {currentYear} {companyName}. {t('footer.allRightsReserved')}
+            © {currentYear} {companyName}.
           </div>
         </div>
       </div>
