@@ -32,7 +32,7 @@ const translations = {
     'hero.discoverMore': 'Descubre Más',
     'hero.title1': 'Evity',
     'hero.title2': '',
-    'hero.subtitle': 'Creemos en la longevidad. La creamos contigo.',
+    'hero.subtitle': 'Vivir mejor, vivir más tiempo',
     'hero.cta': 'Comenzar',
     
     // Prevention Section
