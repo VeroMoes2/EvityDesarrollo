@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 const features = [
   {
-    title: "Diagnóstico integral",
+    title: "Tu punto de partida",
     description: "Evaluación profunda basada en biomarcadores, historial clínico, hábitos y estilo de vida para entender tu salud como un todo."
   },
   {
