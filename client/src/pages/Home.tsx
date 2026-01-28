@@ -16,7 +16,7 @@ const steps = [
   },
   {
     number: 2,
-    title: "Estudios y exámenes",
+    title: "Sumamos contexto",
     description: "Realiza tus estudios y laboratorios con nuestros aliados. Datos precisos y confiables que se convierten en la base de todo tu plan.",
     bgColor: "bg-[#f0f0ea] dark:bg-[#1e1e1e]"
   },
