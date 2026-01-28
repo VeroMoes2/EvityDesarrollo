@@ -11,7 +11,7 @@ const features = [
   },
   {
     title: "Seguimiento continuo",
-    description: "Un sistema de acompañamiento que te mantiene constante, mide tu progreso y te ayuda a cumplir tus objetivos de salud."
+    description: "Acompañamiento para mantener constancia, dar seguimiento a tus avances y sostener tus objetivos de bienestar."
   }
 ];
 
