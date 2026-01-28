@@ -7,7 +7,7 @@ const features = [
   },
   {
     title: "Planes personalizados",
-    description: "Recomendaciones claras y accionables en nutrición, ejercicio, sueño y prevención, diseñadas para tu perfil y objetivos."
+    description: "Recomendaciones claras y accionables en nutrición, movimiento, sueño y manejo del estrés, adaptadas a tu perfil y objetivos."
   },
   {
     title: "Seguimiento continuo",
