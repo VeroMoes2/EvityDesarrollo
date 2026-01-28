@@ -17,7 +17,7 @@ const steps = [
   {
     number: 2,
     title: "Sumamos contexto",
-    description: "Realiza tus estudios y laboratorios con nuestros aliados. Datos precisos y confiables que se convierten en la base de todo tu plan.",
+    description: "Integramos información relevante que tú decides compartir para darte una guía más clara y personalizada en tu proceso.",
     bgColor: "bg-[#f0f0ea] dark:bg-[#1e1e1e]"
   },
   {
