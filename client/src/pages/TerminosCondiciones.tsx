@@ -15,13 +15,6 @@ export default function TerminosCondiciones() {
           </h1>
           
           <p 
-            className="text-xl text-foreground mb-1"
-            style={{ fontFamily: "'Lovelace Light', serif" }}
-          >
-            Evity
-          </p>
-          
-          <p 
             className="text-sm text-muted-foreground mb-6"
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
           >
