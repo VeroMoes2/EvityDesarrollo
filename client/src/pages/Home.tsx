@@ -22,7 +22,7 @@ const steps = [
   },
   {
     number: 3,
-    title: "Diagnóstico de Longevidad",
+    title: "Explora tu panorama actual",
     description: "Traducimos tus resultados y biomarcadores en un diagnóstico claro y accionable: edad biológica, riesgos y oportunidades de mejora. Te lo explicamos en consulta médica y podrás revisarlo en tu portal.",
     bgColor: "bg-[#e8e8e0] dark:bg-[#222222]"
   },
