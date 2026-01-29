@@ -402,7 +402,6 @@
   /* Steps container - single snap section containing all sticky steps */
   .steps-container {
     scroll-snap-align: start;
-    padding-bottom: 42vh;
   }
 
   /* Individual step sections with sticky stacking effect */
@@ -418,6 +417,13 @@
   .step-section:nth-child(3) { top: 4rem; z-index: 3; }
   .step-section:nth-child(4) { top: 6rem; z-index: 4; }
   .step-section:nth-child(5) { top: 8rem; z-index: 5; }
+
+  /* Waitlist section positioned to show below step 5 */
+  #waitlist-section {
+    margin-top: -42vh;
+    position: relative;
+    z-index: 10;
+  }
 
   /* Respect prefers-reduced-motion */
   @media (prefers-reduced-motion: reduce) {
