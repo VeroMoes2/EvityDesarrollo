@@ -36,6 +36,12 @@ Preferred communication style: Simple, everyday language.
 - **Content Types**: Blog posts, resources, guides
 - **Internationalization**: Spanish-language support
 
+#### Landing Page Scroll Behavior
+- **Sticky Stacking Steps**: The 5 journey steps use sticky positioning with progressive top offsets (0, 2rem, 4rem, 6rem, 8rem) creating a stacking card effect
+- **Step 5 + Waitlist View**: When on step 5, the waitlist section should be visible at the bottom (approximately half the screen), with step 5 content in the top half
+- **Waitlist Full View**: Scrolling down from step 5 reveals the complete waitlist section with footer
+- **Steps Container**: Has 42vh padding-bottom to allow proper scroll space for sticky positioning
+
 #### Feature Specifications
 - **Longevity Mini Score Calculator**: A 6-question public assessment providing an immediate lifestyle health snapshot. Stores calculation history locally.
 - **Authenticated Longevity Questionnaire ("Conócete mejor")**: A comprehensive 29-question assessment evaluating 10 health dimensions, calculating personalized longevity and section scores. All results are saved to the database, with history tracking and versioning, including AI-generated personalized summaries.
