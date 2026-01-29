@@ -163,7 +163,7 @@ export default function HeroSection() {
           
           {/* Description - Platform description */}
           <p 
-            className="text-[#3D4F3E] mb-4 max-w-2xl mx-auto text-[18px]"
+            className="mb-4 max-w-2xl mx-auto text-[20px] text-[#21242c]"
             style={{
               fontFamily: "'DM Sans', sans-serif",
               fontWeight: 300,
