@@ -126,9 +126,9 @@ export default function HeroSection() {
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center flex items-center justify-center">
         <div className="max-w-4xl mx-auto -mt-52">
           
-          {/* Headline with per-letter glow effect */}
+          {/* Main Title - Evity */}
           <h1 
-            className="sm:text-6xl lg:text-7xl font-light text-[#2C3E2D] mb-3 tracking-tight text-[65px]"
+            className="sm:text-6xl lg:text-7xl font-light text-[#2C3E2D] mb-4 tracking-tight text-[65px]"
             style={{ 
               fontFamily: "'Lovelace Light', serif",
               textShadow: `
@@ -144,10 +144,29 @@ export default function HeroSection() {
             {t('hero.title1')}
           </h1>
           
-          {/* Subheadline with per-letter glow effect */}
+          {/* Tagline - Vivir mejor, vivir más tiempo */}
           <p 
-            className="text-[#3D4F3E] mb-4 max-w-2xl mx-auto text-[24px]"
+            className="text-[#2C3E2D] mb-4 max-w-2xl mx-auto text-[28px] italic"
             style={{
+              fontFamily: "'Lovelace Light', serif",
+              textShadow: `
+                0 0 2px rgba(245, 240, 230, 1),
+                0 0 4px rgba(245, 240, 230, 0.95),
+                0 0 8px rgba(245, 240, 230, 0.8),
+                0 0 14px rgba(245, 240, 230, 0.5),
+                0 0 22px rgba(245, 240, 230, 0.3)
+              `,
+            }}
+          >
+            {t('hero.title2')}
+          </p>
+          
+          {/* Description - Platform description */}
+          <p 
+            className="text-[#3D4F3E] mb-4 max-w-2xl mx-auto text-[18px]"
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontWeight: 300,
               textShadow: `
                 0 0 2px rgba(245, 240, 230, 1),
                 0 0 4px rgba(245, 240, 230, 0.95),

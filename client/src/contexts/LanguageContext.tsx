@@ -30,8 +30,8 @@ const translations = {
     'hero.welcome': 'Bienvenido a',
     'hero.valueProposition': 'Descubre los secretos científicos de la longevidad. Herramientas personalizadas, recursos basados en evidencia y una comunidad dedicada a vivir más y mejor.',
     'hero.discoverMore': 'Descubre Más',
-    'hero.title1': 'Vivir mejor, vivir más tiempo',
-    'hero.title2': '',
+    'hero.title1': 'Evity',
+    'hero.title2': 'Vivir mejor, vivir más tiempo.',
     'hero.subtitle': 'Una plataforma de bienestar enfocada en hábitos y estilo de vida.',
     'hero.cta': 'Comenzar',
     
