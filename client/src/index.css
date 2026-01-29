@@ -432,14 +432,15 @@
   .step-section:nth-child(4) { top: 6rem; z-index: 4; }
   .step-section:nth-child(5) { top: 8rem; z-index: 5; }
 
-  /* Waitlist section inside steps container - not sticky, flows naturally */
+  /* Waitlist section inside steps container - sticky to stack on top of step 5 */
   .waitlist-in-steps {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    position: relative;
-    z-index: 6;
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
 
   /* Respect prefers-reduced-motion */
