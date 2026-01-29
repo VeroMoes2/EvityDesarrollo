@@ -403,7 +403,6 @@
   .steps-container {
     scroll-snap-align: start;
     position: relative;
-    margin-bottom: 50vh;
   }
 
   /* Individual step sections with sticky stacking effect */
@@ -420,9 +419,14 @@
   .step-section:nth-child(4) { top: 6rem; z-index: 4; }
   .step-section:nth-child(5) { top: 8rem; z-index: 5; }
 
-  /* Waitlist overlaps into the margin space */
-  #waitlist-section {
-    margin-top: -50vh;
+  /* Waitlist section inside steps container - not sticky, flows naturally */
+  .waitlist-in-steps {
+    min-height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 6;
   }
 
   /* Respect prefers-reduced-motion */
