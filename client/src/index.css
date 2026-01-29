@@ -402,8 +402,7 @@
   /* Steps container - single snap section containing all sticky steps */
   .steps-container {
     scroll-snap-align: start;
-    /* Add margin bottom so waitlist peeks from below */
-    margin-bottom: -50vh;
+    padding-bottom: 42vh;
   }
 
   /* Individual step sections with sticky stacking effect */
