@@ -403,11 +403,12 @@
   .steps-container {
     scroll-snap-align: start;
     position: relative;
+    padding-bottom: 50vh;
   }
 
   /* Individual step sections with sticky stacking effect */
   .step-section {
-    height: 42vh;
+    height: 50vh;
     position: sticky;
     display: flex;
     align-items: center;
