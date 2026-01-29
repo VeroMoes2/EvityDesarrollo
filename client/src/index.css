@@ -411,6 +411,10 @@
     position: sticky;
     display: flex;
     align-items: center;
+    /* Ensure solid background for Safari compatibility */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    isolation: isolate;
   }
 
   .step-section:nth-child(1) { top: 0; z-index: 1; }
