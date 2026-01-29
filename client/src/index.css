@@ -383,10 +383,17 @@
   .snap-container {
     height: 100vh;
     overflow-y: scroll;
-    scroll-snap-type: y mandatory;
+    scroll-snap-type: y proximity;
     scroll-behavior: smooth;
-    overscroll-behavior: contain;
+    overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Desktop uses mandatory snap, mobile uses proximity */
+  @media (min-width: 768px) {
+    .snap-container {
+      scroll-snap-type: y mandatory;
+    }
   }
 
   .snap-section {
