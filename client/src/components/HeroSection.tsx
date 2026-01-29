@@ -146,7 +146,7 @@ export default function HeroSection() {
           
           {/* Tagline - Vivir mejor, vivir más tiempo */}
           <p 
-            className="text-[#2C3E2D] mb-4 max-w-2xl mx-auto italic font-extralight text-[28px]"
+            className="text-[#2C3E2D] mb-4 max-w-2xl mx-auto font-extralight text-[28px]"
             style={{
               fontFamily: "'Lovelace Light', serif",
               textShadow: `
