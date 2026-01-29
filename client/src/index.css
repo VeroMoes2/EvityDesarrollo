@@ -402,28 +402,23 @@
   /* Steps container - single snap section containing all sticky steps */
   .steps-container {
     scroll-snap-align: start;
+    /* Add margin bottom so waitlist peeks from below */
+    margin-bottom: -50vh;
   }
 
   /* Individual step sections with sticky stacking effect */
   .step-section {
-    min-height: 60vh;
+    height: 50vh;
     position: sticky;
     display: flex;
     align-items: center;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
   }
 
   .step-section:nth-child(1) { top: 0; z-index: 1; }
-  .step-section:nth-child(2) { top: 1.5rem; z-index: 2; }
-  .step-section:nth-child(3) { top: 3rem; z-index: 3; }
-  .step-section:nth-child(4) { top: 4.5rem; z-index: 4; }
-  .step-section:nth-child(5) { top: 6rem; z-index: 5; }
-
-  /* Last step needs extra bottom padding to be fully visible */
-  .step-section:last-child {
-    padding-bottom: 4rem;
-  }
+  .step-section:nth-child(2) { top: 2rem; z-index: 2; }
+  .step-section:nth-child(3) { top: 4rem; z-index: 3; }
+  .step-section:nth-child(4) { top: 6rem; z-index: 4; }
+  .step-section:nth-child(5) { top: 8rem; z-index: 5; }
 
   /* Respect prefers-reduced-motion */
   @media (prefers-reduced-motion: reduce) {
