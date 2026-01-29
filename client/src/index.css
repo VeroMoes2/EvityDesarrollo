@@ -421,10 +421,10 @@
 
   /* Waitlist section inside steps container - not sticky, flows naturally */
   .waitlist-in-steps {
-    min-height: 50vh;
+    min-height: 100vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: space-between;
     position: relative;
     z-index: 6;
   }

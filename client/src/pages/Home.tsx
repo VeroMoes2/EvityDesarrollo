@@ -93,7 +93,7 @@ export default function Home() {
             </section>
           ))}
           
-          {/* Waitlist Section inside steps container - appears below step 5 */}
+          {/* Waitlist Section + Footer inside steps container - appears below step 5 */}
           <div 
             id="waitlist-section" 
             className="waitlist-in-steps"
@@ -104,19 +104,8 @@ export default function Home() {
             }}
           >
             <WaitlistSection />
+            <Footer />
           </div>
-        </div>
-
-        {/* Footer Section */}
-        <div 
-          className="snap-section flex flex-col justify-end"
-          style={{
-            backgroundImage: `url(${fondoEvity})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        >
-          <Footer />
         </div>
       </main>
     </div>
